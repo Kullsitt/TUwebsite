@@ -1,0 +1,130 @@
+body {
+			font-family: system-ui;
+		}
+		.box {
+			width: 437px;
+			height: 1px;
+			background: #CBCBCB;
+			margin-bottom: 50px;
+			margin-left: 72px;
+			margin-right: 72px;
+		}
+		.button {
+			display: flex;
+			flex-direction: column;
+			align-items: flex-start;
+			background: #FFD140;
+			border-radius: 10px;
+			border: none;
+			padding: 10px 174px;
+			margin-bottom: 15px;
+			margin-left: 72px;
+			text-align: left;
+		}
+		.column {
+			display: flex;
+			flex-direction: column;
+			align-items: flex-start;
+			background: #FFFFFF;
+			border-radius: 16px;
+			padding-top: 31px;
+		}
+		.contain {
+			display: flex;
+			flex-direction: column;
+			background: #FFFFFF;
+		}
+		.image {
+			width: 111px;
+			height: 111px;
+			margin-bottom: 16px;
+			margin-left: 236px;
+			object-fit: fill;
+		}
+		.image2 {
+			width: 24px;
+			height: 24px;
+			margin-left: 14px;
+			margin-right: 8px;
+			object-fit: fill;
+		}
+		.image3 {
+			width: 20px;
+			height: 20px;
+			margin-left: 16px;
+			margin-right: 10px;
+			object-fit: fill;
+		}
+		.input {
+			color: #000000;
+			font-size: 13px;
+			margin-right: 4px;
+			width: 391px;
+			box-sizing: border-box;
+			background: none;
+			border: none;
+			padding-top: 16px;
+			padding-bottom: 16px;
+		}
+		.row-view {
+			display: flex;
+			align-items: center;
+			background: #D9D9D9;
+			border-radius: 10px;
+			margin-bottom: 14px;
+			margin-left: 72px;
+		}
+		.row-view2 {
+			display: flex;
+			align-items: center;
+			background: #D9D9D9;
+			border-radius: 10px;
+			margin-bottom: 46px;
+			margin-left: 72px;
+		}
+		.text {
+			color: #000000;
+			font-size: 24px;
+			text-align: center;
+			margin-bottom: 26px;
+			margin-left: 164px;
+			width: 251px;
+		}
+		.text2 {
+			color: #000000;
+			font-size: 16px;
+			margin-bottom: 8px;
+			margin-left: 72px;
+		}
+		.text3 {
+			color: #000000;
+			font-size: 16px;
+			margin-bottom: 7px;
+			margin-left: 73px;
+		}
+		.text4 {
+			color: #FFFFFF;
+			font-size: 24px;
+		}
+		.text5 {
+			color: #000000;
+			font-size: 16px;
+			margin-bottom: 68px;
+			margin-left: 255px;
+		}
+		.view {
+			align-self: stretch;
+			background: linear-gradient(180deg, #FFD140, #FF9400, #D47C00);
+			padding: 74px 62px;
+		}
+		.view2 {
+			align-self: stretch;
+			display: flex;
+			flex-direction: column;
+			align-items: flex-end;
+			padding-top: 49px;
+			padding-bottom: 49px;
+			padding-right: 59px;
+			background-image: url('https://storage.googleapis.com/tagjs-prod.appspot.com/v1/GTd4CPApLP/d0gyqttr_expires_30_days.png');
+			background-size: 100% 100%;
+		}

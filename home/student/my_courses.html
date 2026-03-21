@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>รายวิชาของฉัน - Thammasat</title>
+    <link rel="stylesheet" href="homestyle.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="top-orange-bar"></div>
+    <div class="container">
+        <header class="main-header">
+            <div class="logo-section">
+                <img src="D:\CS232\home\student\photo\v39_436.png" alt="Thammasat Logo" class="logo-img">
+                <div class="logo-text"><span class="uni-name-th">มหาวิทยาลัยธรรมศาสตร์</span><br><span class="uni-name-en">Thammasat University</span></div>
+            </div>
+            <div class="user-section">
+                <div class="notification">
+                    <i class="fa-regular fa-bell"></i><span class="badge">2</span>
+                    <div class="notification-dropdown">
+                        <div class="notif-header"><span>Notifications</span><i class="fa-solid fa-check" style="color: #f39c12;"></i></div>
+                        <div class="notif-list">
+                            <div class="notif-item"><div class="notif-text">CS271 เพิ่ม Quiz 1 : เนื้อหา...</div><div class="notif-meta"><span class="notif-time">29 มี.ค. 68 13:00 น.</span><i class="fa-solid fa-chevron-right"></i></div></div>
+                            <div class="notif-item"><div class="notif-text">CS251 เพิ่ม Quiz 23 : เนื้อหา...</div><div class="notif-meta"><span class="notif-time">25 มี.ค. 68 15:00 น.</span><i class="fa-solid fa-chevron-right"></i></div></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="user-profile"><div class="avatar-placeholder"><i class="fa-solid fa-user"></i></div><span class="user-name">ชื่อนักศึกษาตัวอย่าง</span></div>
+            </div>
+        </header>
+
+        <div class="search-container">
+            <div class="search-box"><i class="fa-solid fa-bars menu-icon"></i><input type="text" placeholder="ค้นหารายวิชา"><i class="fa-solid fa-magnifying-glass search-icon"></i></div>
+        </div>
+
+        <div class="main-content">
+            <aside class="sidebar">
+                <ul class="menu-list">
+                    <li class="active" onclick="window.location.href='my_courses.html'"><i class="fa-solid fa-graduation-cap"></i> รายวิชาของฉัน</li>
+                    <li  onclick="window.location.href='all_courses.html'"><i class="fa-solid fa-graduation-cap"></i> รายการทั้งหมด</li>
+                </ul>
+            </aside>
+
+            <section class="content-area">
+                <h2 style="margin-left: 20px; margin-bottom: 20px; color: #333;">วิชาที่ฉันลงทะเบียนแล้ว</h2>
+                <div class="course-grid">
+                    <div class="course-card"><div class="card-banner bg-blue"><span class="course-code">CS101</span><h3 class="course-title">การเขียนโปรแกรมเบื้องต้น</h3></div><div class="card-details"><button class="btn-registered">ลงทะเบียนแล้ว</button></div></div>
+                </div>
+            </section>
+        </div>
+    </div>
+</body>
+</html>

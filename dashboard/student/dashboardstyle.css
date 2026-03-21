@@ -1,0 +1,192 @@
+/* =========================================
+   ตั้งค่าพื้นฐาน (Reset & Base Styles)
+========================================= */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Prompt', sans-serif;
+}
+
+body {
+    background-color: #e5e5e5;
+    min-height: 100vh;
+}
+
+/* =========================================
+   ส่วนแถบสีส้มและกล่องบรรจุหลัก
+========================================= */
+.top-orange-bar {
+    background-color: #ffb13b;
+    height: 120px;
+    width: 100%;
+    position: absolute;
+    top: 0;
+    z-index: 1;
+}
+
+.container {
+    background-color: #f2f2f4;
+    width: 95%;
+    max-width: 1400px;
+    margin: 40px auto 20px auto;
+    position: relative;
+    z-index: 2;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    overflow: hidden;
+}
+
+
+
+/* =========================================
+   ส่วน Header (โลโก้และโปรไฟล์)
+========================================= */
+.main-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #ffffff;
+    padding: 15px 30px;
+    border-bottom: 1px solid #ddd;
+}
+
+.logo-section {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.logo-img {
+    width: 50px;
+    height: 50px;
+    background-color: #ccc; /* สีเทาสำรองถ้ารูปยังไม่โหลด */
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.logo-text { line-height: 1.2; }
+.uni-name-th { color: #f39c12; font-weight: 600; font-size: 1.1rem; }
+.uni-name-en { color: #f39c12; font-size: rem; }
+.user-section {
+    display: flex;
+    align-items: center;
+}
+
+.user-profile {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+}
+
+.avatar-placeholder {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #e0e0e0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #666;
+    font-size: 20px;
+}
+
+.user-name {
+    font-size: 14px;
+    font-weight: 500;
+    color: #f39c12;
+}
+
+/* =========================================
+   Dashboard Content Styles
+========================================= */
+.dashboard-content {
+    padding: 40px 50px;
+}
+
+.breadcrumb {
+    font-size: 14px;
+    color: #333;
+    margin-bottom: 25px;
+    font-weight: 400;
+}
+
+.breadcrumb a {
+    color: #f39c12;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.breadcrumb a:hover {
+    text-decoration: underline;
+}
+
+.course-title {
+    font-size: 22px;
+    font-weight: 700;
+    color: #000;
+    margin-bottom: 30px;
+}
+
+/* =========================================
+   Section Cards (Announcement, Material, etc.)
+========================================= */
+.section-card {
+    background-color: #ffffff;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+    overflow: hidden;
+}
+
+.section-header {
+    padding: 15px 25px;
+    background-color: #ffffff;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 18px;
+    font-weight: 700;
+    color: #000;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.outline-icon {
+    color: #f39c12;
+    font-size: 20px;
+}
+
+.section-body {
+    padding: 20px 25px;
+}
+
+/* List Items Inside Cards */
+.list-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
+    padding: 8px 0;
+}
+
+.icon-grey {
+    color: #444;
+    font-size: 16px;
+    margin-top: 4px; /* ดันไอคอนลงมานิดหน่อยให้ตรงกับบรรทัดแรกของข้อความ */
+}
+
+.item-text {
+    flex: 1;
+    font-size: 15px;
+    color: #333;
+    line-height: 1.5;
+}
+
+.text-bold {
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+.text-normal {
+    font-weight: 400;
+}

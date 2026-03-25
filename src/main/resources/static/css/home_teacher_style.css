@@ -324,3 +324,37 @@ body {
 .modal-footer { padding: 0 25px 25px 25px; display: flex; justify-content: flex-end; gap: 10px; }
 .btn-cancel { background-color: #fff; border: 1px solid #ddd; color: #666; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-family: inherit; font-size: 0.9rem; }
 .btn-submit { background-color: #ffb13b; border: none; color: white; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-family: inherit; font-size: 0.9rem; }
+
+
+/* สไตล์สำหรับปุ่มลบวิชาบนการ์ด */
+.course-card {
+    position: relative; /* เพื่อให้ปุ่มลบอ้างอิงตำแหน่งกับการ์ดได้ */
+}
+
+.btn-delete-course {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background-color: rgba(231, 76, 60, 0.9); /* สีแดงเข้มแบบโปร่งแสง */
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 5;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.btn-delete-course:hover {
+    background-color: #c0392b;
+    transform: scale(1.1); /* ขยายใหญ่นิดหน่อยตอนเอาเมาส์วาง */
+}
+
+.btn-delete-course i {
+    font-size: 14px;
+}

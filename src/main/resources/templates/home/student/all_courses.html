@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="th">
+<html lang="th" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>รายการทั้งหมด - Thammasat</title>
-    <link rel="stylesheet" href="/css/homestyle.css">
+    <link rel="stylesheet" th:href="@{/css/homestyle.css}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600&display=swap" rel="stylesheet">
 </head>
@@ -13,33 +13,36 @@
     <div class="container">
         <header class="main-header">
             <div class="logo-section">
-                <img src="/images/TU logo.png" alt="Thammasat Logo" class="logo-img">
-                <div class="logo-text"><span class="uni-name-th">มหาวิทยาลัยธรรมศาสตร์</span><br><span class="uni-name-en">Thammasat University</span></div>
+                <img th:src="@{/images/TU logo.png}" alt="Thammasat Logo" class="logo-img">
+                <div class="logo-text">
+                    <span class="uni-name-th">มหาวิทยาลัยธรรมศาสตร์</span><br>
+                    <span class="uni-name-en">Thammasat University</span>
+                </div>
             </div>
             <div class="user-section">
                 <div class="notification">
                     <i class="fa-regular fa-bell"></i><span class="badge">2</span>
-                    <div class="notification-dropdown">
-                        <div class="notif-header"><span>Notifications</span><i class="fa-solid fa-check" style="color: #f39c12;"></i></div>
-                        <div class="notif-list">
-                            <div class="notif-item"><div class="notif-text">CS271 เพิ่ม Quiz 1 : เนื้อหา...</div><div class="notif-meta"><span class="notif-time">29 มี.ค. 68 13:00 น.</span><i class="fa-solid fa-chevron-right"></i></div></div>
-                            <div class="notif-item"><div class="notif-text">CS251 เพิ่ม Quiz 23 : เนื้อหา...</div><div class="notif-meta"><span class="notif-time">25 มี.ค. 68 15:00 น.</span><i class="fa-solid fa-chevron-right"></i></div></div>
-                        </div>
-                    </div>
                 </div>
-                <div class="user-profile"><div class="avatar-placeholder"><i class="fa-solid fa-user"></i></div><span class="user-name">ชื่อนักศึกษาตัวอย่าง</span></div>
+                <div class="user-profile">
+                    <div class="avatar-placeholder"><i class="fa-solid fa-user"></i></div>
+                    <span class="user-name" th:text="${user != null ? user.displaynameTh : 'ชื่อนักศึกษา'}">ชื่อนักศึกษาตัวอย่าง</span>
+                </div>
             </div>
         </header>
 
         <div class="search-container">
-            <div class="search-box"><i class="fa-solid fa-bars menu-icon"></i><input type="text" placeholder="ค้นหารายวิชา"><i class="fa-solid fa-magnifying-glass search-icon"></i></div>
+            <div class="search-box">
+                <i class="fa-solid fa-bars menu-icon"></i>
+                <input type="text" placeholder="ค้นหารายวิชา">
+                <i class="fa-solid fa-magnifying-glass search-icon"></i>
+            </div>
         </div>
 
         <div class="main-content">
             <aside class="sidebar">
                 <ul class="menu-list">
-                    <li onclick="window.location.href='/home/student'"><i class="fa-solid fa-graduation-cap"></i> รายวิชาของฉัน</li>
-                    <li class="active" onclick="window.location.href='/all-courses'"><i class="fa-solid fa-graduation-cap"></i> รายการทั้งหมด</li>
+                    <li th:onclick="|window.location.href='@{/home/student}'|"><i class="fa-solid fa-graduation-cap"></i> รายวิชาของฉัน</li>
+                    <li class="active" th:onclick="|window.location.href='@{/all-courses}'|"><i class="fa-solid fa-graduation-cap"></i> รายการทั้งหมด</li>
                 </ul>
             </aside>
 
@@ -51,44 +54,39 @@
                 </div>
                 
                 <div class="course-grid">
-                    <div class="course-card">
-                        <div class="card-banner bg-blue"><span class="course-code">CS101</span><h3 class="course-title">การเขียนโปรแกรมเบื้องต้น</h3></div>
-                        <div class="card-details">
-                            <p>อาจารย์: ปัณณทัต</p><p class="capacity">ลงทะเบียน: 20 คน</p>
-                            <button class="btn-register" onclick="window.location.href='/assignment/submit?id=CS101'">ลงทะเบียนเรียน</button>
-                        </div>
+                    <div th:if="${#lists.isEmpty(allCourses)}" style="grid-column: 1/-1; text-align: center; padding: 50px;">
+                         <i class="fa-solid fa-box-open" style="font-size: 50px; color: #ccc;"></i>
+                         <p style="margin-top: 15px; color: #666;">ยังไม่มีรายวิชาที่เปิดสอนในขณะนี้</p>
                     </div>
 
-                    <div class="course-card">
-                        <div class="card-banner bg-green"><span class="course-code">MA102</span><h3 class="course-title">แคลคูลัส 1</h3></div>
-                        <div class="card-details">
-                            <p>อาจารย์: ปัณณทัต</p><p class="capacity">ลงทะเบียน: 25 คน</p>
-                            <button class="btn-register" onclick="window.location.href='/assignment/submit?id=MA102'">ลงทะเบียนเรียน</button>
+                    <div class="course-card" th:each="course, stat : ${allCourses}">
+                        <div class="card-banner" 
+                             th:classappend="${stat.index % 4 == 0 ? 'bg-blue' : (stat.index % 4 == 1 ? 'bg-green' : (stat.index % 4 == 2 ? 'bg-yellow' : 'bg-darkblue'))}">
+                            <span class="course-code" th:text="${course.courseId}">รหัสวิชา</span>
+                            <h3 class="course-title" th:text="${course.courseName}">ชื่อวิชา</h3>
                         </div>
-                    </div>
-
-                    <div class="course-card">
-                        <div class="card-banner bg-yellow"><span class="course-code">EL165</span><h3 class="course-title">ภาษาอังกฤษเพื่อการสื่อสาร</h3></div>
+                        
                         <div class="card-details">
-                            <p>อาจารย์: ปัณณทัต</p><p class="capacity">ลงทะเบียน: 20 คน</p>
-                            <button class="btn-register" onclick="window.location.href='/assignment/submit?id=EL165'">ลงทะเบียนเรียน</button>
-                        </div>
-                    </div>
-
-                    <div class="course-card">
-                        <div class="card-banner bg-darkblue"><span class="course-code">HIS21</span><h3 class="course-title">ประวัติศาสตร์ไทย</h3></div>
-                        <div class="card-details">
-                            <p>อาจารย์: ปัณณทัต</p><p class="capacity">ลงทะเบียน: 20 คน</p>
-                            <button class="btn-register" onclick="window.location.href='/assignment/submit?id=HIS21'">ลงทะเบียนเรียน</button>
+                            <p th:text="'อาจารย์: ' + ${course.teacherName != null ? course.teacherName : 'รอระบุอาจารย์'}">ชื่ออาจารย์</p>
+                            <p class="capacity" th:text="'ลงทะเบียน: ' + ${course.capacity} + ' คน'">ลงทะเบียน: 0 คน</p>
+                            
+                            <button th:unless="${enrolledCourseIds != null and #lists.contains(enrolledCourseIds, course.courseId)}" 
+                                    class="btn-register" 
+                                    th:onclick="|window.location.href='@{/assignment/submit(id=${course.courseId})}'|">
+                                ลงทะเบียนเรียน
+                            </button>
+                            
+                            <button th:if="${enrolledCourseIds != null and #lists.contains(enrolledCourseIds, course.courseId)}" 
+                                    class="btn-register" style="background-color: #9e9e9e; cursor: not-allowed;" disabled>
+                                ลงทะเบียนแล้ว
+                            </button>
                         </div>
                     </div>
                 </div>
 
-                <div class="pagination">
-                    <span class="page-info">หน้า 1 จาก 2</span>
-                    <button class="page-btn active" onclick="window.location.href='/all-courses'">1</button>
-                    <button class="page-btn" onclick="window.location.href='/all-courses?page=2'">2</button>
-                    <button class="page-btn" onclick="window.location.href='/all-courses?page=2'">&gt;</button>
+                <div class="pagination" th:if="${not #lists.isEmpty(allCourses)}">
+                    <span class="page-info">หน้า 1 จาก 1</span>
+                    <button class="page-btn active">1</button>
                 </div>
             </section>
         </div>

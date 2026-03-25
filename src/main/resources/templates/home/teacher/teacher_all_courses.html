@@ -3,10 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>รายวิชาของฉัน - Thammasat</title>
-    
+    <title>รายการทั้งหมด - Thammasat</title>
     <link rel="stylesheet" th:href="@{/css/home_teacher_style.css}">
-    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600&display=swap" rel="stylesheet">
 </head>
@@ -24,19 +22,10 @@
             <div class="user-section">
                 <div class="notification">
                     <i class="fa-regular fa-bell"></i><span class="badge">2</span>
-                    <div class="notification-dropdown">
-                        <div class="notif-header"><span>Notifications</span><i class="fa-solid fa-check" style="color: #f39c12;"></i></div>
-                        <div class="notif-list">
-                            <div class="notif-item"><div class="notif-text">CS271 เพิ่ม Quiz 1 : เนื้อหา...</div><div class="notif-meta"><span class="notif-time">29 มี.ค. 68 13:00 น.</span><i class="fa-solid fa-chevron-right"></i></div></div>
-                            <div class="notif-item"><div class="notif-text">CS251 เพิ่ม Quiz 23 : เนื้อหา...</div><div class="notif-meta"><span class="notif-time">25 มี.ค. 68 15:00 น.</span><i class="fa-solid fa-chevron-right"></i></div></div>
-                        </div>
-                    </div>
                 </div>
                 <div class="user-profile">
                     <div class="avatar-placeholder"><i class="fa-solid fa-user"></i></div>
-                    
-                    <span class="user-name" th:text="${user.displaynameTh}">ชื่ออาจารย์ตัวอย่าง</span>
-                    
+                    <span class="user-name" th:text="${user.displaynameTh}">ชื่ออาจารย์</span>
                 </div>
             </div>
         </header>
@@ -53,10 +42,10 @@
         <div class="main-content">
            <aside class="sidebar">
                 <ul class="menu-list">
-                    <li onclick="window.location.href='/dashboard/teacher'">
+                    <li th:onclick="|window.location.href='@{/dashboard/teacher}'|">
                         <i class="fa-solid fa-graduation-cap"></i> รายวิชาของฉัน
                     </li>
-                    <li class="active" onclick="window.location.href='/dashboard/teacher/all-courses'">
+                    <li class="active" th:onclick="|window.location.href='@{/dashboard/teacher/all-courses}'|">
                         <i class="fa-solid fa-graduation-cap"></i> รายการทั้งหมด
                     </li>
                 </ul>
@@ -70,58 +59,71 @@
                 </div>
                 
 				<div class="course-grid">
-				    <div class="course-card" onclick="window.location.href='/dashboard/teacher/course?id=CS101'" style="cursor: pointer;">
-				        <div class="card-banner bg-blue">
-				            <span class="course-code">CS101</span>
-				            <h3 class="course-title">การเขียนโปรแกรมคอมพิวเตอร์เบื้องต้น</h3>
+                    <div th:if="${#lists.isEmpty(allCourses)}" style="grid-column: 1/-1; text-align: center; padding: 50px; opacity: 0.5;">
+                         <p>ไม่มีรายวิชาในระบบ</p>
+                    </div>
+
+                    <div class="course-card" th:each="course, stat : ${allCourses}" 
+                         th:onclick="|window.location.href='@{/dashboard/teacher/course(id=${course.courseId})}'|" style="cursor: pointer;">
+				        <div class="card-banner" 
+                             th:classappend="${stat.index % 4 == 0 ? 'bg-blue' : (stat.index % 4 == 1 ? 'bg-green' : (stat.index % 4 == 2 ? 'bg-yellow' : 'bg-darkblue'))}">
+				            <span class="course-code" th:text="${course.courseId}">รหัสวิชา</span>
+				            <h3 class="course-title" th:text="${course.courseName}">ชื่อวิชา</h3>
 				        </div>
 				        <div class="card-details">
-				            <p>อาจารย์: <span th:text="${user.displaynameTh}">ชื่ออาจารย์</span></p>
-				            <p class="section-info">section : 65001</p>
+				            <p>อาจารย์: <span th:text="${course.teacherName}">ชื่ออาจารย์</span></p>
+				            <p class="section-info">ความจุ : <span th:text="${course.capacity}"></span> คน</p>
 				        </div>
 				    </div>
 				</div>
+				<div class="pagination" th:if="${not #lists.isEmpty(allCourses)}">
+				                   <span class="page-info">หน้า 1 จาก 1</span>
+				                   <button class="page-btn active">1</button>
+				               </div>
+				
             </section>
         </div>
     </div>
 
-    <div class="modal-overlay" id="addCourseModal">
+    <div class="modal-overlay" id="addCourseModal" style="display: none;">
         <div class="modal-box">
             <div class="modal-header">
                 <div><i class="fa-regular fa-square-plus"></i> เพิ่มรายวิชาใหม่</div>
-                <i class="fa-solid fa-xmark" onclick="closeModal()"></i>
+                <i class="fa-solid fa-xmark" onclick="closeModal()" style="cursor: pointer;"></i>
             </div>
-            <div class="modal-body">
-                <div class="form-group">
-                    <label>ชื่อรายวิชา</label>
-                    <input type="text" placeholder="ex.การเขียนโปรแกรมเบื้องต้น">
-                </div>
-                <div class="form-group">
-                    <label>รหัสวิชา</label>
-                    <input type="text" placeholder="ex.CS101">
-                </div>
-                <div class="form-group">
-                    <label>ชื่อผู้สอน</label>
-                    <input type="text" placeholder="หัวข้อเนื้อหา">
-                </div>
-                <div class="form-row">
+            <form th:action="@{/teacher/course/save}" method="post">
+                <div class="modal-body">
                     <div class="form-group">
-                        <label>กำหนด section</label>
-                        <input type="text" placeholder="กำหนด section">
+                        <label>ชื่อรายวิชา</label>
+                        <input type="text" name="courseName" placeholder="ex.การเขียนโปรแกรมเบื้องต้น" required>
                     </div>
-                    <div class="form-group input-with-icon">
-                        <label>กำหนดวัน</label>
-                        <input type="text" placeholder="กำหนดวัน">
-                        <i class="fa-regular fa-calendar"></i>
+                    <div class="form-group">
+                        <label>รหัสวิชา</label>
+                        <input type="text" name="courseId" placeholder="ex.CS101" required>
+                    </div>
+                    <div class="form-group">
+                        <label>ชื่อผู้สอน</label>
+                        <input type="text" name="teacherName" th:value="${user.displaynameTh}" required>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>จำนวนที่รับ</label>
+                            <input type="number" name="capacity" value="30" required>
+                        </div>
+                       
                     </div>
                 </div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn-cancel" onclick="closeModal()">ยกเลิก</button>
-                <button class="btn-submit" onclick="closeModal()">สร้างเนื้อหา</button>
-            </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-cancel" onclick="closeModal()">ยกเลิก</button>
+                    <button type="submit" class="btn-submit">สร้างเนื้อหา</button>
+                </div>
+            </form>
         </div>
     </div>
+	
+	</div> 
+	
+	
 
     <script>
         function openModal() { document.getElementById('addCourseModal').style.display = 'flex'; }

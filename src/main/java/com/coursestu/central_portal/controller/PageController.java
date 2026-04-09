@@ -199,21 +199,23 @@ public class PageController {
         // 1. ดึงข้อมูลการลงทะเบียนทั้งหมดของนักศึกษา
         List<Enrollment> myEnrollments = enrollmentRepository.findByStudentId(user.getUsername());
         
-        // 2. ดึงข้อมูลรายวิชาทั้งหมดที่มีอยู่ในระบบตอนนี้ (ที่ยังไม่ถูกลบ)
-        List<Course> activeCourses = courseRepository.findAll();
-        List<String> activeCourseIds = activeCourses.stream()
-                                                    .map(Course::getCourseId)
-                                                    .collect(Collectors.toList());
+        // ดึงเฉพาะรายชื่อ "รหัสวิชา" ที่เลือกลงทะเบียนมาไว้ในลิสต์
+        List<String> myCourseIds = myEnrollments.stream()
+                .map(Enrollment::getCourseId)
+                .collect(Collectors.toList());
 
-        // 3. กรองเอาเฉพาะการลงทะเบียนที่ "รหัสวิชายังมีอยู่ในระบบ"
-        List<Enrollment> validEnrollments = myEnrollments.stream()
-                .filter(enrollment -> activeCourseIds.contains(enrollment.getCourseId()))
+        // 2. ดึงข้อมูลรายวิชาทั้งหมดที่มีในระบบ
+        List<Course> activeCourses = courseRepository.findAll();
+
+        // 3. กรองเอามาเฉพาะ "วิชา(Course)" ที่รหัสตรงกับที่นักศึกษาลงทะเบียนไว้
+        List<Course> myEnrolledCourses = activeCourses.stream()
+                .filter(course -> myCourseIds.contains(course.getCourseId()))
                 .collect(Collectors.toList());
 
         model.addAttribute("user", user);
         
-        // 4. ส่งวิชาที่ valid (รอดชีวิต) ไปโชว์หน้าเว็บ
-        model.addAttribute("enrolledCourses", validEnrollments); 
+        // 4. ส่งข้อมูลวิชาแบบเต็มๆ ไปที่หน้าเว็บ
+        model.addAttribute("enrolledCourses", myEnrolledCourses); 
         
         return "home/student/my_courses"; 
     }

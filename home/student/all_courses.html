@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600&display=swap" rel="stylesheet">
 </head>
-<body>
+<body data-page="all">
     <div class="top-orange-bar"></div>
     <div class="container">
         <header class="main-header">
@@ -32,7 +32,7 @@
         </header>
 
         <div class="search-container">
-            <div class="search-box"><i class="fa-solid fa-bars menu-icon"></i><input type="text" placeholder="ค้นหารายวิชา"><i class="fa-solid fa-magnifying-glass search-icon"></i></div>
+            <div class="search-box"><i class="fa-solid fa-bars menu-icon"></i><input type="text" id="searchInput" placeholder="ค้นหารายวิชา"><i class="fa-solid fa-magnifying-glass search-icon"></i></div>
         </div>
 
         <div class="main-content">
@@ -51,12 +51,7 @@
                     </select>
                 </div>
                 
-                <div class="course-grid">
-                    <div class="course-card"><div class="card-banner bg-blue"><span class="course-code">CS101</span><h3 class="course-title">การเขียนโปรแกรมเบื้องต้น</h3></div><div class="card-details"><p>อาจารย์: ปัณณทัต</p><p class="capacity">ลงทะเบียน: 20 คน</p><button class="btn-register">ลงทะเบียนเรียน</button></div></div>
-                    <div class="course-card"><div class="card-banner bg-green"><span class="course-code">MA102</span><h3 class="course-title">แคลคูลัส 1</h3></div><div class="card-details"><p>อาจารย์: ปัณณทัต</p><p class="capacity">ลงทะเบียน: 25 คน</p><button class="btn-register">ลงทะเบียนเรียน</button></div></div>
-                    <div class="course-card"><div class="card-banner bg-yellow"><span class="course-code">EL165</span><h3 class="course-title">ภาษาอังกฤษเพื่อการสื่อสาร</h3></div><div class="card-details"><p>อาจารย์: ปัณณทัต</p><p class="capacity">ลงทะเบียน: 20 คน</p><button class="btn-register">ลงทะเบียนเรียน</button></div></div>
-                    <div class="course-card"><div class="card-banner bg-darkblue"><span class="course-code">HIS21</span><h3 class="course-title">ประวัติศาสตร์ไทย</h3></div><div class="card-details"><p>อาจารย์: ปัณณทัต</p><p class="capacity">ลงทะเบียน: 20 คน</p><button class="btn-register">ลงทะเบียนเรียน</button></div></div>
-                </div>
+                <div class="course-grid" id="courseGrid"></div>
 
                 <div class="pagination">
                     <span class="page-info">หน้า 1 จาก 2
@@ -67,6 +62,74 @@
                 </div>
             </section>
         </div>
+		
     </div>
-</body>
-</html>
+	
+	<script>
+	        // 1. ข้อมูลวิชาจำลอง (Mock Data) 
+	        const allCourses = [
+	            { code: "CS101", title: "การเขียนโปรแกรมเบื้องต้น", instructor: "ปัณณทัต", capacity: 20, isMine: true, color: "bg-blue" },
+	            { code: "MA102", title: "แคลคูลัส 1", instructor: "ปัณณทัต", capacity: 25, isMine: true, color: "bg-green" },
+	            { code: "EL165", title: "ภาษาอังกฤษเพื่อการสื่อสาร", instructor: "ปัณณทัต", capacity: 20, isMine: true, color: "bg-yellow" },
+	            { code: "HIS21", title: "ประวัติศาสตร์ไทย", instructor: "ปัณณทัต", capacity: 20, isMine: false, color: "bg-darkblue" },
+	            { code: "MBA201", title: "การจัดการธุรกิจขั้นสูง", instructor: "สมชาย", capacity: 15, isMine: false, color: "bg-darkblue" }
+	        ];
+
+	        // 2. จับตัวอ้างอิงช่องพิมพ์และกล่องแสดงผล
+	        const searchInput = document.getElementById('searchInput');
+	        const courseGrid = document.getElementById('courseGrid');
+
+	        // 3. ฟังก์ชันสำหรับวาดการ์ดวิชา
+	        function renderCourses(courses) {
+	            courseGrid.innerHTML = ''; // ล้างหน้าจอทุกครั้งก่อนวาดใหม่
+
+	            // ถ้าหาไม่เจอ ให้แสดงข้อความ
+	            if (courses.length === 0) {
+	                courseGrid.innerHTML = '<p style="text-align:center; grid-column: 1/-1; color: #888; margin-top: 20px;">ไม่พบรายวิชาที่ค้นหา</p>';
+	                return;
+	            }
+
+	            // วนลูปสร้างการ์ดวิชา
+	            courses.forEach(course => {
+	                // เช็คปุ่มว่าลงทะเบียนหรือยัง
+	                const btnStyle = course.isMine 
+	                    ? 'background-color: #999; cursor: default;' 
+	                    : 'background-color: #6ed062; cursor: pointer;';
+	                const btnText = course.isMine ? 'ลงทะเบียนแล้ว' : 'ลงทะเบียนเรียน';
+
+	                const cardHTML = `
+	                    <div class="course-card">
+	                        <div class="card-banner ${course.color}">
+	                            <span class="course-code">${course.code}</span>
+	                            <h3 class="course-title">${course.title}</h3>
+	                        </div>
+	                        <div class="card-details">
+	                            <p>อาจารย์: ${course.instructor}</p>
+	                            <p class="capacity">ลงทะเบียน: ${course.capacity} คน</p>
+	                            <button style="width: 100%; border: none; padding: 10px; border-radius: 6px; color: white; font-family: inherit; font-size: 0.9rem; ${btnStyle}">${btnText}</button>
+	                        </div>
+	                    </div>
+	                `;
+	                courseGrid.insertAdjacentHTML('beforeend', cardHTML);
+	            });
+	        }
+
+	        // 4. สั่งให้วาดวิชาทั้งหมดทันทีที่เปิดหน้าเว็บ
+	        renderCourses(allCourses);
+
+	        // 5. ระบบค้นหา (ทำงานทันทีที่พิมพ์)
+	        searchInput.addEventListener('input', function(e) {
+	            const keyword = e.target.value.toLowerCase().trim();
+	            
+	            // กรองเอาแค่วิชาที่มี รหัสวิชา หรือ ชื่อวิชา ตรงกับที่พิมพ์
+	            const filteredCourses = allCourses.filter(course => 
+	                course.code.toLowerCase().includes(keyword) || 
+	                course.title.toLowerCase().includes(keyword)
+	            );
+	            
+	            // สั่งวาดหน้าจอใหม่ด้วยข้อมูลที่กรองแล้ว
+	            renderCourses(filteredCourses);
+	        });
+	    </script>
+	</body>
+	</html>

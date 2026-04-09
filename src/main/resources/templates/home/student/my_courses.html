@@ -33,7 +33,7 @@
         <div class="search-container">
             <div class="search-box">
                 <i class="fa-solid fa-bars menu-icon"></i>
-                <input type="text" placeholder="ค้นหารายวิชา">
+                <input type="text" id="searchInput" placeholder="ค้นหารายวิชา">
                 <i class="fa-solid fa-magnifying-glass search-icon"></i>
             </div>
         </div>
@@ -53,37 +53,66 @@
             <section class="content-area">
                 <h2 style="margin-left: 20px; margin-bottom: 20px; color: #333;">วิชาที่ฉันลงทะเบียนแล้ว</h2>
                 
-				<div class="course-grid">
-				    <div th:each="enroll, stat : ${enrolledCourses}" 
-				         class="course-card" 
-				         th:onclick="|window.location.href='@{/dashboard/student(id=${enroll.courseId})}'|" 
-				         style="cursor:pointer;">
-				        
-				        <div class="card-banner" 
-				             th:classappend="${stat.index % 3 == 0 ? 'bg-blue' : (stat.index % 3 == 1 ? 'bg-green' : 'bg-yellow')}">
-				            
-				            <span class="course-code" th:text="${enroll.courseId}">CSXXX</span>
-				            <h3 class="course-title">เข้าสู่บทเรียน</h3>
+				<div class="course-grid" id="courseGrid">
+				    
+				    <div th:each="course, stat : ${enrolledCourses}" class="course-card" th:onclick="|window.location.href='@{/dashboard/student(id=${course.courseId})}'|" style="cursor:pointer;">
+				        <div class="card-banner" th:classappend="${stat.index % 3 == 0 ? 'bg-blue' : (stat.index % 3 == 1 ? 'bg-green' : 'bg-yellow')}">
+				            <span class="course-code" th:text="${course.courseId}">CSXXX</span>
+				            <h3 class="course-title" th:text="${course.courseName}">ชื่อวิชา</h3>
 				        </div>
-				        
 				        <div class="card-details">
 				            <button class="btn-registered">ลงทะเบียนแล้ว</button>
 				        </div>
 				    </div>
-
+					<div id="noSearchResults" style="display: none; grid-column: 1/-1; text-align: center; padding: 50px; color: #666;">
+										                        <i class="fa-solid fa-magnifying-glass" style="font-size: 48px; margin-bottom: 15px; color: #ccc;"></i>
+										                        <p>ไม่พบรายวิชาที่คุณค้นหา</p>
+					 </div>
 				    </div>
 
-                    <div th:if="${#lists.isEmpty(enrolledCourses)}" 
-                         style="grid-column: 1/-1; text-align: center; padding: 50px; color: #666;">
-                        <i class="fa-solid fa-folder-open" style="font-size: 48px; margin-bottom: 15px; color: #ccc;"></i>
-                        <p>คุณยังไม่มีวิชาที่ลงทะเบียนเรียนในขณะนี้</p>
-                        <a th:href="@{/all-courses}" class="btn-registered" style="display: inline-block; margin-top: 15px; background: #f39c12; color: white; text-decoration: none; padding: 10px 20px; border-radius: 5px;">
-                            ไปดูรายวิชาทั้งหมด
-                        </a>
-                    </div>
-                </div>
+				<div th:if="${#lists.isEmpty(enrolledCourses)}" style="grid-column: 1/-1; text-align: center; padding: 50px; color: #666;">
+				    <i class="fa-solid fa-folder-open" style="font-size: 48px; margin-bottom: 15px; color: #ccc;"></i>
+				    <p>คุณยังไม่มีวิชาที่ลงทะเบียนเรียนในขณะนี้</p>
+				    <a th:href="@{/all-courses}" class="btn-registered" style="display: inline-block; margin-top: 15px; background: #f39c12; color: white; text-decoration: none; padding: 10px 20px; border-radius: 5px;">
+				        ไปดูรายวิชาทั้งหมด
+				    </a>
+				</div>
             </section>
         </div>
     </div>
+	
+	<script>
+		const searchInput = document.getElementById('searchInput');
+				const courseCards = document.querySelectorAll('.course-card');
+				const noSearchResults = document.getElementById('noSearchResults'); // 1. ดึงกล่องข้อความมาเตรียมไว้
+
+				if (searchInput) {
+				    searchInput.addEventListener('input', function(e) {
+				        const keyword = e.target.value.toLowerCase().trim();
+				        let visibleCount = 0; // 2. สร้างตัวแปรมาคอยนับการ์ดที่หาเจอ
+				        
+				        courseCards.forEach(card => {
+				            const code = card.querySelector('.course-code').innerText.toLowerCase();
+				            const title = card.querySelector('.course-title').innerText.toLowerCase();
+				            
+				            if (code.includes(keyword) || title.includes(keyword)) {
+				                card.style.display = 'block';
+				                visibleCount++; // 3. ถ้าหาเจอ ให้นับเพิ่มทีละ 1
+				            } else {
+				                card.style.display = 'none';
+				            }
+				        });
+
+				        // 4. เช็คผลลัพธ์: ถ้ามีการ์ดในระบบ แต่ดันหาไม่เจอเลยสักใบ (visibleCount == 0)
+				        if (noSearchResults && courseCards.length > 0) {
+				            if (visibleCount === 0) {
+				                noSearchResults.style.display = 'block'; // โชว์ข้อความ "ไม่พบรายวิชา"
+				            } else {
+				                noSearchResults.style.display = 'none';  // ซ่อนข้อความทิ้งไป
+				            }
+				        }
+				    });
+				}
+	    </script>
 </body>
 </html>

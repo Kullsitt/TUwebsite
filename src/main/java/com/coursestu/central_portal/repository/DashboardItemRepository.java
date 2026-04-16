@@ -7,6 +7,9 @@ import java.util.List;
 
 @Repository
 public interface DashboardItemRepository extends JpaRepository<DashboardItem, Long> {
-    // โค้ดบรรทัดนี้คือเวทมนตร์! มันจะสร้างคำสั่งดึงข้อมูลของวิชานั้นๆ และเรียงจากใหม่ไปเก่าให้อัตโนมัติ
+    // ของเดิม: ดึงวิชาเดียว
     List<DashboardItem> findByCourseIdOrderByCreatedAtDesc(String courseId);
+    
+    // ของใหม่ (เพิ่มบรรทัดนี้): ดึงหลายๆ วิชาพร้อมกัน สำหรับหน้า Home 
+    List<DashboardItem> findByCourseIdInOrderByCreatedAtDesc(List<String> courseIds);
 }

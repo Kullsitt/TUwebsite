@@ -20,9 +20,19 @@
                 </div>
             </div>
             <div class="user-section">
-                <div class="notification">
-                    <i class="fa-regular fa-bell"></i><span class="badge">2</span>
-                </div>
+				<div class="notification" style="position: relative; cursor: pointer;" onclick="toggleNotification()">
+				    <i class="fa-regular fa-bell"></i>
+				    <span class="badge" id="noti-badge">0</span>
+
+				    <div id="noti-dropdown" class="noti-dropdown-content" style="display: none; position: absolute; right: 0; top: 40px; background: white; border: 1px solid #ddd; width: 320px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 1000; max-height: 400px; overflow-y: auto;">
+				        <div style="padding: 12px; border-bottom: 1px solid #eee; font-weight: bold; text-align: center; color: #c0392b;">
+				            <i class="fa-solid fa-bullhorn"></i> แจ้งเตือนล่าสุด
+				        </div>
+				        <div id="noti-list">
+				            <div style="padding: 15px; text-align: center; color: #888;">กำลังโหลด...</div>
+				        </div>
+				    </div>
+				</div>
                 <div class="user-profile">
                     <div class="avatar-placeholder"><i class="fa-solid fa-user"></i></div>
                     <span class="user-name" th:text="${user.displaynameTh}">ชื่ออาจารย์</span>
@@ -165,5 +175,57 @@
 				    });
 				}
     </script>
+	<script th:inline="javascript">
+	    // ดึงชื่ออาจารย์จาก Session
+	    const currentTeacherName = /*[[${user != null ? user.displaynameTh : 'ชื่ออาจารย์'}]]*/ 'ชื่ออาจารย์';
+
+	    document.addEventListener("DOMContentLoaded", function() {
+	        if(currentTeacherName && currentTeacherName !== 'ชื่ออาจารย์') {
+	            fetchNotifications(currentTeacherName);
+	        }
+	    });
+
+	    function fetchNotifications(teacherName) {
+	        // วิ่งไปขอข้อมูลจาก API ของอาจารย์
+	        fetch(`/api/notifications/teacher/${teacherName}`)
+	            .then(response => response.json())
+	            .then(data => {
+	                document.getElementById('noti-badge').innerText = data.length;
+	                const notiList = document.getElementById('noti-list');
+	                notiList.innerHTML = '';
+
+	                if(data.length === 0) {
+	                    notiList.innerHTML = '<div style="padding: 15px; text-align: center; color: #888;">ไม่มีการแจ้งเตือนใหม่</div>';
+	                    return;
+	                }
+
+	                data.forEach(item => {
+	                    const notiHTML = `
+	                        <a href="/dashboard/teacher?courseId=${item.courseId}" style="display: block; padding: 12px; border-bottom: 1px solid #f5f5f5; text-decoration: none; color: #333; transition: 0.2s;">
+	                            <div style="font-size: 12px; color: #e67e22; font-weight: bold; margin-bottom: 4px;">
+	                                [${item.courseId}] ${item.itemType != null ? item.itemType : 'อัปเดตใหม่'}
+	                            </div>
+	                            <div style="font-size: 14px;">${item.title}</div>
+	                        </a>
+	                    `;
+	                    notiList.innerHTML += notiHTML;
+	                });
+	            })
+	            .catch(error => console.error('Error:', error));
+	    }
+
+	    // ฟังก์ชันเปิด/ปิด กล่องแจ้งเตือน
+	    function toggleNotification() {
+	        const dropdown = document.getElementById("noti-dropdown");
+	        dropdown.style.display = (dropdown.style.display === "none") ? "block" : "none";
+	    }
+
+	    // ปิดกล่องแจ้งเตือนถ้าคลิกที่อื่นบนหน้าจอ
+	    window.onclick = function(event) {
+	        if (!event.target.closest('.notification')) {
+	            document.getElementById("noti-dropdown").style.display = "none";
+	        }
+	    }
+	</script>
 </body>
 </html>

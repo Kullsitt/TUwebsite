@@ -65,7 +65,6 @@ public class PageController {
         return "redirect:/dashboard/teacher";
     }
 
-    // 🎯 เมธอดลบรายวิชาออกจากฐานข้อมูล
     @PostMapping("/teacher/course/delete")
     public String deleteCourse(@RequestParam String courseId, HttpSession session) {
         TULoginResponse user = (TULoginResponse) session.getAttribute("user");
@@ -73,10 +72,25 @@ public class PageController {
             return "redirect:/login";
         }
 
-        // 💾 สั่งลบวิชาจาก Database
-        courseRepository.deleteById(courseId);
+        try {
+            List<Assignment> courseAssignments = assignmentRepository.findByCourseCourseId(courseId);
+            if (!courseAssignments.isEmpty()) {
+                assignmentRepository.deleteAll(courseAssignments);
+            }
 
-        // ลบเสร็จแล้วเด้งกลับไปหน้า Dashboard อาจารย์
+            List<Enrollment> courseEnrollments = enrollmentRepository.findAll().stream()
+                    .filter(e -> courseId.equals(e.getCourseId()))
+                    .collect(Collectors.toList());
+            if (!courseEnrollments.isEmpty()) {
+                enrollmentRepository.deleteAll(courseEnrollments);
+            }
+
+            courseRepository.deleteById(courseId);
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         return "redirect:/dashboard/teacher";
     }
 
@@ -89,7 +103,6 @@ public class PageController {
 
         List<Course> allCourses = courseRepository.findAll();
         model.addAttribute("allCourses", allCourses);
-        
         model.addAttribute("user", user);
         return "home/teacher/teacher_all_courses"; 
     }
@@ -188,7 +201,6 @@ public class PageController {
         return "dashboard/student/dashboardstudent";
     }
 
-    // 🎯 แก้ไขใหม่: กรองวิชาที่อาจารย์ลบทิ้งไปแล้ว ไม่ให้โชว์ในหน้านักศึกษา
     @GetMapping("/home/student")
     public String getMyCoursesPage(HttpSession session, Model model) {
         TULoginResponse user = (TULoginResponse) session.getAttribute("user");
@@ -199,23 +211,30 @@ public class PageController {
         // 1. ดึงข้อมูลการลงทะเบียนทั้งหมดของนักศึกษา
         List<Enrollment> myEnrollments = enrollmentRepository.findByStudentId(user.getUsername());
         
-        // ดึงเฉพาะรายชื่อ "รหัสวิชา" ที่เลือกลงทะเบียนมาไว้ในลิสต์
-        List<String> myCourseIds = myEnrollments.stream()
-                .map(Enrollment::getCourseId)
+        // 2. ดึงข้อมูลรายวิชาทั้งหมดที่มีในระบบ เพื่อกรองวิชาที่อาจถูกลบไปแล้ว
+        List<Course> activeCourses = courseRepository.findAll();
+        List<String> activeCourseIds = activeCourses.stream()
+                .map(Course::getCourseId)
                 .collect(Collectors.toList());
 
-        // 2. ดึงข้อมูลรายวิชาทั้งหมดที่มีในระบบ
-        List<Course> activeCourses = courseRepository.findAll();
+        // 3. กรองเอาเฉพาะ "การลงทะเบียน" ที่วิชายังมีตัวตนอยู่
+        List<Enrollment> validEnrollments = myEnrollments.stream()
+                .filter(enrollment -> activeCourseIds.contains(enrollment.getCourseId()))
+                .collect(Collectors.toList());
 
-        // 3. กรองเอามาเฉพาะ "วิชา(Course)" ที่รหัสตรงกับที่นักศึกษาลงทะเบียนไว้
-        List<Course> myEnrolledCourses = activeCourses.stream()
-                .filter(course -> myCourseIds.contains(course.getCourseId()))
+        // 4. 🚀 ดึงข้อมูล Feed (การบ้าน/ประกาศ) เฉพาะวิชาที่ลงทะเบียน และเรียงจากใหม่ไปเก่า
+        List<String> myCourseIds = validEnrollments.stream()
+                .map(Enrollment::getCourseId)
+                .collect(Collectors.toList());
+                
+        List<Assignment> feedItems = assignmentRepository.findAll().stream()
+                .filter(item -> myCourseIds.contains(item.getCourse().getCourseId()))
+                .sorted(java.util.Comparator.comparing(Assignment::getId).reversed())
                 .collect(Collectors.toList());
 
         model.addAttribute("user", user);
-        
-        // 4. ส่งข้อมูลวิชาแบบเต็มๆ ไปที่หน้าเว็บ
-        model.addAttribute("enrolledCourses", myEnrolledCourses); 
+        model.addAttribute("enrolledCourses", validEnrollments); 
+        model.addAttribute("feedItems", feedItems);
         
         return "home/student/my_courses"; 
     }
@@ -241,7 +260,6 @@ public class PageController {
         }
 
         List<Course> allCourses = courseRepository.findAll();
-
         List<Enrollment> enrollments = enrollmentRepository.findByStudentId(user.getUsername());
         List<String> enrolledCourseIds = enrollments.stream()
                                                     .map(Enrollment::getCourseId)
@@ -250,7 +268,6 @@ public class PageController {
         model.addAttribute("user", user);
         model.addAttribute("allCourses", allCourses); 
         model.addAttribute("enrolledCourseIds", enrolledCourseIds); 
-        
         return "home/student/all_courses"; 
     }
     
@@ -262,7 +279,6 @@ public class PageController {
         }
         
         List<Course> allCourses = courseRepository.findAll();
-
         List<Enrollment> enrollments = enrollmentRepository.findByStudentId(user.getUsername());
         List<String> enrolledCourseIds = enrollments.stream()
                 .map(Enrollment::getCourseId)
@@ -277,5 +293,5 @@ public class PageController {
     @GetMapping("/assignment/submit") 
     public String getSubmitAssignmentPage() {
         return "dashboard/student/submit"; 
-    } 
+    }  
 }

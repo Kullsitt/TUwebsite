@@ -112,9 +112,19 @@
                 <div class="section-body">
                     <div th:if="${#lists.isEmpty(quizzes)}" class="text-normal" style="padding:10px; color:#999;">ไม่มีข้อมูลในหมวดนี้</div>
                     
-                    <div th:each="item : ${quizzes}" class="list-item">
-                        <i class="fa-solid fa-link icon-grey"></i>
-                        <div class="item-text" th:text="${item.title}">ชื่อควิซ</div>
+                    <div th:each="item : ${quizzes}" class="list-item" style="display: flex; align-items: flex-start; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid #eee;">
+                        <i class="fa-solid fa-file-invoice" style="color: #7248B9; font-size: 1.5rem; margin-right: 15px; margin-top: 5px;"></i>
+                        <div class="item-text">
+                            <div class="text-bold" style="font-size: 1.1rem; color: #333; margin-bottom: 5px;" th:text="${item.title}">หัวข้อควิซ</div>
+                            
+                            <a th:href="${item.description}" target="_blank" style="display: inline-block; background-color: #7248B9; color: white; padding: 8px 16px; border-radius: 6px; text-decoration: none; font-size: 0.9rem; transition: 0.3s; box-shadow: 0 2px 4px rgba(114, 72, 185, 0.2);" onmouseover="this.style.backgroundColor='#5e35b1'; this.style.transform='translateY(-1px)';" onmouseout="this.style.backgroundColor='#7248B9'; this.style.transform='translateY(0)';">
+                                <i class="fa-solid fa-arrow-up-right-from-square" style="margin-right: 5px;"></i> ไปทำแบบทดสอบ (Google Form)
+                            </a>
+                            
+                            <div th:if="${item.deadline != null}" style="margin-top: 10px; font-size: 0.85rem; color: #e74c3c;">
+                                <i class="fa-regular fa-clock"></i> กำหนดทำถึง: <span th:text="${#temporals.format(item.deadline, 'dd MMM yyyy HH:mm')}"></span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

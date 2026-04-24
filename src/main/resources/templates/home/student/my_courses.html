@@ -63,10 +63,10 @@
                 <h2 style="margin-left: 20px; margin-bottom: 20px; color: #333;">วิชาที่ฉันลงทะเบียนแล้ว</h2>
                 
                 <div class="course-grid" id="courseGrid">
-                    <div th:each="enroll, stat : ${enrolledCourses}" class="course-card" th:onclick="|window.location.href='@{/dashboard/student(id=${enroll.courseId})}'|" style="cursor:pointer;">
+                    <div th:each="enroll, stat : ${enrolledCourses}" class="course-card" th:onclick="|window.location.href='@{/dashboard/student(id=${enroll.course.courseId})}'|" style="cursor:pointer;">
                         <div class="card-banner" th:classappend="${stat.index % 3 == 0 ? 'bg-blue' : (stat.index % 3 == 1 ? 'bg-green' : 'bg-yellow')}">
-                            <span class="course-code" th:text="${enroll.courseId}">CSXXX</span>
-                            <h3 class="course-title" th:text="${enroll.courseId == 'CS232' ? 'Backend Development' : 'เข้าสู่บทเรียน'}">เข้าสู่บทเรียน</h3>
+                            <span class="course-code" th:text="${enroll.course.courseId}">CSXXX</span>
+                            <h3 class="course-title" th:text="${enroll.course.courseId == 'CS232' ? 'Backend Development' : enroll.course.courseName}">เข้าสู่บทเรียน</h3>
                         </div>
                         <div class="card-details">
                             <button class="btn-registered">ลงทะเบียนแล้ว</button>

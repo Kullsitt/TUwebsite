@@ -7,6 +7,9 @@ import java.util.List;
 
 @Repository
 public interface EnrollmentRepository extends JpaRepository<Enrollment, Long> {
-    // ใช้หารหัสวิชาทั้งหมดที่นักศึกษาคนนี้ลงทะเบียนไว้
-    List<Enrollment> findByStudentId(String studentId);
+
+    List<Enrollment> findByStudent_Id(Long studentId);
+
+    List<Enrollment> findByCourse_CourseId(String courseId);
+
 }

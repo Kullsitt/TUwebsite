@@ -7,6 +7,8 @@ import java.util.List;
 
 @Repository
 public interface CourseRepository extends JpaRepository<Course, String> {
-    // หาว่าอาจารย์ชื่อนี้ สอนวิชาอะไรบ้าง
-    List<Course> findByTeacherName(String teacherName);
+
+    // หา course ทั้งหมดที่ professor คนนี้สอน
+    List<Course> findByProfessor_Id(Long professorId);
+
 }

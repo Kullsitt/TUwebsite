@@ -7,10 +7,25 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class AssignmentService {
+
     @Autowired
     private AssignmentRepository assignmentRepository;
 
+    @Autowired
+    private NotificationService notificationService;
+
     public Assignment saveAssignment(Assignment assignment) {
-        return assignmentRepository.save(assignment);
+        Assignment savedAssignment = assignmentRepository.save(assignment);
+
+        if (savedAssignment.getCourse() != null) {
+            notificationService.notifyStudentsInCourse(
+                    savedAssignment.getCourse(),
+                    "New Assignment: " + savedAssignment.getTitle(),
+                    savedAssignment.getDescription(),
+                    "ASSIGNMENT"
+            );
+        }
+
+        return savedAssignment;
     }
 }

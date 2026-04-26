@@ -40,20 +40,37 @@
                 <ul class="menu-list">
                     <li class="active" onclick="window.location.href='my_courses.html'"><i class="fa-solid fa-graduation-cap"></i> รายวิชาของฉัน</li>
                     <li  onclick="window.location.href='all_courses.html'"><i class="fa-solid fa-graduation-cap"></i> รายการทั้งหมด</li>
-                </ul>
+                    
+                    <li onclick="window.location.href='score_report.html'">
+                        <i class="fa-solid fa-chart-simple"></i> ผลคะแนนของฉัน
+                    </li>
+                    </ul>
             </aside>
 
             <section class="content-area">
                 <h2 style="margin-left: 20px; margin-bottom: 20px; color: #333;">วิชาที่ฉันลงทะเบียนแล้ว</h2>
                 <div class="course-grid">
-                    <div class="course-card"><div class="card-banner bg-blue"><span class="course-code">CS101</span><h3 class="course-title">การเขียนโปรแกรมเบื้องต้น</h3></div><div class="card-details"><button class="btn-registered">ลงทะเบียนแล้ว</button></div></div>
+                    <div class="course-card">
+                        <div class="card-banner bg-blue">
+                            <span class="course-code">CS101</span>
+                            <h3 class="course-title">การเขียนโปรแกรมเบื้องต้น</h3>
+                        </div>
+                        <div class="card-details">
+                            <button class="btn-registered">ลงทะเบียนแล้ว</button>
+                            
+                            <button onclick="window.location.href='score_report.html'" 
+                                    style="background-color: #f39c12; color: white; border: none; padding: 10px 15px; border-radius: 5px; cursor: pointer; margin-left: 8px; font-family: 'Prompt', sans-serif;">
+                                <i class="fa-solid fa-magnifying-glass-chart"></i> ดูคะแนน
+                            </button>
+                            </div>
+                    </div>
                 </div>
             </section>
         </div>
-		<div class="course-grid"></div>
+        <div class="course-grid"></div>
     </div>
-	
-	<script src="script.js"></script>
-	
+    
+    <script src="script.js"></script>
+    
 </body>
 </html>

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ผลคะแนน - Thammasat</title>
+    <link rel="stylesheet" href="homestyle.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        .score-container { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin-top: 20px; text-align: center; }
+        .score-big { font-size: 64px; color: #f39c12; font-weight: 600; margin: 10px 0; }
+        .feedback-box { background: #fff9e6; border-left: 5px solid #f39c12; padding: 15px; text-align: left; margin-top: 20px; }
+        .back-link { display: inline-block; margin-top: 20px; color: #f39c12; text-decoration: none; font-weight: 500; }
+    </style>
+</head>
+<body>
+    <div class="top-orange-bar"></div>
+    <div class="container">
+        <header class="main-header">
+            <div class="logo-section">
+                <img src="photo/v39_436.png" alt="Thammasat Logo" class="logo-img">
+                <div class="logo-text"><span class="uni-name-th">มหาวิทยาลัยธรรมศาสตร์</span><br><span class="uni-name-en">Thammasat University</span></div>
+            </div>
+            <div class="user-profile"><div class="avatar-placeholder"><i class="fa-solid fa-user"></i></div><span class="user-name">ชื่อ-นามสกุล นักศึกษา</span></div>
+        </header>
+
+        <div class="main-content">
+            <aside class="sidebar">
+                <ul class="menu-list">
+                    <li onclick="window.location.href='my_courses.html'"><i class="fa-solid fa-graduation-cap"></i> รายวิชาของฉัน</li>
+                    <li onclick="window.location.href='all_courses.html'"><i class="fa-solid fa-graduation-cap"></i> รายการทั้งหมด</li>
+                    <li class="active"><i class="fa-solid fa-star"></i> ผลคะแนนของฉัน</li>
+                </ul>
+            </aside>
+
+            <section class="content-area">
+                <div class="score-container">
+                    <h2 style="color: #333;">ผลการเรียนวิชา CS101</h2>
+                    <p style="color: #666;">การเขียนโปรแกรมเบื้องต้น</p>
+                    <div class="score-big">9.5 / 10</div>
+                    <div class="feedback-box">
+                        <strong><i class="fa-solid fa-comment-dots"></i> ข้อเสนอแนะจากอาจารย์:</strong><br>
+                        "การเขียนโค้ดทำได้เป็นระเบียบและถูกต้องตามหลักการพัฒนาซอฟต์แวร์ที่ดี"
+                    </div>
+                    <a href="my_courses.html" class="back-link">← กลับไปหน้ารายวิชา</a>
+                </div>
+            </section>
+        </div>
+    </div>
+</body>
+</html>

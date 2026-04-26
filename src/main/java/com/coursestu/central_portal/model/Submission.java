@@ -13,6 +13,9 @@ public class Submission {
     private String fileUrl;
     private LocalDateTime submittedAt = LocalDateTime.now();
 
+    private Double score; 
+    private String feedback; 
+
     @ManyToOne
     @JoinColumn(name = "student_id")
     private Student student;
@@ -35,4 +38,10 @@ public class Submission {
 
     public Assignment getAssignment() { return assignment; }
     public void setAssignment(Assignment assignment) { this.assignment = assignment; }
+
+    public Double getScore() { return score; }
+    public void setScore(Double score) { this.score = score; }
+
+    public String getFeedback() { return feedback; }
+    public void setFeedback(String feedback) { this.feedback = feedback; }
 }

@@ -51,8 +51,12 @@
         <div class="main-content">
             <aside class="sidebar">
                 <ul class="menu-list">
-                    <li th:onclick="|window.location.href='@{/home/student}'|"><i class="fa-solid fa-graduation-cap"></i> รายวิชาของฉัน</li>
-                    <li class="active" th:onclick="|window.location.href='@{/all-courses}'|"><i class="fa-solid fa-graduation-cap"></i> รายการทั้งหมด</li>
+                    <li th:onclick="|window.location.href='${session.role == 'teacher' ? '/dashboard/teacher' : '/home/student'}'|" style="cursor: pointer;">
+                        <i class="fa-solid fa-graduation-cap"></i> รายวิชาของฉัน
+                    </li>
+                    <li class="active" th:onclick="|window.location.href='@{/all-courses}'|" style="cursor: pointer;">
+                        <i class="fa-solid fa-graduation-cap"></i> รายการทั้งหมด
+                    </li>
                 </ul>
             </aside>
 
@@ -111,12 +115,12 @@
 	 <script>
 		const searchInput = document.getElementById('searchInput');
 		const courseCards = document.querySelectorAll('.course-card');
-		const noSearchResults = document.getElementById('noSearchResults'); // 1. ดึงกล่องข้อความมาเตรียมไว้
+		const noSearchResults = document.getElementById('noSearchResults'); 
 
 		if (searchInput) {
 		    searchInput.addEventListener('input', function(e) {
 		        const keyword = e.target.value.toLowerCase().trim();
-		        let visibleCount = 0; // 2. สร้างตัวแปรมาคอยนับการ์ดที่หาเจอ
+		        let visibleCount = 0; 
 		        
 		        courseCards.forEach(card => {
 		            const code = card.querySelector('.course-code').innerText.toLowerCase();
@@ -124,26 +128,23 @@
 		            
 		            if (code.includes(keyword) || title.includes(keyword)) {
 		                card.style.display = 'block';
-		                visibleCount++; // 3. ถ้าหาเจอ ให้นับเพิ่มทีละ 1
+		                visibleCount++; 
 		            } else {
 		                card.style.display = 'none';
 		            }
 		        });
 
-		        // 4. เช็คผลลัพธ์: ถ้ามีการ์ดในระบบ แต่ดันหาไม่เจอเลยสักใบ (visibleCount == 0)
 		        if (noSearchResults && courseCards.length > 0) {
 		            if (visibleCount === 0) {
-		                noSearchResults.style.display = 'block'; // โชว์ข้อความ "ไม่พบรายวิชา"
+		                noSearchResults.style.display = 'block'; 
 		            } else {
-		                noSearchResults.style.display = 'none';  // ซ่อนข้อความทิ้งไป
+		                noSearchResults.style.display = 'none';  
 		            }
 		        }
 		    });
 		}
 		    </script>
 			<script th:inline="javascript">
-			    // ดึงรหัสนักศึกษาจาก Session (สมมติว่าคุณเก็บไว้ในตัวแปร username หรือ id)
-			    // *** ตรงนี้คุณอาจจะต้องแก้ user.username เป็นตัวแปรที่คุณใช้เก็บรหัสนักศึกษาจริงๆ ***
 			    const currentStudentId = /*[[${user != null ? user.username : '65xxxxxx'}]]*/ '65xxxxxx';
 
 			    document.addEventListener("DOMContentLoaded", function() {
@@ -156,7 +157,6 @@
 			        fetch(`/api/notifications/student/${studentId}`)
 			            .then(response => response.json())
 			            .then(data => {
-			                // อัปเดตตัวเลขกระดิ่ง
 			                document.getElementById('noti-badge').innerText = data.length;
 			                const notiList = document.getElementById('noti-list');
 			                notiList.innerHTML = '';
@@ -166,9 +166,7 @@
 			                    return;
 			                }
 
-			                // วนลูปสร้างรายการแจ้งเตือน
 			                data.forEach(item => {
-			                    // กำหนดลิงก์ให้กดไปหน้า Dashboard วิชานั้นๆ
 			                    const notiHTML = `
 			                        <a href="/dashboard/student?courseId=${item.courseId}" style="display: block; padding: 12px; border-bottom: 1px solid #f5f5f5; text-decoration: none; color: #333; transition: 0.2s;">
 			                            <div style="font-size: 12px; color: #e67e22; font-weight: bold; margin-bottom: 4px;">
@@ -183,13 +181,11 @@
 			            .catch(error => console.error('Error:', error));
 			    }
 
-			    // ฟังก์ชันเปิด/ปิด กล่องแจ้งเตือน
 			    function toggleNotification() {
 			        const dropdown = document.getElementById("noti-dropdown");
 			        dropdown.style.display = (dropdown.style.display === "none") ? "block" : "none";
 			    }
 
-			    // ปิดกล่องแจ้งเตือนถ้าคลิกที่อื่นบนหน้าจอ
 			    window.onclick = function(event) {
 			        if (!event.target.closest('.notification')) {
 			            document.getElementById("noti-dropdown").style.display = "none";

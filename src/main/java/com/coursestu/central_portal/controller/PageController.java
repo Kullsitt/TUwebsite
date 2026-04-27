@@ -11,9 +11,10 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.multipart.MultipartFile; // 👈 เพิ่ม Import สำหรับไฟล์
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -74,14 +75,13 @@ public class PageController {
         return "dashboard/teacher/dashboardteacher"; 
     }
 
-    // 🎯 แก้ไขเพิ่มส่วนการรับ MultipartFile
     @PostMapping("/dashboard/teacher/add-content")
     public String addContent(@RequestParam String courseId,
                              @RequestParam String title,
                              @RequestParam String description,
                              @RequestParam String type,
                              @RequestParam(required = false) String deadline,
-                             @RequestParam(value = "file", required = false) MultipartFile file) { // 👈 รับไฟล์
+                             @RequestParam(value = "file", required = false) MultipartFile file) {
         try {
             Course course = courseRepository.findById(courseId).orElse(null);
             if (course != null) {
@@ -91,12 +91,9 @@ public class PageController {
                 assignment.setType(type);
                 assignment.setCourse(course);
 
-                // 📂 ถ้ามีการแนบไฟล์มา ให้เก็บชื่อไฟล์ไว้ในฐานข้อมูล
                 if (file != null && !file.isEmpty()) {
                     String fileName = file.getOriginalFilename();
-                    assignment.setFileName(fileName); // อย่าลืมเพิ่มฟิลด์ fileName ใน Assignment Model นะครับ
-                    
-                    // หมายเหตุ: ตรงนี้คือจุดที่จะเพิ่ม Logic การอัปโหลดไป AWS S3 ต่อไป
+                    assignment.setFileName(fileName);
                 }
 
                 if (deadline != null && !deadline.isEmpty()) {
@@ -177,20 +174,36 @@ public class PageController {
         return "dashboard/student/dashboardstudent";
     }
 
+    // 🎯 ปรับปรุง: แก้ Error 500 สำหรับอาจารย์
     @GetMapping("/all-courses")
     public String getAllCoursesPage(HttpSession session, Model model) {
         TULoginResponse user = (TULoginResponse) session.getAttribute("user");
-        if (user == null || !"student".equals(session.getAttribute("role"))) return "redirect:/login";
+        if (user == null) {
+            return "redirect:/login";
+        }
 
-        Student student = getOrCreateStudent(user);
-        List<Course> allCourses = courseRepository.findAll();
-        List<Enrollment> enrollments = enrollmentRepository.findByStudent_Id(student.getId());
-        List<String> enrolledCourseIds = enrollments.stream().filter(e -> e.getCourse() != null).map(e -> e.getCourse().getCourseId()).collect(Collectors.toList());
+        List<String> enrolledCourseIds = new ArrayList<>();
 
-        model.addAttribute("user", user);
-        model.addAttribute("allCourses", allCourses);
+        if ("student".equals(session.getAttribute("role"))) {
+            Student student = getOrCreateStudent(user);
+            List<Enrollment> enrollments = enrollmentRepository.findByStudent_Id(student.getId());
+            enrolledCourseIds = enrollments.stream()
+                    .filter(e -> e.getCourse() != null)
+                    .map(e -> e.getCourse().getCourseId())
+                    .collect(Collectors.toList());
+        }
+
         model.addAttribute("enrolledCourseIds", enrolledCourseIds);
+        model.addAttribute("user", user);
+        model.addAttribute("allCourses", courseRepository.findAll());
+        
         return "home/student/all_courses";
+    }
+
+    // 🎯 อันนี้แหละคือจุดที่ถูกแก้: ให้เตะไปที่ /all-courses ตัวหลักเลย (ลบอันซ้ำออกให้แล้ว)
+    @GetMapping("/dashboard/teacher/all-courses")
+    public String getTeacherAllCoursesPage() {
+        return "redirect:/all-courses"; 
     }
 
     @PostMapping("/course/enroll/confirm")

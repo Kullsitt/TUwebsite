@@ -51,10 +51,10 @@
         <div class="main-content">
             <aside class="sidebar">
                 <ul class="menu-list">
-                    <li th:onclick="|window.location.href='${session.role == 'teacher' ? '/dashboard/teacher' : '/home/student'}'|" style="cursor: pointer;">
+                    <li th:onclick="'window.location.href=\'' + (${session.role == 'teacher'} ? '/dashboard/teacher' : '/home/student') + '\''" style="cursor: pointer;">
                         <i class="fa-solid fa-graduation-cap"></i> รายวิชาของฉัน
                     </li>
-                    <li class="active" th:onclick="|window.location.href='@{/all-courses}'|" style="cursor: pointer;">
+                    <li class="active" th:onclick="'window.location.href=\'' + @{/all-courses} + '\''" style="cursor: pointer;">
                         <i class="fa-solid fa-graduation-cap"></i> รายการทั้งหมด
                     </li>
                 </ul>
@@ -87,7 +87,7 @@
                             
                             <button th:unless="${enrolledCourseIds != null and #lists.contains(enrolledCourseIds, course.courseId)}" 
                                     class="btn-register" 
-                                    th:onclick="|window.location.href='@{/assignment/submit(id=${course.courseId})}'|">
+                                    th:onclick="'window.location.href=\'' + @{/assignment/submit(id=${course.courseId})} + '\''">
                                 ลงทะเบียนเรียน
                             </button>
                             

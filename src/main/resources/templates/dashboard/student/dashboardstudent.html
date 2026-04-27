@@ -20,9 +20,22 @@
                 </div>
             </div>
             <div class="user-section">
+                <div class="notification" style="position: relative; cursor: pointer; margin-right: 20px;" onclick="toggleNotification()">
+                    <i class="fa-regular fa-bell" style="font-size: 1.2rem; color: #555;"></i>
+                    <span class="badge" id="noti-badge">0</span>
+                    <div id="noti-dropdown" class="noti-dropdown-content" style="display: none; position: absolute; right: 0; top: 40px; background: white; border: 1px solid #ddd; width: 320px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 1000; max-height: 400px; overflow-y: auto;">
+                        <div style="padding: 12px; border-bottom: 1px solid #eee; font-weight: bold; text-align: center; color: #c0392b;">
+                            <i class="fa-solid fa-bullhorn"></i> แจ้งเตือนล่าสุด
+                        </div>
+                        <div id="noti-list">
+                            <div style="padding: 15px; text-align: center; color: #888;">กำลังโหลด...</div>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="user-profile">
                     <div class="avatar-placeholder"><i class="fa-regular fa-user"></i></div>
-                    <span class="user-name" th:text="${user.displaynameTh}">ชื่อนักศึกษา</span>
+                    <span class="user-name" th:text="${user != null ? user.displaynameTh : 'ชื่อนักศึกษา'}">ชื่อนักศึกษา</span>
                 </div>
             </div>
         </header>
@@ -47,6 +60,9 @@
                         <div class="item-text">
                             <div class="text-bold" th:text="${item.title}">หัวข้อประกาศ</div>
                             <div class="text-normal" th:text="${item.description}">รายละเอียดประกาศ</div>
+                            <a th:if="${item.fileName != null}" th:href="@{'/uploads/' + ${item.fileName}}" target="_blank" style="display:inline-block; margin-top:5px; font-size: 0.9rem; color:#e67e22; text-decoration: none;">
+                                <i class="fa-solid fa-paperclip"></i> ดูไฟล์แนบ
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -59,14 +75,15 @@
                 <div class="section-body">
                     <div class="list-item">
                         <i class="fa-regular fa-message icon-grey"></i>
-                        <div class="item-text">ช่องทางสำหรับติดต่อกับอาจารย์ Email : <span th:text="${user.email}">email</span></div>
+                        <div class="item-text">ช่องทางสำหรับติดต่อกับอาจารย์ Email : <span th:text="${user != null ? user.email : ''}">email</span></div>
                     </div>
-                    
-                    <div th:if="${#lists.isEmpty(generals)}" class="text-normal" style="padding:10px; color:#999;">ไม่มีข้อมูลเพิ่มเติม</div>
                     
                     <div th:each="item : ${generals}" class="list-item">
                         <i class="fa-regular fa-message icon-grey"></i>
-                        <div class="item-text" th:text="${item.title}">ข้อมูลทั่วไป</div>
+                        <div class="item-text">
+                            <div class="text-bold" th:text="${item.title}">ข้อมูลทั่วไป</div>
+                            <div class="text-normal" th:text="${item.description}">รายละเอียด</div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -83,6 +100,9 @@
                         <div class="item-text">
                             <div class="text-bold" th:text="${item.title}">ชื่อไฟล์เรียน</div>
                             <div class="text-normal" th:text="${item.description}">คำอธิบายไฟล์</div>
+                            <a th:if="${item.fileName != null}" th:href="@{'/uploads/' + ${item.fileName}}" target="_blank" style="display:inline-block; margin-top:5px; font-size: 0.9rem; color:#e67e22; text-decoration: none;">
+                                <i class="fa-solid fa-download"></i> ดาวน์โหลดไฟล์สื่อการสอน
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -100,6 +120,9 @@
                         <div class="item-text">
                             <div class="text-bold" th:text="${item.title}">ชื่อการบ้าน</div>
                             <div class="text-normal" th:text="'กำหนดส่ง: ' + ${item.deadline != null ? #temporals.format(item.deadline, 'dd MMM yyyy HH:mm') : 'ไม่มีกำหนด'}">Deadline</div>
+                            <a th:if="${item.fileName != null}" th:href="@{'/uploads/' + ${item.fileName}}" target="_blank" style="display:inline-block; margin-top:5px; font-size: 0.9rem; color:#e67e22; text-decoration: none;">
+                                <i class="fa-solid fa-file-pdf"></i> เปิดโจทย์การบ้าน
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -131,5 +154,55 @@
 
         </div>
     </div>
+
+    <script th:inline="javascript">
+        const currentStudentId = /*[[${user != null ? user.username : '65xxxxxx'}]]*/ '65xxxxxx';
+
+        document.addEventListener("DOMContentLoaded", function() {
+            if(currentStudentId && currentStudentId !== '65xxxxxx') {
+                fetchNotifications(currentStudentId);
+            }
+        });
+
+        function fetchNotifications(studentId) {
+            fetch(`/api/notifications/student/${studentId}`)
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('noti-badge').innerText = data.length;
+                    const notiList = document.getElementById('noti-list');
+                    notiList.innerHTML = '';
+
+                    if(data.length === 0) {
+                        notiList.innerHTML = '<div style="padding: 15px; text-align: center; color: #888;">ไม่มีการแจ้งเตือนใหม่</div>';
+                        return;
+                    }
+
+                    data.forEach(item => {
+                        const notiHTML = `
+                            <a href="/dashboard/student?courseId=${item.courseId}" style="display: block; padding: 12px; border-bottom: 1px solid #f5f5f5; text-decoration: none; color: #333; transition: 0.2s;">
+                                <div style="font-size: 12px; color: #e67e22; font-weight: bold; margin-bottom: 4px;">
+                                    [${item.courseId}] ${item.itemType != null ? item.itemType : 'อัปเดตใหม่'}
+                                </div>
+                                <div style="font-size: 14px;">${item.title}</div>
+                            </a>
+                        `;
+                        notiList.innerHTML += notiHTML;
+                    });
+                })
+                .catch(error => console.error('Error:', error));
+        }
+
+        function toggleNotification() {
+            const dropdown = document.getElementById("noti-dropdown");
+            dropdown.style.display = (dropdown.style.display === "none") ? "block" : "none";
+        }
+
+        window.onclick = function(event) {
+            if (!event.target.closest('.notification')) {
+                const dropdown = document.getElementById("noti-dropdown");
+                if (dropdown) dropdown.style.display = "none";
+            }
+        }
+    </script>
 </body>
 </html>

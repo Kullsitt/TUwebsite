@@ -52,10 +52,10 @@
         <div class="main-content">
            <aside class="sidebar">
                 <ul class="menu-list">
-                    <li th:onclick="|window.location.href='@{/dashboard/teacher}'|">
+                    <li th:onclick="'window.location.href=\'' + @{/dashboard/teacher} + '\''" style="cursor: pointer;">
                         <i class="fa-solid fa-graduation-cap"></i> รายวิชาของฉัน
                     </li>
-                    <li class="active" th:onclick="|window.location.href='@{/dashboard/teacher/all-courses}'|">
+                    <li class="active" th:onclick="'window.location.href=\'' + @{/all-courses} + '\''" style="cursor: pointer;">
                         <i class="fa-solid fa-graduation-cap"></i> รายการทั้งหมด
                     </li>
                 </ul>
@@ -74,7 +74,7 @@
                     </div>
 
                     <div class="course-card" th:each="course, stat : ${allCourses}" 
-                         th:onclick="|window.location.href='@{/dashboard/teacher/course(id=${course.courseId})}'|" style="cursor: pointer;">
+                         th:onclick="'window.location.href=\'' + @{/dashboard/teacher/course(id=${course.courseId})} + '\''" style="cursor: pointer;">
 				        <div class="card-banner" 
                              th:classappend="${stat.index % 4 == 0 ? 'bg-blue' : (stat.index % 4 == 1 ? 'bg-green' : (stat.index % 4 == 2 ? 'bg-yellow' : 'bg-darkblue'))}">
 				            <span class="course-code" th:text="${course.courseId}">รหัสวิชา</span>
@@ -138,19 +138,31 @@
 	<script>
         function openModal() { document.getElementById('addCourseModal').style.display = 'flex'; }
         function closeModal() { document.getElementById('addCourseModal').style.display = 'none'; }
+        
+        // แก้ไขส่วนนี้เล็กน้อยเพื่อให้ปิด Modal ได้สมบูรณ์เวลาคลิกข้างนอก
         window.onclick = function(event) {
             var modal = document.getElementById('addCourseModal');
-            if (event.target == modal) { modal.style.display = "none"; }
+            var notiDropdown = document.getElementById("noti-dropdown");
+            
+            // ปิด Modal ถ่าคลิกพื้นที่สีเทา
+            if (event.target == modal) { 
+                modal.style.display = "none"; 
+            }
+            
+            // ปิด Notification ถ้าคลิกที่อื่น
+            if (!event.target.closest('.notification')) {
+                if(notiDropdown) notiDropdown.style.display = "none";
+            }
         }
 		
 		const searchInput = document.getElementById('searchInput');
 				const courseCards = document.querySelectorAll('.course-card');
-				const noSearchResults = document.getElementById('noSearchResults'); // 1. ดึงกล่องข้อความมาเตรียมไว้
+				const noSearchResults = document.getElementById('noSearchResults'); 
 
 				if (searchInput) {
 				    searchInput.addEventListener('input', function(e) {
 				        const keyword = e.target.value.toLowerCase().trim();
-				        let visibleCount = 0; // 2. สร้างตัวแปรมาคอยนับการ์ดที่หาเจอ
+				        let visibleCount = 0; 
 				        
 				        courseCards.forEach(card => {
 				            const code = card.querySelector('.course-code').innerText.toLowerCase();
@@ -158,25 +170,23 @@
 				            
 				            if (code.includes(keyword) || title.includes(keyword)) {
 				                card.style.display = 'block';
-				                visibleCount++; // 3. ถ้าหาเจอ ให้นับเพิ่มทีละ 1
+				                visibleCount++; 
 				            } else {
 				                card.style.display = 'none';
 				            }
 				        });
 
-				        // 4. เช็คผลลัพธ์: ถ้ามีการ์ดในระบบ แต่ดันหาไม่เจอเลยสักใบ (visibleCount == 0)
 				        if (noSearchResults && courseCards.length > 0) {
 				            if (visibleCount === 0) {
-				                noSearchResults.style.display = 'block'; // โชว์ข้อความ "ไม่พบรายวิชา"
+				                noSearchResults.style.display = 'block'; 
 				            } else {
-				                noSearchResults.style.display = 'none';  // ซ่อนข้อความทิ้งไป
+				                noSearchResults.style.display = 'none';  
 				            }
 				        }
 				    });
 				}
     </script>
 	<script th:inline="javascript">
-	    // ดึงชื่ออาจารย์จาก Session
 	    const currentTeacherName = /*[[${user != null ? user.displaynameTh : 'ชื่ออาจารย์'}]]*/ 'ชื่ออาจารย์';
 
 	    document.addEventListener("DOMContentLoaded", function() {
@@ -186,7 +196,6 @@
 	    });
 
 	    function fetchNotifications(teacherName) {
-	        // วิ่งไปขอข้อมูลจาก API ของอาจารย์
 	        fetch(`/api/notifications/teacher/${teacherName}`)
 	            .then(response => response.json())
 	            .then(data => {
@@ -214,17 +223,9 @@
 	            .catch(error => console.error('Error:', error));
 	    }
 
-	    // ฟังก์ชันเปิด/ปิด กล่องแจ้งเตือน
 	    function toggleNotification() {
 	        const dropdown = document.getElementById("noti-dropdown");
 	        dropdown.style.display = (dropdown.style.display === "none") ? "block" : "none";
-	    }
-
-	    // ปิดกล่องแจ้งเตือนถ้าคลิกที่อื่นบนหน้าจอ
-	    window.onclick = function(event) {
-	        if (!event.target.closest('.notification')) {
-	            document.getElementById("noti-dropdown").style.display = "none";
-	        }
 	    }
 	</script>
 </body>

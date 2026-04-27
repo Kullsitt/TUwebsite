@@ -7,6 +7,7 @@ import com.coursestu.central_portal.service.AssignmentService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional; // 👈 เพิ่ม Import สำหรับการลบข้อมูลที่เกี่ยวข้องกัน
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -249,5 +250,63 @@ public class PageController {
     @GetMapping("/assignment/submit") 
     public String getSubmitAssignmentPage() {
         return "dashboard/student/submit"; 
+    }
+
+    // 🎯 เมธอดสำหรับรับค่าจาก Modal และสร้างวิชาใหม่
+    @PostMapping("/teacher/course/save")
+    public String saveCourse(@RequestParam String courseId,
+                             @RequestParam String courseName,
+                             @RequestParam String teacherName,
+                             @RequestParam int capacity) {
+        try {
+            // เช็กก่อนว่ามีรหัสวิชานี้ในระบบหรือยัง จะได้ไม่ซ้ำ
+            Course existingCourse = courseRepository.findById(courseId).orElse(null);
+            
+            if (existingCourse == null) {
+                Course newCourse = new Course();
+                newCourse.setCourseId(courseId);
+                newCourse.setCourseName(courseName);
+                newCourse.setTeacherName(teacherName);
+                newCourse.setCapacity(capacity);
+                
+                // บันทึกลง Database
+                courseRepository.save(newCourse);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        
+        // เซฟเสร็จแล้วให้เด้งกลับไปหน้า Dashboard ของอาจารย์
+        return "redirect:/dashboard/teacher";
+    }
+
+    // 🎯 เพิ่มเมธอดลบวิชาตรงนี้!
+    @PostMapping("/teacher/course/delete")
+    @Transactional // บังคับให้ทำลบข้อมูลทุกส่วนให้เสร็จพร้อมกัน ถ้าพังให้ยกเลิก
+    public String deleteCourse(@RequestParam String courseId) {
+        try {
+            // 1. ลบเนื้อหา/การบ้าน/ประกาศ ที่ผูกกับวิชานี้ทิ้งก่อน
+            List<Assignment> assignments = assignmentRepository.findByCourseCourseId(courseId);
+            if (!assignments.isEmpty()) {
+                assignmentRepository.deleteAll(assignments);
+            }
+
+            // 2. ลบประวัติการลงทะเบียนของนักเรียนในวิชานี้ทิ้ง
+            List<Enrollment> enrollments = enrollmentRepository.findAll().stream()
+                    .filter(e -> e.getCourse() != null && e.getCourse().getCourseId().equals(courseId))
+                    .collect(Collectors.toList());
+            if (!enrollments.isEmpty()) {
+                enrollmentRepository.deleteAll(enrollments);
+            }
+
+            // 3. เมื่อเคลียร์ของที่ผูกติดหมดแล้ว ก็ทำการลบตัวรายวิชาทิ้งได้เลย
+            courseRepository.deleteById(courseId);
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        
+        // ลบเสร็จแล้วให้เด้งกลับมาหน้า Dashboard
+        return "redirect:/dashboard/teacher";
     }
 }

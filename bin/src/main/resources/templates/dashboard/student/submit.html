@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="th" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Submit Assignment / Enroll - Thammasat</title>
+    <link rel="stylesheet" th:href="@{/css/submitstyle.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="top-orange-bar"></div>
+    <div class="container">
+        <header class="main-header">
+             <div class="logo-section">
+                <img th:src="@{/images/TU logo.png}" alt="Thammasat Logo" class="logo-img">
+                <div class="logo-text">
+                    <span class="uni-name-th">มหาวิทยาลัยธรรมศาสตร์</span><br>
+                    <span class="uni-name-en">Thammasat University</span>
+                </div>
+            </div>
+            <div class="user-section">
+                <div class="user-profile">
+                    <div class="avatar-placeholder"><i class="fa-regular fa-user"></i></div>
+                    <span class="user-name" th:text="${user != null ? user.displaynameTh : 'ชื่อนักศึกษา'}">สุเมธา พวงทอง</span>
+                </div>
+            </div>
+        </header>
+
+        <div class="page-content">
+            <div class="breadcrumb">
+                <a th:href="@{/home/student}">หน้าแรก</a> / <span id="breadcrumb-text">วิชา CS271 ARTIFICIAL INTELLIGENCE FUNDAMENTALS / การบ้านครั้งที่ 1</span>
+            </div>
+
+            <div class="submit-card">
+                <div class="card-header">
+                    <h2 id="main-title">การบ้านครั้งที่ 1</h2>
+                </div>
+                <div class="card-body">
+                    <p class="assignment-desc" id="assignment-desc">
+                        Assignment#1<br>
+                        เขียนคำตอบแต่ละข้อย่อย<br>
+                        ข้อย่อยละ 1 diagram เรียงตามลำดับ เขียนคำตอบลงในไฟล์เดียวกัน ตั้งชื่อไฟล์ว่า cs251_HW1_x.pdf<br>
+                        หมายเหตุ เขียน ERD/EERD ด้วยลายมือก็ได้ หรือใช้เครื่องมือวาด & พิมพ์ก็ได้
+                    </p>
+                    
+                    <div class="meta-item">
+                        <i class="fa-regular fa-folder-open icon-meta"></i> 
+                        <a href="#" class="file-link">ไฟล์การบ้าน</a>
+                    </div>
+                    <div class="meta-item">
+                        <i class="fa-regular fa-calendar icon-meta"></i> 
+                        <span>20/03/2569 ไม่เกิน 23.59 น.</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="submit-card">
+                <div class="card-header border-none">
+                    <h2 id="action-title">กล่องสำหรับส่งงาน</h2>
+                </div>
+                <div class="card-body">
+                    <div class="upload-box" id="upload-box">
+                        <i class="fa-solid fa-arrow-up-from-bracket upload-icon"></i>
+                        <span class="upload-text">อัปโหลดการบ้าน</span>
+                    </div>
+                    
+                    <div class="button-group">
+                        <button class="btn-cancel" id="btn-cancel">ยกเลิก</button>
+                        <button class="btn-submit" id="btn-submit">ตกลง</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 1. ดึงค่า ID จาก URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const courseId = urlParams.get('id');
+
+            // 2. ถ้ามีการส่ง ID มา แปลว่าเป็นโหมด "ลงทะเบียนเรียน"
+            if (courseId) {
+                document.getElementById('breadcrumb-text').innerText = `ยืนยันการลงทะเบียนเรียน: ${courseId}`;
+                document.getElementById('main-title').innerText = `ยืนยันการลงทะเบียนเรียน: ${courseId}`;
+                
+                document.getElementById('assignment-desc').innerHTML = 
+                    `คุณกำลังดำเนินการลงทะเบียนในรายวิชา <strong>${courseId}</strong><br>` +
+                    `โปรดตรวจสอบความถูกต้องของรายวิชาก่อนกดยืนยันการลงทะเบียน`;
+
+                const metaItems = document.querySelectorAll('.meta-item');
+                metaItems.forEach(item => item.style.display = 'none');
+                
+                document.getElementById('upload-box').style.display = 'none';
+                document.getElementById('action-title').innerText = "ดำเนินการลงทะเบียน";
+
+                // ✅ 🎯 จุดสำคัญที่แก้: จัดการปุ่มยืนยัน
+                const btnSubmit = document.getElementById('btn-submit');
+                btnSubmit.innerText = "ยืนยันการลงทะเบียน";
+                btnSubmit.onclick = function() {
+                    
+                    // แอบสร้าง Form ด้วย JavaScript เพื่อส่งค่าแบบ POST
+                    const form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = '/course/enroll/confirm'; // ส่งไปที่ Controller ที่เรารอรับอยู่
+
+                    // ใส่รหัสวิชาลงไปในกล่องพัสดุ
+                    const inputCourseId = document.createElement('input');
+                    inputCourseId.type = 'hidden';
+                    inputCourseId.name = 'courseId';
+                    inputCourseId.value = courseId;
+                    
+                    form.appendChild(inputCourseId);
+                    document.body.appendChild(form);
+
+                    // แจ้งเตือนเสร็จปุ๊บ กดส่ง Form ทันที
+                    alert('กำลังส่งคำขอลงทะเบียนวิชา ' + courseId + ' ...');
+                    form.submit(); // ส่งเข้า Database และ Spring Boot จะทำหน้าที่ Redirect กลับไปหน้าแรกให้เอง
+                };
+
+                const btnCancel = document.getElementById('btn-cancel');
+                btnCancel.onclick = function() {
+                    window.history.back();
+                };
+            }
+        });
+    </script>
+</body>
+</html>

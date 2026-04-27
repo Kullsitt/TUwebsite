@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="th" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>รายการทั้งหมด - Thammasat</title>
+    <link rel="stylesheet" th:href="@{/css/home_teacher_style.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="top-orange-bar"></div>
+    <div class="container">
+        <header class="main-header">
+            <div class="logo-section">
+                <img th:src="@{/images/v39_436.png}" alt="TU Logo" class="logo-img">
+                <div class="logo-text">
+                    <span class="uni-name-th">มหาวิทยาลัยธรรมศาสตร์</span><br>
+                    <span class="uni-name-en">Thammasat University</span>
+                </div>
+            </div>
+            <div class="user-section">
+				<div class="notification" style="position: relative; cursor: pointer;" onclick="toggleNotification()">
+				    <i class="fa-regular fa-bell"></i>
+				    <span class="badge" id="noti-badge">0</span>
+
+				    <div id="noti-dropdown" class="noti-dropdown-content" style="display: none; position: absolute; right: 0; top: 40px; background: white; border: 1px solid #ddd; width: 320px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 1000; max-height: 400px; overflow-y: auto;">
+				        <div style="padding: 12px; border-bottom: 1px solid #eee; font-weight: bold; text-align: center; color: #c0392b;">
+				            <i class="fa-solid fa-bullhorn"></i> แจ้งเตือนล่าสุด
+				        </div>
+				        <div id="noti-list">
+				            <div style="padding: 15px; text-align: center; color: #888;">กำลังโหลด...</div>
+				        </div>
+				    </div>
+				</div>
+                <div class="user-profile">
+                    <div class="avatar-placeholder"><i class="fa-solid fa-user"></i></div>
+                    <span class="user-name" th:text="${user.displaynameTh}">ชื่ออาจารย์</span>
+                </div>
+            </div>
+        </header>
+
+        <div class="search-container">
+            <div class="search-box">
+                <i class="fa-solid fa-bars menu-icon"></i>
+                <input type="text" id="searchInput" placeholder="ค้นหารายวิชา">
+                <i class="fa-solid fa-magnifying-glass search-icon"></i>
+            </div>
+            <button class="btn-add-course" onclick="openModal()"><i class="fa-solid fa-plus"></i> เพิ่มรายวิชา</button>
+        </div>
+
+        <div class="main-content">
+           <aside class="sidebar">
+                <ul class="menu-list">
+                    <li th:onclick="|window.location.href='@{/dashboard/teacher}'|">
+                        <i class="fa-solid fa-graduation-cap"></i> รายวิชาของฉัน
+                    </li>
+                    <li class="active" th:onclick="|window.location.href='@{/dashboard/teacher/all-courses}'|">
+                        <i class="fa-solid fa-graduation-cap"></i> รายการทั้งหมด
+                    </li>
+                </ul>
+            </aside>
+
+            <section class="content-area">
+                <div class="filter-section">
+                    <select class="term-select">
+                        <option value="1">ภาคการศึกษา: 1/2568 </option>
+                    </select>
+                </div>
+                
+				<div class="course-grid">
+                    <div th:if="${#lists.isEmpty(allCourses)}" style="grid-column: 1/-1; text-align: center; padding: 50px; opacity: 0.5;">
+                         <p>ไม่มีรายวิชาในระบบ</p>
+                    </div>
+
+                    <div class="course-card" th:each="course, stat : ${allCourses}" 
+                         th:onclick="|window.location.href='@{/dashboard/teacher/course(id=${course.courseId})}'|" style="cursor: pointer;">
+				        <div class="card-banner" 
+                             th:classappend="${stat.index % 4 == 0 ? 'bg-blue' : (stat.index % 4 == 1 ? 'bg-green' : (stat.index % 4 == 2 ? 'bg-yellow' : 'bg-darkblue'))}">
+				            <span class="course-code" th:text="${course.courseId}">รหัสวิชา</span>
+				            <h3 class="course-title" th:text="${course.courseName}">ชื่อวิชา</h3>
+				        </div>
+				        <div class="card-details">
+				            <p>อาจารย์: <span th:text="${course.teacherName}">ชื่ออาจารย์</span></p>
+				            <p class="section-info">ความจุ : <span th:text="${course.capacity}"></span> คน</p>
+				        </div>
+				    </div>
+					<div id="noSearchResults" style="display: none; grid-column: 1/-1; text-align: center; padding: 50px; color: #666;">
+															                        <i class="fa-solid fa-magnifying-glass" style="font-size: 48px; margin-bottom: 15px; color: #ccc;"></i>
+															                        <p>ไม่พบรายวิชาที่คุณค้นหา</p>
+					</div>
+				</div>
+				<div class="pagination" th:if="${not #lists.isEmpty(allCourses)}">
+				                   <span class="page-info">หน้า 1 จาก 1</span>
+				                   <button class="page-btn active">1</button>
+				               </div>
+				
+            </section>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="addCourseModal" style="display: none;">
+        <div class="modal-box">
+            <div class="modal-header">
+                <div><i class="fa-regular fa-square-plus"></i> เพิ่มรายวิชาใหม่</div>
+                <i class="fa-solid fa-xmark" onclick="closeModal()" style="cursor: pointer;"></i>
+            </div>
+            <form th:action="@{/teacher/course/save}" method="post">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>ชื่อรายวิชา</label>
+                        <input type="text" name="courseName" placeholder="ex.การเขียนโปรแกรมเบื้องต้น" required>
+                    </div>
+                    <div class="form-group">
+                        <label>รหัสวิชา</label>
+                        <input type="text" name="courseId" placeholder="ex.CS101" required>
+                    </div>
+                    <div class="form-group">
+                        <label>ชื่อผู้สอน</label>
+                        <input type="text" name="teacherName" th:value="${user.displaynameTh}" required>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>จำนวนที่รับ</label>
+                            <input type="number" name="capacity" value="30" required>
+                        </div>
+                       
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-cancel" onclick="closeModal()">ยกเลิก</button>
+                    <button type="submit" class="btn-submit">สร้างเนื้อหา</button>
+                </div>
+            </form>
+        </div>
+    </div>
+	
+	<script>
+        function openModal() { document.getElementById('addCourseModal').style.display = 'flex'; }
+        function closeModal() { document.getElementById('addCourseModal').style.display = 'none'; }
+        window.onclick = function(event) {
+            var modal = document.getElementById('addCourseModal');
+            if (event.target == modal) { modal.style.display = "none"; }
+        }
+		
+		const searchInput = document.getElementById('searchInput');
+				const courseCards = document.querySelectorAll('.course-card');
+				const noSearchResults = document.getElementById('noSearchResults'); // 1. ดึงกล่องข้อความมาเตรียมไว้
+
+				if (searchInput) {
+				    searchInput.addEventListener('input', function(e) {
+				        const keyword = e.target.value.toLowerCase().trim();
+				        let visibleCount = 0; // 2. สร้างตัวแปรมาคอยนับการ์ดที่หาเจอ
+				        
+				        courseCards.forEach(card => {
+				            const code = card.querySelector('.course-code').innerText.toLowerCase();
+				            const title = card.querySelector('.course-title').innerText.toLowerCase();
+				            
+				            if (code.includes(keyword) || title.includes(keyword)) {
+				                card.style.display = 'block';
+				                visibleCount++; // 3. ถ้าหาเจอ ให้นับเพิ่มทีละ 1
+				            } else {
+				                card.style.display = 'none';
+				            }
+				        });
+
+				        // 4. เช็คผลลัพธ์: ถ้ามีการ์ดในระบบ แต่ดันหาไม่เจอเลยสักใบ (visibleCount == 0)
+				        if (noSearchResults && courseCards.length > 0) {
+				            if (visibleCount === 0) {
+				                noSearchResults.style.display = 'block'; // โชว์ข้อความ "ไม่พบรายวิชา"
+				            } else {
+				                noSearchResults.style.display = 'none';  // ซ่อนข้อความทิ้งไป
+				            }
+				        }
+				    });
+				}
+    </script>
+	<script th:inline="javascript">
+	    // ดึงชื่ออาจารย์จาก Session
+	    const currentTeacherName = /*[[${user != null ? user.displaynameTh : 'ชื่ออาจารย์'}]]*/ 'ชื่ออาจารย์';
+
+	    document.addEventListener("DOMContentLoaded", function() {
+	        if(currentTeacherName && currentTeacherName !== 'ชื่ออาจารย์') {
+	            fetchNotifications(currentTeacherName);
+	        }
+	    });
+
+	    function fetchNotifications(teacherName) {
+	        // วิ่งไปขอข้อมูลจาก API ของอาจารย์
+	        fetch(`/api/notifications/teacher/${teacherName}`)
+	            .then(response => response.json())
+	            .then(data => {
+	                document.getElementById('noti-badge').innerText = data.length;
+	                const notiList = document.getElementById('noti-list');
+	                notiList.innerHTML = '';
+
+	                if(data.length === 0) {
+	                    notiList.innerHTML = '<div style="padding: 15px; text-align: center; color: #888;">ไม่มีการแจ้งเตือนใหม่</div>';
+	                    return;
+	                }
+
+	                data.forEach(item => {
+	                    const notiHTML = `
+	                        <a href="/dashboard/teacher?courseId=${item.courseId}" style="display: block; padding: 12px; border-bottom: 1px solid #f5f5f5; text-decoration: none; color: #333; transition: 0.2s;">
+	                            <div style="font-size: 12px; color: #e67e22; font-weight: bold; margin-bottom: 4px;">
+	                                [${item.courseId}] ${item.itemType != null ? item.itemType : 'อัปเดตใหม่'}
+	                            </div>
+	                            <div style="font-size: 14px;">${item.title}</div>
+	                        </a>
+	                    `;
+	                    notiList.innerHTML += notiHTML;
+	                });
+	            })
+	            .catch(error => console.error('Error:', error));
+	    }
+
+	    // ฟังก์ชันเปิด/ปิด กล่องแจ้งเตือน
+	    function toggleNotification() {
+	        const dropdown = document.getElementById("noti-dropdown");
+	        dropdown.style.display = (dropdown.style.display === "none") ? "block" : "none";
+	    }
+
+	    // ปิดกล่องแจ้งเตือนถ้าคลิกที่อื่นบนหน้าจอ
+	    window.onclick = function(event) {
+	        if (!event.target.closest('.notification')) {
+	            document.getElementById("noti-dropdown").style.display = "none";
+	        }
+	    }
+	</script>
+</body>
+</html>

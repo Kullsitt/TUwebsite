@@ -30,7 +30,6 @@ public class AssignmentController {
     @Autowired
     private AssignmentService assignmentService;
 
-    // ฉีดตัวส่ง Email เข้ามาใช้งาน
     @Autowired
     private JavaMailSender mailSender;
 
@@ -42,53 +41,60 @@ public class AssignmentController {
             @RequestParam("courseId") String courseId,
             @RequestParam("file") MultipartFile file) throws IOException {
 
-        // 1. จัดการโฟลเดอร์และบันทึกไฟล์
+        // 🔧 1. สร้าง folder ถ้ายังไม่มี
         String uploadDir = "uploads/";
         Path uploadPath = Paths.get(uploadDir);
         if (!Files.exists(uploadPath)) {
             Files.createDirectories(uploadPath);
         }
 
+        // 🔧 2. บันทึกไฟล์
         String fileName = file.getOriginalFilename();
         Path filePath = uploadPath.resolve(fileName);
         Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
 
-        // 2. สร้าง Object และตั้งค่าข้อมูล
+        // 🔧 3. สร้าง Assignment
         Assignment assignment = new Assignment();
         assignment.setTitle(title);
         assignment.setDescription(description);
-        
+
         try {
             assignment.setDeadline(LocalDateTime.parse(deadline));
         } catch (DateTimeParseException e) {
             assignment.setDeadline(LocalDateTime.now());
         }
-        
+
         assignment.setFileName(fileName);
-        String fileDownloadUrl = "http://localhost:8080/api/assignments/download/" + fileName;
-        assignment.setFileUrl(fileDownloadUrl); 
+
+        // 🔥🔥🔥 ตรงนี้คือจุดสำคัญ (แก้จาก download → view)
+        String fileViewUrl = "http://localhost:8080/documents/view/" + fileName;
+        assignment.setFileUrl(fileViewUrl);
 
         Course course = new Course();
         course.setCourseId(courseId);
         assignment.setCourse(course);
 
-        // 3. บันทึกลงฐานข้อมูล
+        // 🔧 4. Save DB
         Assignment savedAssignment = assignmentService.saveAssignment(assignment);
 
-        // 4. ส่ง Email แจ้งเตือน (ใส่ try-catch แยกไว้เพื่อไม่ให้กระทบการเซฟข้อมูลหลัก)
+        // 🔧 5. ส่ง Email
         try {
             SimpleMailMessage message = new SimpleMailMessage();
-            message.setFrom("your-email@gmail.com"); // ตรงนี้ควรตรงกับ spring.mail.username ใน properties
-            message.setTo("target-email@gmail.com"); // ใส่อีเมลผู้รับ (เช่น อีเมลของคุณเองเพื่อทดสอบ)
+            message.setFrom("your-email@gmail.com");
+            message.setTo("target-email@gmail.com");
             message.setSubject("New Assignment Created: " + title);
-            message.setText("Hello,\n\nA new assignment has been uploaded.\n\n" +
-                            "Course ID: " + courseId + "\n" +
-                            "Title: " + title + "\n" +
-                            "Deadline: " + deadline + "\n" +
-                            "You can download the file here: " + fileDownloadUrl);
-            
+
+            message.setText(
+                    "Hello,\n\nA new assignment has been uploaded.\n\n" +
+                    "Course ID: " + courseId + "\n" +
+                    "Title: " + title + "\n" +
+                    "Deadline: " + deadline + "\n\n" +
+                    "View file here: " + fileViewUrl
+            );
+
             mailSender.send(message);
             System.out.println("Email sent successfully!");
+
         } catch (Exception e) {
             System.err.println("Failed to send email: " + e.getMessage());
         }
@@ -96,6 +102,7 @@ public class AssignmentController {
         return savedAssignment;
     }
 
+    // 🔽 (ยังเก็บไว้ได้ เผื่ออยากโหลดจริง)
     @GetMapping("/download/{fileName:.+}")
     public ResponseEntity<Resource> downloadFile(@PathVariable String fileName) {
         try {
@@ -105,7 +112,8 @@ public class AssignmentController {
             if (resource.exists()) {
                 return ResponseEntity.ok()
                         .contentType(MediaType.APPLICATION_OCTET_STREAM)
-                        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
+                        .header(HttpHeaders.CONTENT_DISPOSITION,
+                                "attachment; filename=\"" + resource.getFilename() + "\"")
                         .body(resource);
             } else {
                 return ResponseEntity.notFound().build();

@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="th" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Teacher - [[${courseId}]]</title>
+    <link rel="stylesheet" th:href="@{/css/dashboradteacher.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* เพิ่มสไตล์ปุ่มแก้ไขและลบเพิ่มเติม */
+        .list-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid #eee; }
+        .item-content-left { display: flex; align-items: center; gap: 15px; }
+        .item-actions { display: flex; gap: 10px; }
+        .btn-action { background: none; border: none; cursor: pointer; font-size: 1.1rem; transition: 0.2s; }
+        .btn-edit-icon { color: #f39c12; }
+        .btn-edit-icon:hover { color: #d68910; }
+        .btn-delete-icon { color: #e74c3c; }
+        .btn-delete-icon:hover { color: #c0392b; }
+    </style>
+</head>
+<body>
+    <div class="top-orange-bar"></div>
+    <div class="container">
+        <header class="main-header">
+            <div class="logo-section">
+                <img th:src="@{/images/v39_436.png}" alt="Thammasat Logo" class="logo-img">
+                <div class="logo-text">
+                    <span class="uni-name-th">มหาวิทยาลัยธรรมศาสตร์</span><br>
+                    <span class="uni-name-en">Thammasat University</span>
+                </div>
+            </div>
+            <div class="user-section">
+                <div class="user-profile">
+                    <div class="avatar-placeholder"><i class="fa-regular fa-user"></i></div>
+                    <span class="user-name" th:text="${user.displaynameTh}">ชื่ออาจารย์</span>
+                </div>
+            </div>
+        </header>
+
+        <div class="dashboard-content">
+            <div class="breadcrumb">
+                <a th:href="@{/dashboard/teacher}">หน้าแรก</a> / 
+                <span>วิชา <span th:text="${courseId}">CSXXX</span></span>
+            </div>
+
+            <div class="course-header-row">
+                <h1 class="course-title">วิชา <span th:text="${courseId}">CSXXX</span></h1>
+                <button class="btn-add-content" onclick="openModal()">
+                    <i class="fa-solid fa-plus"></i> เพิ่มเนื้อหา
+                </button>
+            </div>
+
+            <div class="section-card">
+                <div class="section-header"><i class="fa-solid fa-bullhorn outline-icon"></i> Announcement</div>
+                <div class="section-body">
+                    <div th:if="${#lists.isEmpty(announcements)}" class="text-normal" style="padding:10px; color:#999;">ไม่มีข้อมูลในหมวดนี้</div>
+                    <div th:each="item : ${announcements}" class="list-item">
+                        <div class="item-content-left">
+                            <i class="fa-regular fa-message icon-grey"></i>
+                            <div class="item-text">
+                                <div class="text-bold" th:text="${item.title}">หัวข้อประกาศ</div>
+                                <div class="text-normal" th:text="${item.description}">รายละเอียด</div>
+                            </div>
+                        </div>
+                        <div class="item-actions">
+                            <button class="btn-action btn-edit-icon" th:onclick="openEditModal([[${item.id}]], [[${item.title}]], [[${item.description}]], [[${item.type}]])">
+                                <i class="fa-solid fa-pen-to-square"></i>
+                            </button>
+                            <button class="btn-action btn-delete-icon" th:onclick="confirmDelete([[${item.id}]])">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section-card">
+                <div class="section-header"><i class="fa-solid fa-book-open outline-icon"></i> General</div>
+                <div class="section-body">
+                    <div class="list-item">
+                        <div class="item-content-left">
+                            <i class="fa-regular fa-message icon-grey"></i>
+                            <div class="item-text">ช่องทางติดต่ออาจารย์ Email : <span th:text="${user.email}">email</span></div>
+                        </div>
+                    </div>
+                    <div th:if="${#lists.isEmpty(generals)}" class="text-normal" style="padding:10px; color:#999;">ไม่มีข้อมูลเพิ่มเติม</div>
+                    <div th:each="item : ${generals}" class="list-item">
+                        <div class="item-content-left">
+                            <i class="fa-regular fa-message icon-grey"></i>
+                            <div class="item-text" th:text="${item.title}">ข้อมูลทั่วไป</div>
+                        </div>
+                        <div class="item-actions">
+                            <button class="btn-action btn-edit-icon" th:onclick="openEditModal([[${item.id}]], [[${item.title}]], [[${item.description}]], [[${item.type}]])">
+                                <i class="fa-solid fa-pen-to-square"></i>
+                            </button>
+                            <button class="btn-action btn-delete-icon" th:onclick="confirmDelete([[${item.id}]])">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section-card">
+                <div class="section-header"><i class="fa-regular fa-file-lines outline-icon"></i> Material</div>
+                <div class="section-body">
+                    <div th:if="${#lists.isEmpty(materials)}" class="text-normal" style="padding:10px; color:#999;">ไม่มีข้อมูลในหมวดนี้</div>
+                    <div th:each="item : ${materials}" class="list-item">
+                        <div class="item-content-left">
+                            <i class="fa-solid fa-file-arrow-down icon-grey"></i>
+                            <div class="item-text" th:text="${item.title}">ชื่อไฟล์เรียน</div>
+                        </div>
+                        <div class="item-actions">
+                            <button class="btn-action btn-edit-icon" th:onclick="openEditModal([[${item.id}]], [[${item.title}]], [[${item.description}]], [[${item.type}]])">
+                                <i class="fa-solid fa-pen-to-square"></i>
+                            </button>
+                            <button class="btn-action btn-delete-icon" th:onclick="confirmDelete([[${item.id}]])">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section-card">
+                <div class="section-header"><i class="fa-regular fa-file-word outline-icon"></i> Homework</div>
+                <div class="section-body">
+                    <div th:if="${#lists.isEmpty(homeworks)}" class="text-normal" style="padding:10px; color:#999;">ไม่มีข้อมูลในหมวดนี้</div>
+                    <div th:each="item : ${homeworks}" class="list-item">
+                        <div class="item-content-left">
+                            <i class="fa-regular fa-square-check icon-grey"></i>
+                            <div class="item-text" th:text="${item.title}">ชื่อการบ้าน</div>
+                        </div>
+                        <div class="item-actions">
+                            <button class="btn-action btn-edit-icon" th:onclick="openEditModal([[${item.id}]], [[${item.title}]], [[${item.description}]], [[${item.type}]])">
+                                <i class="fa-solid fa-pen-to-square"></i>
+                            </button>
+                            <button class="btn-action btn-delete-icon" th:onclick="confirmDelete([[${item.id}]])">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section-card">
+                <div class="section-header"><i class="fa-regular fa-circle-question outline-icon"></i> Quizzes</div>
+                <div class="section-body">
+                    <div th:if="${#lists.isEmpty(quizzes)}" class="text-normal" style="padding:10px; color:#999;">ไม่มีข้อมูลในหมวดนี้</div>
+                    <div th:each="item : ${quizzes}" class="list-item">
+                        <div class="item-content-left">
+                            <i class="fa-solid fa-link icon-grey"></i>
+                            <div class="item-text" th:text="${item.title}">ชื่อควิซ</div>
+                        </div>
+                        <div class="item-actions">
+                            <button class="btn-action btn-edit-icon" th:onclick="openEditModal([[${item.id}]], [[${item.title}]], [[${item.description}]], [[${item.type}]])">
+                                <i class="fa-solid fa-pen-to-square"></i>
+                            </button>
+                            <button class="btn-action btn-delete-icon" th:onclick="confirmDelete([[${item.id}]])">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="contentModal" class="modal">
+        <div class="modal-content">
+            <form th:action="@{/dashboard/teacher/add-content}" method="post">
+                <input type="hidden" name="courseId" th:value="${courseId}">
+                <div class="modal-header">
+                    <h2><i class="fa-regular fa-square-plus" style="margin-right: 10px;"></i> เพิ่มเนื้อหาใหม่</h2>
+                    <span class="close-btn" onclick="closeModal()">&times;</span>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>หัวข้อเนื้อหา</label>
+                        <input type="text" name="title" placeholder="หัวข้อเนื้อหา" required>
+                    </div>
+                    <div class="form-group">
+                        <label>คำอธิบายภายในเนื้อหา</label>
+                        <textarea name="description" placeholder="คำอธิบายภายในเนื้อหา" rows="3"></textarea>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group half">
+                            <label>ประเภท</label>
+                            <select name="type" required>
+                                <option value="">ประเภทเนื้อหา</option>
+                                <option value="announcement">Announcement</option>
+                                <option value="general">General</option>
+                                <option value="material">Material</option>
+                                <option value="homework">Homework</option>
+                                <option value="quizzes">Quizzes</option>
+                            </select>
+                        </div>
+                        <div class="form-group half">
+                            <label>กำหนดเวลา (Deadline)</label>
+                            <input type="date" name="deadline">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-cancel" onclick="closeModal()">ยกเลิก</button>
+                    <button type="submit" class="btn-submit">สร้างเนื้อหา</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="editModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <form th:action="@{/dashboard/teacher/edit-content}" method="post">
+                <input type="hidden" name="courseId" th:value="${courseId}">
+                <input type="hidden" name="assignmentId" id="edit-id">
+                
+                <div class="modal-header">
+                    <h2><i class="fa-solid fa-pen-to-square" style="margin-right: 10px;"></i> แก้ไขเนื้อหา</h2>
+                    <span class="close-btn" onclick="closeEditModal()">&times;</span>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>หัวข้อเนื้อหา</label>
+                        <input type="text" name="title" id="edit-title" required>
+                    </div>
+                    <div class="form-group">
+                        <label>คำอธิบายภายในเนื้อหา</label>
+                        <textarea name="description" id="edit-description" rows="3"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>ประเภท</label>
+                        <select name="type" id="edit-type" required>
+                            <option value="announcement">Announcement</option>
+                            <option value="general">General</option>
+                            <option value="material">Material</option>
+                            <option value="homework">Homework</option>
+                            <option value="quizzes">Quizzes</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-cancel" onclick="closeEditModal()">ยกเลิก</button>
+                    <button type="submit" class="btn-submit" style="background-color: #f39c12;">บันทึกการแก้ไข</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <form id="deleteForm" th:action="@{/dashboard/teacher/delete-content}" method="post" style="display:none;">
+        <input type="hidden" name="assignmentId" id="delete-id">
+        <input type="hidden" name="courseId" th:value="${courseId}">
+    </form>
+
+    <script>
+        // Modal เพิ่มเนื้อหา
+        function openModal() { document.getElementById("contentModal").style.display = "block"; }
+        function closeModal() { document.getElementById("contentModal").style.display = "none"; }
+
+        // Modal แก้ไขเนื้อหา
+        function openEditModal(id, title, desc, type) {
+            document.getElementById("edit-id").value = id;
+            document.getElementById("edit-title").value = title;
+            document.getElementById("edit-description").value = desc;
+            document.getElementById("edit-type").value = type;
+            document.getElementById("editModal").style.display = "block";
+        }
+        function closeEditModal() { document.getElementById("editModal").style.display = "none"; }
+
+        // ระบบลบ
+        function confirmDelete(id) {
+            if(confirm("คุณแน่ใจหรือไม่ว่าต้องการลบเนื้อหานี้?")) {
+                document.getElementById("delete-id").value = id;
+                document.getElementById("deleteForm").submit();
+            }
+        }
+
+        window.onclick = function(event) {
+            if (event.target == document.getElementById("contentModal")) closeModal();
+            if (event.target == document.getElementById("editModal")) closeEditModal();
+        }
+    </script>
+</body>
+</html>

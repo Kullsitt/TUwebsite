@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>รายการทั้งหมด (หน้า 1) - Thammasat</title>
+    <link rel="stylesheet" href="homestyle.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+<body data-page="all">
+    <div class="top-orange-bar"></div>
+    <div class="container">
+        <header class="main-header">
+            <div class="logo-section">
+                <img src="D:\CS232\home\student\photo\v39_436.png" alt="Thammasat Logo" class="logo-img">
+                <div class="logo-text"><span class="uni-name-th">มหาวิทยาลัยธรรมศาสตร์</span><br><span class="uni-name-en">Thammasat University</span></div>
+            </div>
+            <div class="user-section">
+                <div class="notification">
+                    <i class="fa-regular fa-bell"></i><span class="badge">2</span>
+                    <div class="notification-dropdown">
+                        <div class="notif-header"><span>Notifications</span><i class="fa-solid fa-check" style="color: #f39c12;"></i></div>
+                        <div class="notif-list">
+                            <div class="notif-item"><div class="notif-text">CS271 เพิ่ม Quiz 1 : เนื้อหา...</div><div class="notif-meta"><span class="notif-time">29 มี.ค. 68 13:00 น.</span><i class="fa-solid fa-chevron-right"></i></div></div>
+                            <div class="notif-item"><div class="notif-text">CS251 เพิ่ม Quiz 23 : เนื้อหา...</div><div class="notif-meta"><span class="notif-time">25 มี.ค. 68 15:00 น.</span><i class="fa-solid fa-chevron-right"></i></div></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="user-profile"><div class="avatar-placeholder"><i class="fa-solid fa-user"></i></div><span class="user-name">ชื่อนักศึกษาตัวอย่าง</span></div>
+            </div>
+        </header>
+
+        <div class="search-container">
+            <div class="search-box"><i class="fa-solid fa-bars menu-icon"></i><input type="text" id="searchInput" placeholder="ค้นหารายวิชา"><i class="fa-solid fa-magnifying-glass search-icon"></i></div>
+        </div>
+
+        <div class="main-content">
+            <aside class="sidebar">
+                <ul class="menu-list">
+                    <li  onclick="window.location.href='my_courses.html'"><i class="fa-solid fa-graduation-cap"></i> รายวิชาของฉัน</li>
+                    <li class="active" onclick="window.location.href='all_courses.html'"><i class="fa-solid fa-graduation-cap"></i> รายการทั้งหมด</li>
+
+                </ul>
+            </aside>
+
+            <section class="content-area">
+                <div class="filter-section">
+                    <select class="term-select">
+                        <option value="1">ภาคการศึกษาที่ 1/2568</option>
+                    </select>
+                </div>
+                
+                <div class="course-grid" id="courseGrid"></div>
+
+                <div class="pagination">
+                    <span class="page-info">หน้า 1 จาก 2
+                    <button class="page-btn active" onclick="window.location.href='all_courses.html'">1</button>
+                    <button class="page-btn" onclick="window.location.href='all_courses_p2.html'">2</button>
+                   
+                    <button class="page-btn" onclick="window.location.href='all_courses_p2.html'">&gt;</button>
+                </div>
+            </section>
+        </div>
+		
+    </div>
+	
+	<script>
+	        // 1. ข้อมูลวิชาจำลอง (Mock Data) 
+	        const allCourses = [
+	            { code: "CS101", title: "การเขียนโปรแกรมเบื้องต้น", instructor: "ปัณณทัต", capacity: 20, isMine: true, color: "bg-blue" },
+	            { code: "MA102", title: "แคลคูลัส 1", instructor: "ปัณณทัต", capacity: 25, isMine: true, color: "bg-green" },
+	            { code: "EL165", title: "ภาษาอังกฤษเพื่อการสื่อสาร", instructor: "ปัณณทัต", capacity: 20, isMine: true, color: "bg-yellow" },
+	            { code: "HIS21", title: "ประวัติศาสตร์ไทย", instructor: "ปัณณทัต", capacity: 20, isMine: false, color: "bg-darkblue" },
+	            { code: "MBA201", title: "การจัดการธุรกิจขั้นสูง", instructor: "สมชาย", capacity: 15, isMine: false, color: "bg-darkblue" }
+	        ];
+
+	        // 2. จับตัวอ้างอิงช่องพิมพ์และกล่องแสดงผล
+	        const searchInput = document.getElementById('searchInput');
+	        const courseGrid = document.getElementById('courseGrid');
+
+	        // 3. ฟังก์ชันสำหรับวาดการ์ดวิชา
+	        function renderCourses(courses) {
+	            courseGrid.innerHTML = ''; // ล้างหน้าจอทุกครั้งก่อนวาดใหม่
+
+	            // ถ้าหาไม่เจอ ให้แสดงข้อความ
+	            if (courses.length === 0) {
+	                courseGrid.innerHTML = '<p style="text-align:center; grid-column: 1/-1; color: #888; margin-top: 20px;">ไม่พบรายวิชาที่ค้นหา</p>';
+	                return;
+	            }
+
+	            // วนลูปสร้างการ์ดวิชา
+	            courses.forEach(course => {
+	                // เช็คปุ่มว่าลงทะเบียนหรือยัง
+	                const btnStyle = course.isMine 
+	                    ? 'background-color: #999; cursor: default;' 
+	                    : 'background-color: #6ed062; cursor: pointer;';
+	                const btnText = course.isMine ? 'ลงทะเบียนแล้ว' : 'ลงทะเบียนเรียน';
+
+	                const cardHTML = `
+	                    <div class="course-card">
+	                        <div class="card-banner ${course.color}">
+	                            <span class="course-code">${course.code}</span>
+	                            <h3 class="course-title">${course.title}</h3>
+	                        </div>
+	                        <div class="card-details">
+	                            <p>อาจารย์: ${course.instructor}</p>
+	                            <p class="capacity">ลงทะเบียน: ${course.capacity} คน</p>
+	                            <button style="width: 100%; border: none; padding: 10px; border-radius: 6px; color: white; font-family: inherit; font-size: 0.9rem; ${btnStyle}">${btnText}</button>
+	                        </div>
+	                    </div>
+	                `;
+	                courseGrid.insertAdjacentHTML('beforeend', cardHTML);
+	            });
+	        }
+
+	        // 4. สั่งให้วาดวิชาทั้งหมดทันทีที่เปิดหน้าเว็บ
+	        renderCourses(allCourses);
+
+	        // 5. ระบบค้นหา (ทำงานทันทีที่พิมพ์)
+	        searchInput.addEventListener('input', function(e) {
+	            const keyword = e.target.value.toLowerCase().trim();
+	            
+	            // กรองเอาแค่วิชาที่มี รหัสวิชา หรือ ชื่อวิชา ตรงกับที่พิมพ์
+	            const filteredCourses = allCourses.filter(course => 
+	                course.code.toLowerCase().includes(keyword) || 
+	                course.title.toLowerCase().includes(keyword)
+	            );
+	            
+	            // สั่งวาดหน้าจอใหม่ด้วยข้อมูลที่กรองแล้ว
+	            renderCourses(filteredCourses);
+	        });
+	    </script>
+	</body>
+	</html>

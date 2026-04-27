@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>รายวิชาของฉัน - Thammasat</title>
+    <link rel="stylesheet" href="home_teacher_style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="top-orange-bar"></div>
+    <div class="container">
+        <header class="main-header">
+            <div class="logo-section">
+                <img src="D:\CS232\home\teacher\photo\v39_436.png" alt="TU Logo" class="logo-img">
+                <div class="logo-text">
+                    <span class="uni-name-th">มหาวิทยาลัยธรรมศาสตร์</span><br>
+                    <span class="uni-name-en">Thammasat University</span>
+                </div>
+            </div>
+            <div class="user-section">
+                <div class="notification">
+                    <i class="fa-regular fa-bell"></i><span class="badge">2</span>
+                    <div class="notification-dropdown">
+                        <div class="notif-header"><span>Notifications</span><i class="fa-solid fa-check" style="color: #f39c12;"></i></div>
+                        <div class="notif-list">
+                            <div class="notif-item"><div class="notif-text">CS271 เพิ่ม Quiz 1 : เนื้อหา...</div><div class="notif-meta"><span class="notif-time">29 มี.ค. 68 13:00 น.</span><i class="fa-solid fa-chevron-right"></i></div></div>
+                            <div class="notif-item"><div class="notif-text">CS251 เพิ่ม Quiz 23 : เนื้อหา...</div><div class="notif-meta"><span class="notif-time">25 มี.ค. 68 15:00 น.</span><i class="fa-solid fa-chevron-right"></i></div></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="user-profile">
+                    <div class="avatar-placeholder"><i class="fa-solid fa-user"></i></div>
+                    <span class="user-name">ชื่ออาจารย์ตัวอย่าง</span>
+                </div>
+            </div>
+        </header>
+
+        <div class="search-container">
+            <div class="search-box">
+                <i class="fa-solid fa-bars menu-icon"></i>
+                <input type="text" placeholder="ค้นหารายวิชา">
+                <i class="fa-solid fa-magnifying-glass search-icon"></i>
+            </div>
+            <button class="btn-add-course" onclick="openModal()"><i class="fa-solid fa-plus"></i> เพิ่มรายวิชา</button>
+        </div>
+
+        <div class="main-content">
+           <aside class="sidebar">
+    <ul class="menu-list">
+        <li onclick="window.location.href='teacher_my_courses.html'">
+            <i class="fa-solid fa-graduation-cap"></i> รายวิชาของฉัน
+        </li>
+        <li class="active" onclick="window.location.href='teacher_all_courses.html'">
+            <i class="fa-solid fa-graduation-cap"></i> รายการทั้งหมด
+        </li>
+    </ul>
+</aside>
+
+            <section class="content-area">
+                <div class="filter-section">
+                    <select class="term-select">
+                        <option value="1">ภาคการศึกษา: 1/2568 </option>
+                    </select>
+                </div>
+                
+                <div class="course-grid">
+                    <div class="course-card">
+                        <div class="card-banner bg-blue"><span class="course-code">CS101</span><h3 class="course-title">การเขียนโปรแกรมคอมพิวเตอร์เบื้องต้น</h3></div>
+                        <div class="card-details"><p>อาจารย์:ปัณณทัต ศิริเศรษฐ์ศักดิ์</p><p class="section-info">section : 65001</p></div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="addCourseModal">
+        <div class="modal-box">
+            <div class="modal-header">
+                <div><i class="fa-regular fa-square-plus"></i> เพิ่มรายวิชาใหม่</div>
+                <i class="fa-solid fa-xmark" onclick="closeModal()"></i>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>ชื่อรายวิชา</label>
+                    <input type="text" placeholder="ex.การเขียนโปรแกรมเบื้องต้น">
+                </div>
+                <div class="form-group">
+                    <label>รหัสวิชา</label>
+                    <input type="text" placeholder="ex.CS101">
+                </div>
+                <div class="form-group">
+                    <label>ชื่อผู้สอน</label>
+                    <input type="text" placeholder="หัวข้อเนื้อหา">
+                </div>
+                
+                <div class="form-group">
+                    <label>กำหนด section</label>
+                    <input type="text" placeholder="กำหนด section">
+                </div>
+
+                <div class="form-group">
+                    <label>คณะ/สาขา</label>
+                    <input type="text" placeholder="คณะ/สาขา">
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>ภาคการศึกษา</label>
+                        <input type="text" placeholder="ex.2/2569">
+                    </div>
+                    <div class="form-group input-with-icon">
+                        <label>กำหนดวัน</label>
+                        <input type="text" placeholder="กำหนดวัน">
+                        <i class="fa-regular fa-calendar"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-cancel" onclick="closeModal()">ยกเลิก</button>
+                <button class="btn-submit" onclick="closeModal()">สร้างเนื้อหา</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function openModal() { document.getElementById('addCourseModal').style.display = 'flex'; }
+        function closeModal() { document.getElementById('addCourseModal').style.display = 'none'; }
+        window.onclick = function(event) {
+            var modal = document.getElementById('addCourseModal');
+            if (event.target == modal) { modal.style.display = "none"; }
+        }
+    </script>
+</body>
+</html>

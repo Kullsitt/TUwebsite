@@ -7,6 +7,27 @@
     <link rel="stylesheet" th:href="@{/css/homestyle.css}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        /* 🎯 สไตล์สำหรับปุ่มส่งอีเมลและ Modal (ให้เหมือนหน้ารายวิชาของฉัน) */
+        .fab-email {
+            position: fixed; bottom: 30px; right: 30px; background-color: #e67e22; color: white;
+            width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center;
+            justify-content: center; font-size: 24px; box-shadow: 0 4px 15px rgba(230, 126, 34, 0.4);
+            cursor: pointer; transition: 0.3s; z-index: 100; border: none;
+        }
+        .fab-email:hover { transform: scale(1.1) translateY(-5px); background-color: #d35400; }
+        .email-modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); }
+        .email-modal-content { background-color: #fff; margin: 5% auto; padding: 0; border-radius: 12px; width: 400px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); overflow: hidden; }
+        .email-header { background: linear-gradient(135deg, #e67e22, #f39c12); color: white; padding: 15px 20px; font-size: 1.2rem; display: flex; justify-content: space-between; align-items: center; }
+        .email-body { padding: 20px; }
+        .email-form-group { margin-bottom: 15px; }
+        .email-form-group label { display: block; margin-bottom: 5px; font-size: 0.9rem; color: #555; }
+        .email-form-group input, .email-form-group textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-family: 'Prompt', sans-serif; }
+        .email-footer { padding: 15px 20px; background: #f9f9f9; text-align: right; border-top: 1px solid #eee; }
+        .btn-send { background: #e67e22; color: white; border: none; padding: 8px 20px; border-radius: 6px; cursor: pointer; transition: 0.2s; }
+        .btn-send:hover { background: #d35400; }
+        .btn-cancel { background: white; color: #666; border: 1px solid #ccc; padding: 8px 15px; border-radius: 6px; cursor: pointer; margin-right: 10px; }
+    </style>
 </head>
 <body>
     <div class="top-orange-bar"></div>
@@ -57,6 +78,9 @@
                     <li class="active" th:onclick="'window.location.href=\'' + @{/all-courses} + '\''" style="cursor: pointer;">
                         <i class="fa-solid fa-graduation-cap"></i> รายการทั้งหมด
                     </li>
+                    <li th:if="${session.role == 'student'}" th:onclick="'window.location.href=\'' + @{/score-report} + '\''" style="cursor: pointer;">
+                        <i class="fa-solid fa-chart-simple"></i> ผลคะแนนของฉัน
+                    </li>
                 </ul>
             </aside>
 
@@ -98,10 +122,10 @@
                         </div>
                     </div>
 					
-						<div id="noSearchResults" style="display: none; grid-column: 1/-1; text-align: center; padding: 50px; color: #666;">
-					                        <i class="fa-solid fa-magnifying-glass" style="font-size: 48px; margin-bottom: 15px; color: #ccc;"></i>
-					                        <p>ไม่พบรายวิชาที่คุณค้นหา</p>
-					    </div>
+					<div id="noSearchResults" style="display: none; grid-column: 1/-1; text-align: center; padding: 50px; color: #666;">
+                        <i class="fa-solid fa-magnifying-glass" style="font-size: 48px; margin-bottom: 15px; color: #ccc;"></i>
+                        <p>ไม่พบรายวิชาที่คุณค้นหา</p>
+					</div>
                 </div>
 
                 <div class="pagination" th:if="${not #lists.isEmpty(allCourses)}">
@@ -112,7 +136,40 @@
         </div>
     </div>
 	
-	 <script>
+    <button class="fab-email" onclick="openEmailModal()" title="ส่งอีเมลติดต่อระบบ">
+        <i class="fa-regular fa-envelope"></i>
+    </button>
+
+    <div id="emailModal" class="email-modal">
+        <div class="email-modal-content">
+            <div class="email-header">
+                <span><i class="fa-regular fa-paper-plane"></i> ส่งอีเมลติดต่อ</span>
+                <i class="fa-solid fa-xmark" onclick="closeEmailModal()" style="cursor:pointer;"></i>
+            </div>
+            <form th:action="@{/api/send-email}" method="post">
+                <div class="email-body">
+                    <div class="email-form-group">
+                        <label>ส่งถึง (Email)</label>
+                        <input type="email" name="toEmail" placeholder="เช่น teacher@tu.ac.th" required>
+                    </div>
+                    <div class="email-form-group">
+                        <label>หัวข้อ (Subject)</label>
+                        <input type="text" name="subject" placeholder="ระบุหัวข้อที่ต้องการติดต่อ" required>
+                    </div>
+                    <div class="email-form-group">
+                        <label>ข้อความ (Message)</label>
+                        <textarea name="message" rows="4" placeholder="พิมพ์ข้อความของคุณที่นี่..." required></textarea>
+                    </div>
+                </div>
+                <div class="email-footer">
+                    <button type="button" class="btn-cancel" onclick="closeEmailModal()">ยกเลิก</button>
+                    <button type="submit" class="btn-send"><i class="fa-solid fa-paper-plane"></i> ส่งอีเมล</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+	<script>
 		const searchInput = document.getElementById('searchInput');
 		const courseCards = document.querySelectorAll('.course-card');
 		const noSearchResults = document.getElementById('noSearchResults'); 
@@ -143,55 +200,61 @@
 		        }
 		    });
 		}
-		    </script>
-			<script th:inline="javascript">
-			    const currentStudentId = /*[[${user != null ? user.username : '65xxxxxx'}]]*/ '65xxxxxx';
+    </script>
+	<script th:inline="javascript">
+        const currentStudentId = /*[[${user != null ? user.username : '65xxxxxx'}]]*/ '65xxxxxx';
 
-			    document.addEventListener("DOMContentLoaded", function() {
-			        if(currentStudentId && currentStudentId !== '65xxxxxx') {
-			            fetchNotifications(currentStudentId);
-			        }
-			    });
+        document.addEventListener("DOMContentLoaded", function() {
+            if(currentStudentId && currentStudentId !== '65xxxxxx') {
+                fetchNotifications(currentStudentId);
+            }
+        });
 
-			    function fetchNotifications(studentId) {
-			        fetch(`/api/notifications/student/${studentId}`)
-			            .then(response => response.json())
-			            .then(data => {
-			                document.getElementById('noti-badge').innerText = data.length;
-			                const notiList = document.getElementById('noti-list');
-			                notiList.innerHTML = '';
+        function fetchNotifications(studentId) {
+            fetch(`/api/notifications/student/${studentId}`)
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('noti-badge').innerText = data.length;
+                    const notiList = document.getElementById('noti-list');
+                    notiList.innerHTML = '';
 
-			                if(data.length === 0) {
-			                    notiList.innerHTML = '<div style="padding: 15px; text-align: center; color: #888;">ไม่มีการแจ้งเตือนใหม่</div>';
-			                    return;
-			                }
+                    if(data.length === 0) {
+                        notiList.innerHTML = '<div style="padding: 15px; text-align: center; color: #888;">ไม่มีการแจ้งเตือนใหม่</div>';
+                        return;
+                    }
 
-			                data.forEach(item => {
-			                    const notiHTML = `
-			                        <a href="/dashboard/student?courseId=${item.courseId}" style="display: block; padding: 12px; border-bottom: 1px solid #f5f5f5; text-decoration: none; color: #333; transition: 0.2s;">
-			                            <div style="font-size: 12px; color: #e67e22; font-weight: bold; margin-bottom: 4px;">
-			                                [${item.courseId}] ${item.itemType != null ? item.itemType : 'อัปเดตใหม่'}
-			                            </div>
-			                            <div style="font-size: 14px;">${item.title}</div>
-			                        </a>
-			                    `;
-			                    notiList.innerHTML += notiHTML;
-			                });
-			            })
-			            .catch(error => console.error('Error:', error));
-			    }
+                    data.forEach(item => {
+                        const notiHTML = `
+                            <a href="/dashboard/student?courseId=${item.courseId}" style="display: block; padding: 12px; border-bottom: 1px solid #f5f5f5; text-decoration: none; color: #333; transition: 0.2s;">
+                                <div style="font-size: 12px; color: #e67e22; font-weight: bold; margin-bottom: 4px;">
+                                    [${item.courseId}] ${item.itemType != null ? item.itemType : 'อัปเดตใหม่'}
+                                </div>
+                                <div style="font-size: 14px;">${item.title}</div>
+                            </a>
+                        `;
+                        notiList.innerHTML += notiHTML;
+                    });
+                })
+                .catch(error => console.error('Error:', error));
+        }
 
-			    function toggleNotification() {
-			        const dropdown = document.getElementById("noti-dropdown");
-			        dropdown.style.display = (dropdown.style.display === "none") ? "block" : "none";
-			    }
+        function toggleNotification() {
+            const dropdown = document.getElementById("noti-dropdown");
+            dropdown.style.display = (dropdown.style.display === "none") ? "block" : "none";
+        }
 
-			    window.onclick = function(event) {
-			        if (!event.target.closest('.notification')) {
-			            document.getElementById("noti-dropdown").style.display = "none";
-			        }
-			    }
-			</script>
-	
+        // 🎯 สคริปต์ควบคุม Modal อีเมล
+        const emailModal = document.getElementById("emailModal");
+        function openEmailModal() { emailModal.style.display = "block"; }
+        function closeEmailModal() { emailModal.style.display = "none"; }
+
+        window.onclick = function(event) {
+            if (!event.target.closest('.notification')) {
+                const notiDropdown = document.getElementById("noti-dropdown");
+                if (notiDropdown) notiDropdown.style.display = "none";
+            }
+            if (event.target == emailModal) closeEmailModal();
+        }
+    </script>
 </body>
 </html>

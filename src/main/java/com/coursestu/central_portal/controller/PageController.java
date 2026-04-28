@@ -309,4 +309,20 @@ public class PageController {
         // ลบเสร็จแล้วให้เด้งกลับมาหน้า Dashboard
         return "redirect:/dashboard/teacher";
     }
+ // 🎯 เพิ่มเมธอดสำหรับรับหน้า "ผลคะแนนของฉัน"
+    @GetMapping("/score-report")
+    public String getScoreReportPage(HttpSession session, Model model) {
+        // เช็กก่อนว่าใช่นักศึกษาล็อกอินอยู่ไหม
+        TULoginResponse user = (TULoginResponse) session.getAttribute("user");
+        if (user == null || !"student".equals(session.getAttribute("role"))) {
+            return "redirect:/login";
+        }
+        
+        // ส่งข้อมูล user ไปให้หน้าเว็บแสดงชื่อโปรไฟล์
+        model.addAttribute("user", user);
+        
+        // ⚠️ สำคัญ: ตรงนี้ต้องชี้ไปที่ไฟล์ HTML ที่เพื่อนคุณสร้างไว้
+        // สมมติว่าเพื่อนเซฟไว้ที่ src/main/resources/templates/home/student/score_report.html
+        return "home/student/score_report"; 
+    }
 }

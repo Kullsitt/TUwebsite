@@ -135,18 +135,25 @@ public class PageController {
     @Autowired
     private SubmissionRepository submissionRepository; // ต้องประกาศตัวแปรนี้ไว้
 
+
     @GetMapping("/dashboard/teacher/evaluation/{id}")
     public String getEvaluationPage(@PathVariable Long id, Model model) {
-        // 1. ดึงข้อมูลการส่งงานตาม ID ที่รับมา
+        // 1. ใช้ id จาก URL ไปค้นหาข้อมูลที่อาจารย์ "เคยบันทึกไว้" ใน DB
+        Assignment assignment = assignmentRepository.findById(id).orElse(null);
+
+        if (assignment != null) {
+            // 2. ดึงข้อมูลจริงจาก Object assignment ที่ได้จากฐานข้อมูล
+            // ข้อมูลเหล่านี้คือสิ่งที่กรอกมาจากหน้า "เพิ่มเนื้อหาใหม่"
+            model.addAttribute("courseId", assignment.getCourse().getCourseId()); 
+            model.addAttribute("subjectCode", assignment.getCourse().getCourseName()); 
+            model.addAttribute("assignmentTitle", assignment.getTitle());
+            model.addAttribute("assignmentDescription", assignment.getDescription()); // รายละเอียดที่กรอกในช่องคำอธิบาย
+        }
+
+        // 3. ดึงรายชื่อนักศึกษาที่ส่งงานชิ้นนี้
         List<Submission> submissions = submissionRepository.findByAssignmentId(id);
-        
-        // 2. สมมติว่าดึงชื่อวิชาจากฐานข้อมูล (คุณอาจต้องมี CourseRepository เพื่อหาชื่อวิชาจาก id ของการบ้าน)
-        // ในที่นี้ส่งค่าตัวแปรไปให้ HTML ใช้งาน
-        //model.addAttribute("courseId", 1); // เปลี่ยนเลข 1 เป็น ID วิชาจริงที่ดึงมา
-        //model.addAttribute("subjectCode", "CS271 ARTIFICIAL INTELLIGENCE"); // ดึงจาก DB
-        //model.addAttribute("assignmentTitle", "การบ้านครั้งที่ 1");
-        
         model.addAttribute("submissions", submissions);
+
         return "dashboard/teacher/evaluation";
     }
     

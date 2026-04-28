@@ -132,6 +132,28 @@ td { padding: 18px 40px; border-bottom: 1px solid #f9f9f9; font-size: 14px; }
     font-weight: bold;
 }
 
+.score-input {
+    width: 60px;
+    padding: 5px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    text-align: center;
+    font-family: inherit;
+}
+
+.score-input:focus {
+    border-color: #ff9800; /* สีส้มตามธีมเว็บคุณ */
+    outline: none;
+    box-shadow: 0 0 5px rgba(255, 152, 0, 0.3);
+}
+
+/* เอาลูกศรเพิ่ม/ลดเลขที่เป็น default ของ browser ออก (ถ้าอยากให้คลีน) */
+.score-input::-webkit-inner-spin-button,
+.score-input::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
 .btn-orange {
     background-color: var(--tu-orange);
     color: white;

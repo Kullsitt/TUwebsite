@@ -12,14 +12,17 @@
         .item-content-left { display: flex; align-items: center; gap: 15px; }
         .item-actions { display: flex; gap: 10px; }
         .btn-action { background: none; border: none; cursor: pointer; font-size: 1.1rem; transition: 0.2s; }
+        
+        /* เพิ่มสไตล์ปุ่มแก้ไข */
         .btn-edit-icon { color: #f39c12; }
-        .btn-edit-icon:hover { color: #d68910; }
+        .btn-edit-icon:hover { color: #d68910; transform: scale(1.1); }
+        
         .btn-delete-icon { color: #e74c3c; }
-        .btn-delete-icon:hover { color: #c0392b; }
+        .btn-delete-icon:hover { color: #c0392b; transform: scale(1.1); }
         .file-badge { background: #f0f0f0; padding: 2px 8px; border-radius: 4px; font-size: 0.85rem; color: #666; margin-top: 5px; display: inline-block; }
-        /* ซ่อม Modal ให้แสดงผลกลางจอ */
+        
         .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); }
-        .modal-content { background-color: #fff; margin: 5% auto; padding: 20px; border-radius: 8px; width: 50%; }
+        .modal-content { background-color: #fff; margin: 5% auto; padding: 20px; border-radius: 8px; width: 50%; box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
     </style>
 </head>
 <body>
@@ -67,6 +70,9 @@
                             </div>
                         </div>
                         <div class="item-actions">
+                            <button class="btn-action btn-edit-icon" th:onclick="openEditModal([[${item.id}]], [[${item.title}]], [[${item.description}]], 'announcement')">
+                                <i class="fa-solid fa-pen"></i>
+                            </button>
                             <button class="btn-action btn-delete-icon" th:onclick="confirmDelete([[${item.id}]])">
                                 <i class="fa-solid fa-trash"></i>
                             </button>
@@ -90,6 +96,9 @@
                             <div class="item-text" th:text="${item.title}">ข้อมูลทั่วไป</div>
                         </div>
                         <div class="item-actions">
+                            <button class="btn-action btn-edit-icon" th:onclick="openEditModal([[${item.id}]], [[${item.title}]], [[${item.description}]], 'general')">
+                                <i class="fa-solid fa-pen"></i>
+                            </button>
                             <button class="btn-action btn-delete-icon" th:onclick="confirmDelete([[${item.id}]])">
                                 <i class="fa-solid fa-trash"></i>
                             </button>
@@ -113,6 +122,9 @@
                             </div>
                         </div>
                         <div class="item-actions">
+                            <button class="btn-action btn-edit-icon" th:onclick="openEditModal([[${item.id}]], [[${item.title}]], [[${item.description}]], 'material')">
+                                <i class="fa-solid fa-pen"></i>
+                            </button>
                             <button class="btn-action btn-delete-icon" th:onclick="confirmDelete([[${item.id}]])">
                                 <i class="fa-solid fa-trash"></i>
                             </button>
@@ -131,6 +143,9 @@
                             <div class="item-text" th:text="${item.title}">ชื่อการบ้าน</div>
                         </div>
                         <div class="item-actions">
+                            <button class="btn-action btn-edit-icon" th:onclick="openEditModal([[${item.id}]], [[${item.title}]], [[${item.description}]], 'homework')">
+                                <i class="fa-solid fa-pen"></i>
+                            </button>
                             <button class="btn-action btn-delete-icon" th:onclick="confirmDelete([[${item.id}]])">
                                 <i class="fa-solid fa-trash"></i>
                             </button>
@@ -149,6 +164,9 @@
                             <div class="item-text" th:text="${item.title}">ชื่อควิซ</div>
                         </div>
                         <div class="item-actions">
+                            <button class="btn-action btn-edit-icon" th:onclick="openEditModal([[${item.id}]], [[${item.title}]], [[${item.description}]], 'quizzes')">
+                                <i class="fa-solid fa-pen"></i>
+                            </button>
                             <button class="btn-action btn-delete-icon" th:onclick="confirmDelete([[${item.id}]])">
                                 <i class="fa-solid fa-trash"></i>
                             </button>
@@ -156,28 +174,31 @@
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
 
-        </div> </div> <div id="contentModal" class="modal">
+    <div id="contentModal" class="modal">
         <div class="modal-content">
             <form th:action="@{/dashboard/teacher/add-content}" method="post" enctype="multipart/form-data">
                 <input type="hidden" name="courseId" th:value="${courseId}">
                 <div class="modal-header">
-                    <h2>เพิ่มเนื้อหาใหม่</h2>
-                    <span class="close-btn" onclick="closeModal()" style="cursor:pointer; float:right;">&times;</span>
+                    <h2><i class="fa-solid fa-plus-circle"></i> เพิ่มเนื้อหาใหม่</h2>
+                    <span class="close-btn" onclick="closeModal()" style="cursor:pointer; float:right; font-size: 1.5rem;">&times;</span>
                 </div>
+                <hr style="margin: 10px 0; border: 0; border-top: 1px solid #eee;">
                 <div class="modal-body">
                     <div class="form-group" style="margin-bottom:15px;">
-                        <label style="display:block;">หัวข้อเนื้อหา</label>
-                        <input type="text" name="title" style="width:100%; padding:8px;" required>
+                        <label style="display:block; margin-bottom: 5px; font-weight: 500;">หัวข้อเนื้อหา</label>
+                        <input type="text" name="title" style="width:100%; padding:8px; border: 1px solid #ccc; border-radius: 4px;" required>
                     </div>
                     <div class="form-group" style="margin-bottom:15px;">
-                        <label style="display:block;">คำอธิบาย</label>
-                        <textarea name="description" style="width:100%; padding:8px;" rows="3"></textarea>
+                        <label style="display:block; margin-bottom: 5px; font-weight: 500;">คำอธิบาย</label>
+                        <textarea name="description" style="width:100%; padding:8px; border: 1px solid #ccc; border-radius: 4px;" rows="3"></textarea>
                     </div>
                     <div style="display:flex; gap:10px; margin-bottom:15px;">
                         <div style="flex:1;">
-                            <label>ประเภท</label>
-                            <select name="type" style="width:100%; padding:8px;" required>
+                            <label style="display:block; margin-bottom: 5px; font-weight: 500;">ประเภท</label>
+                            <select name="type" style="width:100%; padding:8px; border: 1px solid #ccc; border-radius: 4px;" required>
                                 <option value="material">Material</option>
                                 <option value="announcement">Announcement</option>
                                 <option value="general">General</option>
@@ -186,14 +207,53 @@
                             </select>
                         </div>
                         <div style="flex:1;">
-                            <label>แนบไฟล์</label>
+                            <label style="display:block; margin-bottom: 5px; font-weight: 500;">แนบไฟล์</label>
                             <input type="file" name="file" style="width:100%;">
                         </div>
                     </div>
                 </div>
-                <div class="modal-footer" style="text-align:right;">
-                    <button type="button" onclick="closeModal()">ยกเลิก</button>
-                    <button type="submit" style="background-color:#e67e22; color:white; padding:8px 15px; border:none; border-radius:4px;">บันทึก</button>
+                <div class="modal-footer" style="text-align:right; margin-top: 20px;">
+                    <button type="button" onclick="closeModal()" style="padding: 8px 15px; border: 1px solid #ccc; background: white; border-radius: 4px; cursor: pointer; margin-right: 10px;">ยกเลิก</button>
+                    <button type="submit" style="background-color:#e67e22; color:white; padding:8px 20px; border:none; border-radius:4px; cursor: pointer;">บันทึก</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="editModal" class="modal">
+        <div class="modal-content" style="border-top: 4px solid #f39c12;">
+            <form th:action="@{/dashboard/teacher/edit-content}" method="post">
+                <input type="hidden" name="courseId" th:value="${courseId}">
+                <input type="hidden" name="assignmentId" id="edit-id">
+                
+                <div class="modal-header">
+                    <h2 style="color: #333;"><i class="fa-solid fa-pen-to-square"></i> แก้ไขเนื้อหา</h2>
+                    <span class="close-btn" onclick="closeEditModal()" style="cursor:pointer; float:right; font-size: 1.5rem;">&times;</span>
+                </div>
+                <hr style="margin: 10px 0; border: 0; border-top: 1px solid #eee;">
+                <div class="modal-body">
+                    <div class="form-group" style="margin-bottom:15px;">
+                        <label style="display:block; margin-bottom: 5px; font-weight: 500;">หัวข้อเนื้อหา</label>
+                        <input type="text" name="title" id="edit-title" style="width:100%; padding:8px; border: 1px solid #ccc; border-radius: 4px;" required>
+                    </div>
+                    <div class="form-group" style="margin-bottom:15px;">
+                        <label style="display:block; margin-bottom: 5px; font-weight: 500;">คำอธิบาย / ลิงก์</label>
+                        <textarea name="description" id="edit-description" style="width:100%; padding:8px; border: 1px solid #ccc; border-radius: 4px;" rows="3"></textarea>
+                    </div>
+                    <div class="form-group" style="margin-bottom:15px;">
+                        <label style="display:block; margin-bottom: 5px; font-weight: 500;">เปลี่ยนประเภท (ย้ายหมวดหมู่)</label>
+                        <select name="type" id="edit-type" style="width:100%; padding:8px; border: 1px solid #ccc; border-radius: 4px;" required>
+                            <option value="material">Material</option>
+                            <option value="announcement">Announcement</option>
+                            <option value="general">General</option>
+                            <option value="homework">Homework</option>
+                            <option value="quizzes">Quizzes</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer" style="text-align:right; margin-top: 20px;">
+                    <button type="button" onclick="closeEditModal()" style="padding: 8px 15px; border: 1px solid #ccc; background: white; border-radius: 4px; cursor: pointer; margin-right: 10px;">ยกเลิก</button>
+                    <button type="submit" style="background-color:#f39c12; color:white; padding:8px 20px; border:none; border-radius:4px; cursor: pointer;">บันทึกการแก้ไข</button>
                 </div>
             </form>
         </div>
@@ -205,16 +265,33 @@
     </form>
 
     <script>
+        // ควบคุม Modal เพิ่มเนื้อหา
         function openModal() { document.getElementById("contentModal").style.display = "block"; }
         function closeModal() { document.getElementById("contentModal").style.display = "none"; }
+        
+        // 🎯 ควบคุม Modal แก้ไขเนื้อหา พร้อมโยนข้อมูลเก่าเข้าไปใส่กล่อง
+        function openEditModal(id, title, description, type) {
+            document.getElementById("edit-id").value = id;
+            document.getElementById("edit-title").value = title;
+            // ถ้า description เป็น null ให้โชว์เป็นกล่องว่างๆ แทนคำว่า null
+            document.getElementById("edit-description").value = description === 'null' ? '' : description; 
+            document.getElementById("edit-type").value = type;
+            
+            document.getElementById("editModal").style.display = "block";
+        }
+        function closeEditModal() { document.getElementById("editModal").style.display = "none"; }
+
         function confirmDelete(id) {
-            if(confirm("ยืนยันการลบ?")) {
+            if(confirm("ยืนยันการลบเนื้อหานี้ใช่หรือไม่?")) {
                 document.getElementById("delete-id").value = id;
                 document.getElementById("deleteForm").submit();
             }
         }
+
+        // ปิด Modal ถ้าคลิกพื้นที่สีดำ
         window.onclick = function(event) {
             if (event.target == document.getElementById("contentModal")) closeModal();
+            if (event.target == document.getElementById("editModal")) closeEditModal();
         }
     </script>
 </body>

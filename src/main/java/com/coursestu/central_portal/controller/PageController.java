@@ -10,6 +10,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional; // 👈 เพิ่ม Import สำหรับการลบข้อมูลที่เกี่ยวข้องกัน
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
@@ -130,6 +131,25 @@ public class PageController {
         assignmentRepository.deleteById(assignmentId);
         return "redirect:/dashboard/teacher/course?id=" + courseId;
     }
+    
+    @Autowired
+    private SubmissionRepository submissionRepository; // ต้องประกาศตัวแปรนี้ไว้
+
+    @GetMapping("/dashboard/teacher/evaluation/{id}")
+    public String getEvaluationPage(@PathVariable Long id, Model model) {
+        // 1. ดึงข้อมูลการส่งงานตาม ID ที่รับมา
+        List<Submission> submissions = submissionRepository.findByAssignmentId(id);
+        
+        // 2. สมมติว่าดึงชื่อวิชาจากฐานข้อมูล (คุณอาจต้องมี CourseRepository เพื่อหาชื่อวิชาจาก id ของการบ้าน)
+        // ในที่นี้ส่งค่าตัวแปรไปให้ HTML ใช้งาน
+        //model.addAttribute("courseId", 1); // เปลี่ยนเลข 1 เป็น ID วิชาจริงที่ดึงมา
+        //model.addAttribute("subjectCode", "CS271 ARTIFICIAL INTELLIGENCE"); // ดึงจาก DB
+        //model.addAttribute("assignmentTitle", "การบ้านครั้งที่ 1");
+        
+        model.addAttribute("submissions", submissions);
+        return "dashboard/teacher/evaluation";
+    }
+    
 
     // ===============================
     // Student Section & Helpers

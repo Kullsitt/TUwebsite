@@ -140,7 +140,13 @@
                     <div th:each="item : ${homeworks}" class="list-item">
                         <div class="item-content-left">
                             <i class="fa-regular fa-square-check icon-grey"></i>
-                            <div class="item-text" th:text="${item.title}">ชื่อการบ้าน</div>
+
+							<div class="item-text">
+							    <a th:href="@{/dashboard/teacher/evaluation/{id}(id=${item.id})}" 
+							       style="text-decoration: none; color: inherit; font-weight: bold; cursor: pointer;">
+							       <span th:text="${item.title}">ชื่อการบ้าน</span>
+							    </a>
+							</div>
                         </div>
                         <div class="item-actions">
                             <button class="btn-action btn-edit-icon" th:onclick="openEditModal([[${item.id}]], [[${item.title}]], [[${item.description}]], 'homework')">

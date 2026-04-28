@@ -7,4 +7,5 @@ import java.util.List;
 public interface SubmissionRepository extends JpaRepository<Submission, Long> {
     List<Submission> findByStudent_Id(Long studentId);
     List<Submission> findByAssignment_Id(Long assignmentId);
+	List<Submission> findByAssignmentId(Long id);
 }

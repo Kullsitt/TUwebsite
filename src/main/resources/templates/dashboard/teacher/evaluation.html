@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="th" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ระบบประเมินผลงาน - มหาวิทยาลัยธรรมศาสตร์</title>
+    <link rel="stylesheet" th:href="@{/css/evaluation-style.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-[#f0f0f0] min-h-screen">
+
+    <header class="tu-header">
+        <div class="container header-flex">
+            <div class="logo-section">
+                <img th:src="@{/images/TU logo.png}" alt="TU Logo" class="tu-logo">
+                <div>
+                    <h1 class="tu-text-red">มหาวิทยาลัยธรรมศาสตร์</h1>
+                    <p class="tu-subtitle">Thammasat University</p>
+                </div>
+            </div>
+            
+            <div class="user-profile">
+                <span class="user-name" th:text="${userDisplayName}">ชื่ออาจารย์ผู้สอน</span>
+                <div class="user-avatar"></div>
+            </div>
+        </div>
+    </header>
+
+	<nav class="container breadcrumb">
+	    <a th:href="@{/dashboard/teacher}" class="link-home">หน้าแรก</a>
+	    <span>/</span>
+		<span>วิชา <span th:text="${courseId}">CSXXX</span></span>	
+	    
+	    <span>/</span>
+	    <span class="current-page" th:text="${assignmentTitle}">การบ้านครั้งที่ 1</span>
+	</nav>
+	
+    <main class="container">
+        <section class="card">
+            <div class="card-header">
+                <h2 th:text="${assignmentTitle}">การบ้านครั้งที่ 1</h2>
+                <span class="score-label">คะแนน : 100</span>
+            </div>
+            <div class="assignment-info">
+                <p class="font-bold">Assignment#1</p>
+                <p>เขียนคำตอบแต่ละข้อย่อย 1 diagram เรียงตามลำดับ...</p>
+                <a href="#" class="file-link">
+                    <i class="fas fa-file-pdf"></i> ไฟล์การบ้าน
+                </a>
+                <p class="deadline">
+                    <i class="far fa-calendar-alt"></i> 20/03/2569 ไม่เกิน 23.59 น.
+                </p>
+            </div>
+        </section>
+
+        <section class="table-section">
+            <div class="table-title">
+                <h3>รายชื่อนักศึกษาที่ส่งงานแล้ว (รอตรวจ)</h3>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>รหัสนักศึกษา</th>
+                        <th>ชื่อ-นามสกุล</th>
+                        <th class="text-center">สถานะ</th>
+                        <th class="text-right">จัดการ</th>
+                    </tr>
+                </thead>
+                <tbody id="student-table-body">
+                    </tbody>
+            </table>
+        </section>
+    </main>
+
+    <footer>
+        &copy; 2026 Thammasat University. All rights reserved.
+    </footer>
+
+    <script th:src="@{/js/evaluation-script.js}"></script>
+</body>
+</html>

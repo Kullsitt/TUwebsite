@@ -137,27 +137,47 @@ public class PageController {
 
 
     @GetMapping("/dashboard/teacher/evaluation/{id}")
-    public String getEvaluationPage(@PathVariable Long id, Model model) {
-        // 1. ใช้ id จาก URL ไปค้นหาข้อมูลที่อาจารย์ "เคยบันทึกไว้" ใน DB
+    public String getEvaluationPage(@PathVariable Long id, HttpSession session, Model model) {
+        
+        // ✅ เพิ่ม: ดึง user จาก session แล้วส่ง userDisplayName ไปด้วย
+        TULoginResponse user = (TULoginResponse) session.getAttribute("user");
+        if (user == null || !"teacher".equals(session.getAttribute("role"))) {
+            return "redirect:/login";
+        }
+        model.addAttribute("userDisplayName", user.getDisplaynameEn());
+
         Assignment assignment = assignmentRepository.findById(id).orElse(null);
 
         if (assignment != null) {
-            // 2. ดึงข้อมูลจริงจาก Object assignment ที่ได้จากฐานข้อมูล
-            // ข้อมูลเหล่านี้คือสิ่งที่กรอกมาจากหน้า "เพิ่มเนื้อหาใหม่"
-            model.addAttribute("courseId", assignment.getCourse().getCourseId()); 
-            model.addAttribute("subjectCode", assignment.getCourse().getCourseName()); 
             model.addAttribute("assignmentTitle", assignment.getTitle());
-            model.addAttribute("assignmentDescription", assignment.getDescription()); // รายละเอียดที่กรอกในช่องคำอธิบาย
+            model.addAttribute("assignmentDescription", assignment.getDescription());
+            model.addAttribute("assignmentFileName", assignment.getFileName());
+            model.addAttribute("assignmentFileUrl", assignment.getFileUrl());
+            
+            // ✅ เพิ่ม: ส่ง assignmentId ไปด้วย (JS ต้องใช้)
+            model.addAttribute("assignmentId", id);
+
+            if (assignment.getDeadline() != null) {
+                String deadline = assignment.getDeadline().toString().replace("T", " เวลา ");
+                model.addAttribute("assignmentDeadline", deadline);
+            }
+
+            if (assignment.getCourse() != null) {
+                model.addAttribute("courseId", assignment.getCourse().getCourseId());
+                model.addAttribute("subjectCode", assignment.getCourse().getCourseName());
+            } else {
+                model.addAttribute("courseId", "N/A");
+                model.addAttribute("subjectCode", "ไม่ระบุวิชา");
+            }
+        } else {
+            return "redirect:/dashboard/teacher";
         }
 
-        // 3. ดึงรายชื่อนักศึกษาที่ส่งงานชิ้นนี้
         List<Submission> submissions = submissionRepository.findByAssignmentId(id);
         model.addAttribute("submissions", submissions);
 
         return "dashboard/teacher/evaluation";
     }
-    
-
     // ===============================
     // Student Section & Helpers
     // ===============================

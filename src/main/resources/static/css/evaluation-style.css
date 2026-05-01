@@ -133,25 +133,26 @@ td { padding: 18px 40px; border-bottom: 1px solid #f9f9f9; font-size: 14px; }
 }
 
 .score-input {
-    width: 60px;
-    padding: 5px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
+    width: 80px;
+    padding: 8px 12px;
+    border: 2px solid #e67e22;
+    border-radius: 8px;
+    background: #ffffff;
+    color: #333;
+    font-size: 14px;
     text-align: center;
-    font-family: inherit;
+    outline: none;
+    transition: box-shadow 0.2s;
 }
 
 .score-input:focus {
-    border-color: #ff9800; /* สีส้มตามธีมเว็บคุณ */
-    outline: none;
-    box-shadow: 0 0 5px rgba(255, 152, 0, 0.3);
+    box-shadow: 0 0 0 3px rgba(230, 126, 34, 0.25);
 }
 
-/* เอาลูกศรเพิ่ม/ลดเลขที่เป็น default ของ browser ออก (ถ้าอยากให้คลีน) */
-.score-input::-webkit-inner-spin-button,
-.score-input::-webkit-outer-spin-button {
+/* ซ่อน arrow ของ number input */
+.score-input::-webkit-outer-spin-button,
+.score-input::-webkit-inner-spin-button {
     -webkit-appearance: none;
-    margin: 0;
 }
 
 .btn-orange {

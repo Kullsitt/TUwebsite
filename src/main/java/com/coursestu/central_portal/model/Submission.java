@@ -11,6 +11,7 @@ public class Submission {
     private Long id;
 
     private String fileUrl;
+    private String fileName;
     private LocalDateTime submittedAt = LocalDateTime.now();
 
     private Double score; 
@@ -44,4 +45,7 @@ public class Submission {
 
     public String getFeedback() { return feedback; }
     public void setFeedback(String feedback) { this.feedback = feedback; }
+    
+    public String getFileName() { return fileName; }
+    public void setFileName(String fileName) { this.fileName = fileName; }
 }

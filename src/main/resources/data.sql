@@ -42,8 +42,8 @@ VALUES (2, 'สไลด์บทที่ 1: Spring Boot Architecture', 'โห
 
 
 
-INSERT IGNORE INTO assignment (id, title, description, type, deadline, file_name, file_url, course_id)
-VALUES (3,'การบ้านครั้งที่ 1: สร้าง API ง่ายๆ','ส่งผ่านระบบก่อนวันอาทิตย์นี้เวลา 23:59 น.','homework','2026-05-04 23:59:00','homework1_requirement.pdf','https://drive.google.com/file/d/example_hw1','CS232');
+INSERT IGNORE INTO assignment (id, title, description, type, deadline, file_name, course_id)
+VALUES (3, 'การบ้านครั้งที่ 1: สร้าง API ง่ายๆ', 'ส่งผ่านระบบก่อนวันอาทิตย์นี้เวลา 23:59 น.', 'homework', '2026-05-04 23:59:00', 'homework1_requirement.pdf', 'CS232');
 
 
 
@@ -83,9 +83,8 @@ INSERT IGNORE INTO student (id, student_code, firstname) VALUES ('std003', '6409
 
 --============================
 
-INSERT INTO submission (file_url, file_name, submitted_at, score, feedback, student_id, assignment_id)
+INSERT INTO submission (file_name, submitted_at, score, feedback, student_id, assignment_id)
 VALUES (
-    'https://drive.google.com/file/d/example001',
     'homework1_somchai.pdf',
     '2026-04-20 22:30:00',
     85.0,
@@ -94,9 +93,8 @@ VALUES (
     3
 );
 
-INSERT INTO submission (file_url, file_name, submitted_at, score, feedback, student_id, assignment_id)
+INSERT INTO submission (file_name, submitted_at, score, feedback, student_id, assignment_id)
 VALUES (
-    'https://drive.google.com/file/d/example002',
     'homework1_somsri.pdf',
     '2026-04-21 18:00:00',
     NULL,

@@ -19,10 +19,13 @@ public class DocumentController {
     @PostMapping("/upload")
     public String uploadFile(@RequestParam("file") MultipartFile file) {
         try {
-            Path path = Paths.get(uploadDir + file.getOriginalFilename());
-            Files.createDirectories(path.getParent()); // กัน folder ไม่มี
+            // ✅ เปลี่ยนชื่อไฟล์ให้ไม่มี space
+            String safeFileName = file.getOriginalFilename().replaceAll("\\s+", "_");
+            
+            Path path = Paths.get(uploadDir + safeFileName);
+            Files.createDirectories(path.getParent());
             Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
-            return "Upload success: " + file.getOriginalFilename();
+            return "Upload success: " + safeFileName;
         } catch (Exception e) {
             return "Upload failed";
         }
@@ -31,33 +34,33 @@ public class DocumentController {
     
     @GetMapping("/view/{filename}")
     public ResponseEntity<Resource> viewFile(@PathVariable String filename) throws IOException {
-        Path path = Paths.get(uploadDir + filename);
-
+        // decode %20 กลับเป็น space
+        String decodedFilename = java.net.URLDecoder.decode(filename, "UTF-8");
+        Path path = Paths.get(uploadDir + decodedFilename);
+        
         if (!Files.exists(path)) {
             return ResponseEntity.notFound().build();
         }
-
         Resource resource = new UrlResource(path.toUri());
-
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_TYPE, Files.probeContentType(path))
                 .body(resource);
     }
-
+    
+   
     
     @GetMapping("/download/{filename}")
     public ResponseEntity<Resource> downloadFile(@PathVariable String filename) throws IOException {
-        Path path = Paths.get(uploadDir + filename);
-
+        String decodedFilename = java.net.URLDecoder.decode(filename, "UTF-8");
+        Path path = Paths.get(uploadDir + decodedFilename);
+        
         if (!Files.exists(path)) {
             return ResponseEntity.notFound().build();
         }
-
         Resource resource = new UrlResource(path.toUri());
-
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION,
-                        "attachment; filename=\"" + resource.getFilename() + "\"")
+                        "attachment; filename=\"" + decodedFilename + "\"")
                 .body(resource);
     }
 }

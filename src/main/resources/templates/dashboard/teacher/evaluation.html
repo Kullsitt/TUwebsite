@@ -45,10 +45,12 @@
 	        
 	        <div th:if="${assignmentFileName != null}" style="display: flex; align-items: center; gap: 8px; margin-top: 10px;">
 	            <i class="fa fa-file" style="color: #666;"></i>
-	            <a th:href="${assignmentFileUrl != null ? assignmentFileUrl : '/uploads/' + assignmentFileName}" 
-	               target="_blank" 
-	               th:text="${assignmentFileName}"
-	               style="color: #e67e22; font-weight: bold; text-decoration: underline;">ชื่อไฟล์</a>
+				<a th:if="${assignmentFileName != null}"
+				   th:href="@{'/documents/view/' + ${assignmentFileName}}"
+				   th:text="${assignmentFileName}"
+				   target="_blank"
+				   style="color: #e67e22; font-weight: bold; text-decoration: underline;">
+				</a>
 	        </div>
 	        
 	        <p class="deadline" style="margin-top: 10px; display: flex; align-items: center; gap: 8px;">
@@ -76,13 +78,13 @@
 				    <td th:text="${sub.student.firstname + (sub.student.surname != null ? ' ' + sub.student.surname : '')}">ชื่อ-นามสกุล</td>
 					
 					<td style="text-align: center; vertical-align: middle;">
-					    <a th:if="${sub.fileUrl != null}"
-					       th:href="${sub.fileUrl}"
-					       th:text="${sub.fileName != null ? sub.fileName : 'ดูไฟล์'}"
+					    <a th:if="${sub.fileName != null}"
+					       th:href="@{'/documents/view/' + ${sub.fileName}}"
+					       th:text="${sub.fileName}"
 					       target="_blank"
 					       style="color: #e67e22; font-weight: bold; text-decoration: underline;">
 					    </a>
-					    <span th:if="${sub.fileUrl == null}" style="color: #aaa;">ยังไม่ส่ง</span>
+					    <span th:if="${sub.fileName == null}" style="color: #aaa;">ยังไม่ส่ง</span>
 					</td>
 
 					<td class="text-center">

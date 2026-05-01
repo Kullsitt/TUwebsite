@@ -1,6 +1,8 @@
 package com.coursestu.central_portal.controller;
 
 import com.coursestu.central_portal.dto.TULoginResponse;
+
+import java.nio.file.*;
 import com.coursestu.central_portal.model.*;
 import com.coursestu.central_portal.repository.*;
 import com.coursestu.central_portal.service.AssignmentService;
@@ -94,8 +96,15 @@ public class PageController {
                 assignment.setCourse(course);
 
                 if (file != null && !file.isEmpty()) {
-                    String fileName = file.getOriginalFilename();
-                    assignment.setFileName(fileName);
+                    // ✅ เพิ่มส่วนนี้: save ไฟล์จริงๆ ลง disk
+                    String safeFileName = file.getOriginalFilename().replaceAll("\\s+", "_");
+                    Path uploadPath = Paths.get("uploads/");
+                    Files.createDirectories(uploadPath);
+                    Files.copy(file.getInputStream(), 
+                               uploadPath.resolve(safeFileName), 
+                               StandardCopyOption.REPLACE_EXISTING);
+                    
+                    assignment.setFileName(safeFileName);
                 }
 
                 if (deadline != null && !deadline.isEmpty()) {

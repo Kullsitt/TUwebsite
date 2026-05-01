@@ -3,8 +3,15 @@ function viewStudentWork(fileUrl) {
         alert("ไม่พบไฟล์งานที่นักศึกษาส่ง");
         return;
     }
-    const targetUrl = (fileUrl.startsWith('http')) ? fileUrl : "/uploads/" + fileUrl;
-    window.open(targetUrl, '_blank');
+    const targetUrl = fileUrl.startsWith('http') ? fileUrl : "/uploads/" + fileUrl;
+    
+    // สร้าง <a> ชั่วคราว แล้ว click เพื่อโหลดไฟล์
+    const a = document.createElement('a');
+    a.href = targetUrl;
+    a.download = '';  // ให้ browser ตั้งชื่อไฟล์เอง
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
 }
 
 async function saveScore(studentId) {

@@ -2,6 +2,7 @@ package com.coursestu.central_portal.model;
 
 import jakarta.persistence.*;
 import java.util.List;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 public class Course {
@@ -11,7 +12,7 @@ public class Course {
 
     private String courseName;
 
-    private String teacherName; // เก็บไว้เพื่อให้หน้าเว็บเก่าไม่พัง
+    private String teacherName;
 
     private int capacity;
 
@@ -20,86 +21,46 @@ public class Course {
     private Professor professor;
 
     @OneToMany(mappedBy = "course")
+    @JsonIgnore
     private List<Assignment> assignments;
 
     @OneToMany(mappedBy = "course")
+    @JsonIgnore
     private List<Quiz> quizzes;
 
     @OneToMany(mappedBy = "course")
+    @JsonIgnore
     private List<Announcement> announcements;
 
     @OneToMany(mappedBy = "course")
+    @JsonIgnore
     private List<Enrollment> enrollments;
 
-    public String getCourseId() {
-        return courseId;
-    }
+    public String getCourseId() { return courseId; }
+    public void setCourseId(String courseId) { this.courseId = courseId; }
 
-    public void setCourseId(String courseId) {
-        this.courseId = courseId;
-    }
+    public String getCourseName() { return courseName; }
+    public void setCourseName(String courseName) { this.courseName = courseName; }
 
-    public String getCourseName() {
-        return courseName;
-    }
+    public String getTeacherName() { return teacherName; }
+    public void setTeacherName(String teacherName) { this.teacherName = teacherName; }
 
-    public void setCourseName(String courseName) {
-        this.courseName = courseName;
-    }
+    public int getCapacity() { return capacity; }
+    public void setCapacity(int capacity) { this.capacity = capacity; }
 
-    public String getTeacherName() {
-        return teacherName;
-    }
+    public Professor getProfessor() { return professor; }
+    public void setProfessor(Professor professor) { this.professor = professor; }
 
-    public void setTeacherName(String teacherName) {
-        this.teacherName = teacherName;
-    }
+    public List<Assignment> getAssignments() { return assignments; }
+    public void setAssignments(List<Assignment> assignments) { this.assignments = assignments; }
 
-    public int getCapacity() {
-        return capacity;
-    }
+    public List<Quiz> getQuizzes() { return quizzes; }
+    public void setQuizzes(List<Quiz> quizzes) { this.quizzes = quizzes; }
 
-    public void setCapacity(int capacity) {
-        this.capacity = capacity;
-    }
+    public List<Announcement> getAnnouncements() { return announcements; }
+    public void setAnnouncements(List<Announcement> announcements) { this.announcements = announcements; }
 
-    public Professor getProfessor() {
-        return professor;
-    }
+    public List<Enrollment> getEnrollments() { return enrollments; }
+    public void setEnrollments(List<Enrollment> enrollments) { this.enrollments = enrollments; }
 
-    public void setProfessor(Professor professor) {
-        this.professor = professor;
-    }
-
-    public List<Assignment> getAssignments() {
-        return assignments;
-    }
-
-    public void setAssignments(List<Assignment> assignments) {
-        this.assignments = assignments;
-    }
-
-    public List<Quiz> getQuizzes() {
-        return quizzes;
-    }
-
-    public void setQuizzes(List<Quiz> quizzes) {
-        this.quizzes = quizzes;
-    }
-
-    public List<Announcement> getAnnouncements() {
-        return announcements;
-    }
-
-    public void setAnnouncements(List<Announcement> announcements) {
-        this.announcements = announcements;
-    }
-
-    public List<Enrollment> getEnrollments() {
-        return enrollments;
-    }
-
-    public void setEnrollments(List<Enrollment> enrollments) {
-        this.enrollments = enrollments;
-    }
 }

@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ผลคะแนนทั้งหมด - Thammasat</title>
+
+    <link rel="stylesheet" href="homestyle.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+</head>
+<body>
+
+    <div class="top-orange-bar"></div>
+
+    <div class="container">
+
+        <header class="main-header">
+
+            <div class="logo-section">
+
+                <img src="photo/v39_436.png" alt="Thammasat Logo" class="logo-img">
+
+                <div class="logo-text">
+                    <span class="uni-name-th">มหาวิทยาลัยธรรมศาสตร์</span><br>
+                    <span class="uni-name-en">Thammasat University</span>
+                </div>
+
+            </div>
+
+        </header>
+
+        <div class="main-content" style="margin-top: 30px;">
+
+            <aside class="sidebar">
+
+                <ul class="menu-list">
+
+                    <li onclick="window.location.href='my_courses.html'" style="cursor: pointer;">
+                        <i class="fa-solid fa-graduation-cap"></i> รายวิชาของฉัน
+                    </li>
+
+                    <li onclick="window.location.href='all_courses.html'" style="cursor: pointer;">
+                        <i class="fa-solid fa-graduation-cap"></i> รายการทั้งหมด
+                    </li>
+
+                    <li class="active" onclick="window.location.href='all_scores.html'" style="cursor: pointer;">
+                        <i class="fa-solid fa-chart-simple"></i> ผลคะแนนของฉัน
+                    </li>
+
+                </ul>
+
+            </aside>
+
+            <section class="content-area">
+
+                <h2 style="margin-bottom: 25px; color: #333;">ผลคะแนนทุกวิชาที่ลงทะเบียน</h2>
+                
+                <div id="scores-container" class="course-grid">
+
+                    <div style="padding: 20px; color: #666;">
+                        <i class="fa-solid fa-spinner fa-spin"></i> กำลังโหลดข้อมูลคะแนนจากเซิร์ฟเวอร์...
+                    </div>
+
+                </div>
+
+            </section>
+
+        </div>
+
+    </div>
+
+    <script>
+
+        fetch('http://localhost:8080/api/scores/student/1')
+            .then(response => {
+
+                if (!response.ok) throw new Error('Network response was not ok');
+                return response.json();
+
+            })
+            .then(data => {
+
+                const container = document.getElementById('scores-container');
+                container.innerHTML = ''; 
+
+                if (data.length === 0) {
+
+                    container.innerHTML = '<div style="padding: 20px;">ยังไม่มีข้อมูลคะแนน</div>';
+                    return;
+
+                }
+
+                data.forEach(item => {
+
+                    let code = item.assignment?.course?.courseId || "CSXXX"; 
+                    let name = item.assignment?.course?.courseName || "วิชาทั่วไป";
+                    let score = item.score || 0;
+
+                    if (code === "CS232") {
+                        code = "CS101";
+                        name = "การเขียนโปรแกรมคอมพิวเตอร์เบื้องต้น";
+                    }
+
+                    const cardHTML = `
+                        <div class="course-card" style="cursor: pointer; transition: 0.3s;" 
+                             onclick="goToScoreDetail('${code}', '${name}', ${score})"
+                             onmouseover="this.style.transform='translateY(-5px)'"
+                             onmouseout="this.style.transform='translateY(0)'">
+
+                            <div class="card-banner bg-blue">
+                                <span class="course-code">${code}</span>
+                                <h3 class="course-title">${name}</h3>
+                            </div>
+
+                            <div class="card-details">
+                                <h2 style="text-align: center; color: #f39c12; font-size: 2.5rem; margin: 10px 0;">${score} <span style="font-size: 1rem; color: #888;">/ 100</span></h2>
+                                <p style="text-align: center; color: #3498db; font-weight: 500;">คลิกเพื่อดูรายละเอียด <i class="fa-solid fa-arrow-right"></i></p>
+                            </div>
+
+                        </div>
+                    `;
+
+                    container.innerHTML += cardHTML;
+
+                });
+
+            })
+            .catch(error => {
+
+                console.error('Error fetching data:', error);
+                document.getElementById('scores-container').innerHTML = '<div style="color: #e74c3c; padding: 20px;">ไม่สามารถเชื่อมต่อฐานข้อมูลได้ (อย่าลืมเปิดรัน Spring Boot ไว้ด้วยนะ)</div>';
+
+            });
+
+        function goToScoreDetail(code, name, score) {
+
+            const url = `score_report.html?code=${encodeURIComponent(code)}&name=${encodeURIComponent(name)}&score=${score}`;
+            window.location.href = url;
+
+        }
+
+    </script>
+
+</body>
+</html>

@@ -27,6 +27,15 @@
         .btn-send { background: #e67e22; color: white; border: none; padding: 8px 20px; border-radius: 6px; cursor: pointer; transition: 0.2s; }
         .btn-send:hover { background: #d35400; }
         .btn-cancel { background: white; color: #666; border: 1px solid #ccc; padding: 8px 15px; border-radius: 6px; cursor: pointer; margin-right: 10px; }
+
+        /* Dropdown logout */
+        .user-profile { position: relative; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+        #user-dropdown { display: none; position: absolute; top: 110%; right: 0; background: #fff; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.15); min-width: 180px; z-index: 999; overflow: hidden; }
+        .dd-header { padding: 12px 16px; border-bottom: 1px solid #f0f0f0; }
+        .dd-header-name { font-weight: 600; font-size: 14px; }
+        .dd-header-role { font-size: 12px; color: #888; }
+        .dd-logout { display: flex; align-items: center; gap: 10px; padding: 12px 16px; color: #e74c3c; text-decoration: none; font-size: 14px; }
+        .dd-logout:hover { background: #fff5f5; }
     </style>
 </head>
 <body>
@@ -53,9 +62,21 @@
                         </div>
                     </div>
                 </div>
-                <div class="user-profile">
+
+                <!-- User Profile + Dropdown logout -->
+                <div class="user-profile" onclick="toggleUserMenu()">
                     <div class="avatar-placeholder"><i class="fa-solid fa-user"></i></div>
                     <span class="user-name" th:text="${user.displaynameTh}">ชื่อนักศึกษาตัวอย่าง</span>
+                    <i class="fa-solid fa-chevron-down" style="font-size:11px;"></i>
+                    <div id="user-dropdown">
+                        <div class="dd-header">
+                            <div class="dd-header-name" th:text="${user.displaynameTh}">ชื่อนักศึกษาตัวอย่าง</div>
+                            <div class="dd-header-role">นักศึกษา</div>
+                        </div>
+                        <a th:href="@{/logout}" class="dd-logout">
+                            <i class="fa-solid fa-right-from-bracket"></i> ออกจากระบบ
+                        </a>
+                    </div>
                 </div>
             </div>
         </header>
@@ -239,6 +260,12 @@
             dropdown.style.display = (dropdown.style.display === "none") ? "block" : "none";
         }
 
+        // Toggle user dropdown
+        function toggleUserMenu() {
+            const dd = document.getElementById('user-dropdown');
+            dd.style.display = dd.style.display === 'none' ? 'block' : 'none';
+        }
+
         // สคริปต์ควบคุม Modal อีเมล
         const emailModal = document.getElementById("emailModal");
         function openEmailModal() { emailModal.style.display = "block"; }
@@ -249,6 +276,10 @@
             if (!event.target.closest('.notification')) {
                 const notiDropdown = document.getElementById("noti-dropdown");
                 if(notiDropdown) notiDropdown.style.display = "none";
+            }
+            if (!event.target.closest('.user-profile')) {
+                const userDD = document.getElementById('user-dropdown');
+                if (userDD) userDD.style.display = 'none';
             }
             if (event.target == emailModal) closeEmailModal();
         }

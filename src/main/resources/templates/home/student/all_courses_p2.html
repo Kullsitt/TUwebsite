@@ -7,6 +7,15 @@
     <link rel="stylesheet" th:href="@{/css/homestyle.css}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        .user-profile { position: relative; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+        #user-dropdown { display: none; position: absolute; top: 110%; right: 0; background: #fff; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.15); min-width: 180px; z-index: 999; overflow: hidden; }
+        .dd-header { padding: 12px 16px; border-bottom: 1px solid #f0f0f0; }
+        .dd-header-name { font-weight: 600; font-size: 14px; }
+        .dd-header-role { font-size: 12px; color: #888; }
+        .dd-logout { display: flex; align-items: center; gap: 10px; padding: 12px 16px; color: #e74c3c; text-decoration: none; font-size: 14px; }
+        .dd-logout:hover { background: #fff5f5; }
+    </style>
 </head>
 <body>
     <div class="top-orange-bar"></div>
@@ -17,22 +26,25 @@
                 <div class="logo-text"><span class="uni-name-th">มหาวิทยาลัยธรรมศาสตร์</span><br><span class="uni-name-en">Thammasat University</span></div>
             </div>
             <div class="user-section">
-				<div class="notification" style="position: relative; cursor: pointer;" onclick="toggleNotification()">
-				    <i class="fa-regular fa-bell"></i>
-				    <span class="badge" id="noti-badge">0</span>
-
-				    <div id="noti-dropdown" class="noti-dropdown-content" style="display: none; position: absolute; right: 0; top: 40px; background: white; border: 1px solid #ddd; width: 320px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 1000; max-height: 400px; overflow-y: auto;">
-				        <div style="padding: 12px; border-bottom: 1px solid #eee; font-weight: bold; text-align: center; color: #c0392b;">
-				            <i class="fa-solid fa-bullhorn"></i> แจ้งเตือนล่าสุด
-				        </div>
-				        <div id="noti-list">
-				            <div style="padding: 15px; text-align: center; color: #888;">กำลังโหลด...</div>
-				        </div>
-				    </div>
-				</div>
-                <div class="user-profile">
+                <div class="notification" style="position: relative; cursor: pointer;" onclick="toggleNotification()">
+                    <i class="fa-regular fa-bell"></i>
+                    <span class="badge" id="noti-badge">0</span>
+                    <div id="noti-dropdown" class="noti-dropdown-content" style="display: none; position: absolute; right: 0; top: 40px; background: white; border: 1px solid #ddd; width: 320px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 1000; max-height: 400px; overflow-y: auto;">
+                        <div style="padding: 12px; border-bottom: 1px solid #eee; font-weight: bold; text-align: center; color: #c0392b;"><i class="fa-solid fa-bullhorn"></i> แจ้งเตือนล่าสุด</div>
+                        <div id="noti-list"><div style="padding: 15px; text-align: center; color: #888;">กำลังโหลด...</div></div>
+                    </div>
+                </div>
+                <div class="user-profile" onclick="toggleUserMenu()">
                     <div class="avatar-placeholder"><i class="fa-solid fa-user"></i></div>
                     <span class="user-name" th:text="${user != null ? user.displaynameTh : 'ชื่อนักศึกษา'}">ชื่อนักศึกษาตัวอย่าง</span>
+                    <i class="fa-solid fa-chevron-down" style="font-size:11px;"></i>
+                    <div id="user-dropdown">
+                        <div class="dd-header">
+                            <div class="dd-header-name" th:text="${user != null ? user.displaynameTh : 'ชื่อนักศึกษา'}">ชื่อนักศึกษา</div>
+                            <div class="dd-header-role">นักศึกษา</div>
+                        </div>
+                        <a href="/logout" class="dd-logout"><i class="fa-solid fa-right-from-bracket"></i> ออกจากระบบ</a>
+                    </div>
                 </div>
             </div>
         </header>
@@ -57,107 +69,58 @@
                         <option value="s">ภาคการศึกษาที่ s/2568</option>
                     </select>
                 </div>
-                
                 <div class="course-grid">
-                    
                     <div class="course-card">
                         <div class="card-banner bg-blue"><span class="course-code">SC211</span><h3 class="course-title">ฟิสิกส์ทั่วไป</h3></div>
                         <div class="card-details">
                             <p>อาจารย์: สมชาย</p><p class="capacity">ลงทะเบียน: 30 คน</p>
-                            
-                            <button th:unless="${enrolledCourseIds != null and #lists.contains(enrolledCourseIds, 'SC211')}" 
-                                    class="btn-register" th:onclick="|window.location.href='@{/assignment/submit(id=SC211)}'|">
-                                ลงทะเบียนเรียน
-                            </button>
-                            
-                            <button th:if="${enrolledCourseIds != null and #lists.contains(enrolledCourseIds, 'SC211')}" 
-                                    class="btn-register" style="background-color: #9e9e9e; cursor: not-allowed;" disabled>
-                                ลงทะเบียนแล้ว
-                            </button>
+                            <button th:unless="${enrolledCourseIds != null and #lists.contains(enrolledCourseIds, 'SC211')}" class="btn-register" th:onclick="|window.location.href='@{/assignment/submit(id=SC211)}'|">ลงทะเบียนเรียน</button>
+                            <button th:if="${enrolledCourseIds != null and #lists.contains(enrolledCourseIds, 'SC211')}" class="btn-register" style="background-color: #9e9e9e; cursor: not-allowed;" disabled>ลงทะเบียนแล้ว</button>
                         </div>
                     </div>
-
                     <div class="course-card">
                         <div class="card-banner bg-green"><span class="course-code">EC210</span><h3 class="course-title">เศรษฐศาสตร์มหภาค</h3></div>
                         <div class="card-details">
                             <p>อาจารย์: สมหญิง</p><p class="capacity">ลงทะเบียน: 40 คน</p>
-                            
-                            <button th:unless="${enrolledCourseIds != null and #lists.contains(enrolledCourseIds, 'EC210')}" 
-                                    class="btn-register" th:onclick="|window.location.href='@{/assignment/submit(id=EC210)}'|">
-                                ลงทะเบียนเรียน
-                            </button>
-                            
-                            <button th:if="${enrolledCourseIds != null and #lists.contains(enrolledCourseIds, 'EC210')}" 
-                                    class="btn-register" style="background-color: #9e9e9e; cursor: not-allowed;" disabled>
-                                ลงทะเบียนแล้ว
-                            </button>
+                            <button th:unless="${enrolledCourseIds != null and #lists.contains(enrolledCourseIds, 'EC210')}" class="btn-register" th:onclick="|window.location.href='@{/assignment/submit(id=EC210)}'|">ลงทะเบียนเรียน</button>
+                            <button th:if="${enrolledCourseIds != null and #lists.contains(enrolledCourseIds, 'EC210')}" class="btn-register" style="background-color: #9e9e9e; cursor: not-allowed;" disabled>ลงทะเบียนแล้ว</button>
                         </div>
                     </div>
                 </div>
-
-				<div class="pagination">
-				    <span class="page-info">หน้า 2 จาก 2</span>
-				    <button class="page-btn" th:onclick="|window.location.href='@{/all-courses}'|">1</button>
-				    <button class="page-btn active" th:onclick="|window.location.href='@{/all-courses-p2}'|">2</button>
-				    <button class="page-btn" disabled>&gt;</button>
-				</div>
+                <div class="pagination">
+                    <span class="page-info">หน้า 2 จาก 2</span>
+                    <button class="page-btn" th:onclick="|window.location.href='@{/all-courses}'|">1</button>
+                    <button class="page-btn active" th:onclick="|window.location.href='@{/all-courses-p2}'|">2</button>
+                    <button class="page-btn" disabled>&gt;</button>
+                </div>
             </section>
         </div>
     </div>
-	<script th:inline="javascript">
-	    // ดึงรหัสนักศึกษาจาก Session (สมมติว่าคุณเก็บไว้ในตัวแปร username หรือ id)
-	    // *** ตรงนี้คุณอาจจะต้องแก้ user.username เป็นตัวแปรที่คุณใช้เก็บรหัสนักศึกษาจริงๆ ***
-	    const currentStudentId = /*[[${user != null ? user.username : '65xxxxxx'}]]*/ '65xxxxxx';
-
-	    document.addEventListener("DOMContentLoaded", function() {
-	        if(currentStudentId && currentStudentId !== '65xxxxxx') {
-	            fetchNotifications(currentStudentId);
-	        }
-	    });
-
-	    function fetchNotifications(studentId) {
-	        fetch(`/api/notifications/student/${studentId}`)
-	            .then(response => response.json())
-	            .then(data => {
-	                // อัปเดตตัวเลขกระดิ่ง
-	                document.getElementById('noti-badge').innerText = data.length;
-	                const notiList = document.getElementById('noti-list');
-	                notiList.innerHTML = '';
-
-	                if(data.length === 0) {
-	                    notiList.innerHTML = '<div style="padding: 15px; text-align: center; color: #888;">ไม่มีการแจ้งเตือนใหม่</div>';
-	                    return;
-	                }
-
-	                // วนลูปสร้างรายการแจ้งเตือน
-	                data.forEach(item => {
-	                    // กำหนดลิงก์ให้กดไปหน้า Dashboard วิชานั้นๆ
-	                    const notiHTML = `
-	                        <a href="/dashboard/student?courseId=${item.courseId}" style="display: block; padding: 12px; border-bottom: 1px solid #f5f5f5; text-decoration: none; color: #333; transition: 0.2s;">
-	                            <div style="font-size: 12px; color: #e67e22; font-weight: bold; margin-bottom: 4px;">
-	                                [${item.courseId}] ${item.itemType != null ? item.itemType : 'อัปเดตใหม่'}
-	                            </div>
-	                            <div style="font-size: 14px;">${item.title}</div>
-	                        </a>
-	                    `;
-	                    notiList.innerHTML += notiHTML;
-	                });
-	            })
-	            .catch(error => console.error('Error:', error));
-	    }
-
-	    // ฟังก์ชันเปิด/ปิด กล่องแจ้งเตือน
-	    function toggleNotification() {
-	        const dropdown = document.getElementById("noti-dropdown");
-	        dropdown.style.display = (dropdown.style.display === "none") ? "block" : "none";
-	    }
-
-	    // ปิดกล่องแจ้งเตือนถ้าคลิกที่อื่นบนหน้าจอ
-	    window.onclick = function(event) {
-	        if (!event.target.closest('.notification')) {
-	            document.getElementById("noti-dropdown").style.display = "none";
-	        }
-	    }
-	</script>
+    <script th:inline="javascript">
+        const currentStudentId = /*[[${user != null ? user.username : '65xxxxxx'}]]*/ '65xxxxxx';
+        document.addEventListener("DOMContentLoaded", function() {
+            if(currentStudentId && currentStudentId !== '65xxxxxx') fetchNotifications(currentStudentId);
+        });
+        function fetchNotifications(studentId) {
+            fetch(`/api/notifications/student/${studentId}`).then(r => r.json()).then(data => {
+                document.getElementById('noti-badge').innerText = data.length;
+                const notiList = document.getElementById('noti-list');
+                notiList.innerHTML = data.length === 0 ? '<div style="padding: 15px; text-align: center; color: #888;">ไม่มีการแจ้งเตือนใหม่</div>' : '';
+                data.forEach(item => { notiList.innerHTML += `<a href="/dashboard/student?courseId=${item.courseId}" style="display: block; padding: 12px; border-bottom: 1px solid #f5f5f5; text-decoration: none; color: #333;"><div style="font-size: 12px; color: #e67e22; font-weight: bold;">[${item.courseId}] ${item.itemType != null ? item.itemType : 'อัปเดตใหม่'}</div><div style="font-size: 14px;">${item.title}</div></a>`; });
+            }).catch(error => console.error('Error:', error));
+        }
+        function toggleNotification() {
+            const dropdown = document.getElementById("noti-dropdown");
+            dropdown.style.display = (dropdown.style.display === "none") ? "block" : "none";
+        }
+        function toggleUserMenu() {
+            const dd = document.getElementById('user-dropdown');
+            dd.style.display = dd.style.display === 'none' ? 'block' : 'none';
+        }
+        window.onclick = function(event) {
+            if (!event.target.closest('.notification')) { const d = document.getElementById("noti-dropdown"); if(d) d.style.display = "none"; }
+            if (!event.target.closest('.user-profile')) { const d = document.getElementById("user-dropdown"); if(d) d.style.display = "none"; }
+        }
+    </script>
 </body>
 </html>

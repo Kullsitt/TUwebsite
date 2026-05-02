@@ -8,14 +8,11 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
-        /* สไตล์กล่องคะแนนของเพื่อน (เก็บไว้เหมือนเดิม แต่จัดให้สวยขึ้น) */
         .score-container { background: white; padding: 40px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-top: 20px; text-align: center; max-width: 800px; margin-left: auto; margin-right: auto; }
         .score-big { font-size: 72px; color: #f39c12; font-weight: 600; margin: 20px 0; text-shadow: 2px 2px 4px rgba(0,0,0,0.1); }
         .feedback-box { background: #fff9e6; border-left: 5px solid #f39c12; padding: 20px; text-align: left; margin-top: 20px; border-radius: 0 8px 8px 0; }
         .back-link { display: inline-block; margin-top: 30px; color: #f39c12; text-decoration: none; font-weight: 500; padding: 10px 20px; border: 1px solid #f39c12; border-radius: 6px; transition: 0.3s; }
         .back-link:hover { background: #f39c12; color: white; }
-        
-        /* สไตล์สำหรับปุ่มส่งอีเมลและ Modal */
         .fab-email { position: fixed; bottom: 30px; right: 30px; background-color: #e67e22; color: white; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; box-shadow: 0 4px 15px rgba(230, 126, 34, 0.4); cursor: pointer; transition: 0.3s; z-index: 100; border: none; }
         .fab-email:hover { transform: scale(1.1) translateY(-5px); background-color: #d35400; }
         .email-modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); }
@@ -29,6 +26,26 @@
         .btn-send { background: #e67e22; color: white; border: none; padding: 8px 20px; border-radius: 6px; cursor: pointer; transition: 0.2s; }
         .btn-send:hover { background: #d35400; }
         .btn-cancel { background: white; color: #666; border: 1px solid #ccc; padding: 8px 15px; border-radius: 6px; cursor: pointer; margin-right: 10px; }
+
+        /* Dropdown logout */
+        .user-profile { position: relative; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+        #user-dropdown {
+            display: none;
+            position: absolute;
+            top: 110%;
+            right: 0;
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+            min-width: 180px;
+            z-index: 999;
+            overflow: hidden;
+        }
+        .dd-header { padding: 12px 16px; border-bottom: 1px solid #f0f0f0; }
+        .dd-header-name { font-weight: 600; font-size: 14px; }
+        .dd-header-role { font-size: 12px; color: #888; }
+        .dd-logout { display: flex; align-items: center; gap: 10px; padding: 12px 16px; color: #e74c3c; text-decoration: none; font-size: 14px; }
+        .dd-logout:hover { background: #fff5f5; }
     </style>
 </head>
 <body>
@@ -55,9 +72,22 @@
                         </div>
                     </div>
                 </div>
-                <div class="user-profile">
+
+                <div class="user-profile" onclick="toggleUserMenu()">
                     <div class="avatar-placeholder"><i class="fa-solid fa-user"></i></div>
                     <span class="user-name" th:text="${user != null ? user.displaynameTh : 'ชื่อนักศึกษา'}">ชื่อนักศึกษา</span>
+                    <i class="fa-solid fa-chevron-down" style="font-size:11px;"></i>
+
+                    <div id="user-dropdown">
+                        <div class="dd-header">
+                            <div class="dd-header-name" th:text="${user != null ? user.displaynameTh : 'ชื่อนักศึกษา'}">ชื่อนักศึกษา</div>
+                            <div class="dd-header-role">นักศึกษา</div>
+                        </div>
+                        <a href="/logout" class="dd-logout">
+                            <i class="fa-solid fa-right-from-bracket"></i>
+                            ออกจากระบบ
+                        </a>
+                    </div>
                 </div>
             </div>
         </header>
@@ -89,14 +119,11 @@
                 <div class="score-container">
                     <h2 style="color: #333; font-size: 1.8rem; margin-bottom: 5px;">ผลการเรียนวิชา CS101</h2>
                     <p style="color: #666; font-size: 1.1rem;">การเขียนโปรแกรมเบื้องต้น</p>
-                    
                     <div class="score-big">9.5 / 10</div>
-                    
                     <div class="feedback-box">
                         <strong style="color: #d35400; font-size: 1.1rem;"><i class="fa-solid fa-comment-dots"></i> ข้อเสนอแนะจากอาจารย์:</strong><br>
                         <p style="margin-top: 10px; color: #444; line-height: 1.6;">"การเขียนโค้ดทำได้เป็นระเบียบและถูกต้องตามหลักการพัฒนาซอฟต์แวร์ที่ดี"</p>
                     </div>
-                    
                     <a th:href="@{/home/student}" class="back-link"><i class="fa-solid fa-arrow-left"></i> กลับไปหน้ารายวิชา</a>
                 </div>
             </section>
@@ -137,7 +164,6 @@
     </div>
 
     <script th:inline="javascript">
-        // ระบบแจ้งเตือนกระดิ่ง
         const currentStudentId = /*[[${user != null ? user.username : ''}]]*/ '';
         document.addEventListener("DOMContentLoaded", function() {
             if(currentStudentId) fetchNotifications(currentStudentId);
@@ -161,16 +187,23 @@
             dropdown.style.display = (dropdown.style.display === "none") ? "block" : "none";
         }
 
-        // สคริปต์ควบคุม Modal อีเมล
+        function toggleUserMenu() {
+            const dd = document.getElementById('user-dropdown');
+            dd.style.display = dd.style.display === 'none' ? 'block' : 'none';
+        }
+
         const emailModal = document.getElementById("emailModal");
         function openEmailModal() { emailModal.style.display = "block"; }
         function closeEmailModal() { emailModal.style.display = "none"; }
 
-        // ปิด Modal ถ้าคลิกพื้นที่ว่าง
         window.onclick = function(event) {
             if (!event.target.closest('.notification')) {
                 const notiDropdown = document.getElementById("noti-dropdown");
                 if(notiDropdown) notiDropdown.style.display = "none";
+            }
+            if (!event.target.closest('.user-profile')) {
+                const userDropdown = document.getElementById("user-dropdown");
+                if(userDropdown) userDropdown.style.display = "none";
             }
             if (event.target == emailModal) closeEmailModal();
         }

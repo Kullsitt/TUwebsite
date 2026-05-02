@@ -7,6 +7,15 @@
     <link rel="stylesheet" th:href="@{/css/dashboardstudent.css}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/cs/sall.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        .user-profile { position: relative; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+        #user-dropdown { display: none; position: absolute; top: 110%; right: 0; background: #fff; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.15); min-width: 180px; z-index: 999; overflow: hidden; }
+        .dd-header { padding: 12px 16px; border-bottom: 1px solid #f0f0f0; }
+        .dd-header-name { font-weight: 600; font-size: 14px; }
+        .dd-header-role { font-size: 12px; color: #888; }
+        .dd-logout { display: flex; align-items: center; gap: 10px; padding: 12px 16px; color: #e74c3c; text-decoration: none; font-size: 14px; }
+        .dd-logout:hover { background: #fff5f5; }
+    </style>
 </head>
 <body>
     <div class="top-orange-bar"></div>
@@ -33,9 +42,19 @@
                     </div>
                 </div>
 
-                <div class="user-profile">
+                <div class="user-profile" onclick="toggleUserMenu()">
                     <div class="avatar-placeholder"><i class="fa-regular fa-user"></i></div>
                     <span class="user-name" th:text="${user != null ? user.displaynameTh : 'ชื่อนักศึกษา'}">ชื่อนักศึกษา</span>
+                    <i class="fa-solid fa-chevron-down" style="font-size:11px;"></i>
+                    <div id="user-dropdown">
+                        <div class="dd-header">
+                            <div class="dd-header-name" th:text="${user != null ? user.displaynameTh : 'ชื่อนักศึกษา'}">ชื่อนักศึกษา</div>
+                            <div class="dd-header-role">นักศึกษา</div>
+                        </div>
+                        <a href="/logout" class="dd-logout">
+                            <i class="fa-solid fa-right-from-bracket"></i> ออกจากระบบ
+                        </a>
+                    </div>
                 </div>
             </div>
         </header>
@@ -139,11 +158,9 @@
                         <i class="fa-solid fa-file-invoice" style="color: #7248B9; font-size: 1.5rem; margin-right: 15px; margin-top: 5px;"></i>
                         <div class="item-text">
                             <div class="text-bold" style="font-size: 1.1rem; color: #333; margin-bottom: 5px;" th:text="${item.title}">หัวข้อควิซ</div>
-                            
                             <a th:href="${item.description}" target="_blank" style="display: inline-block; background-color: #7248B9; color: white; padding: 8px 16px; border-radius: 6px; text-decoration: none; font-size: 0.9rem; transition: 0.3s; box-shadow: 0 2px 4px rgba(114, 72, 185, 0.2);" onmouseover="this.style.backgroundColor='#5e35b1'; this.style.transform='translateY(-1px)';" onmouseout="this.style.backgroundColor='#7248B9'; this.style.transform='translateY(0)';">
                                 <i class="fa-solid fa-arrow-up-right-from-square" style="margin-right: 5px;"></i> ไปทำแบบทดสอบ (Google Form)
                             </a>
-                            
                             <div th:if="${item.deadline != null}" style="margin-top: 10px; font-size: 0.85rem; color: #e74c3c;">
                                 <i class="fa-regular fa-clock"></i> กำหนดทำถึง: <span th:text="${#temporals.format(item.deadline, 'dd MMM yyyy HH:mm')}"></span>
                             </div>
@@ -151,7 +168,6 @@
                     </div>
                 </div>
             </div>
-
         </div>
     </div>
 
@@ -171,18 +187,14 @@
                     document.getElementById('noti-badge').innerText = data.length;
                     const notiList = document.getElementById('noti-list');
                     notiList.innerHTML = '';
-
                     if(data.length === 0) {
                         notiList.innerHTML = '<div style="padding: 15px; text-align: center; color: #888;">ไม่มีการแจ้งเตือนใหม่</div>';
                         return;
                     }
-
                     data.forEach(item => {
                         const notiHTML = `
                             <a href="/dashboard/student?courseId=${item.courseId}" style="display: block; padding: 12px; border-bottom: 1px solid #f5f5f5; text-decoration: none; color: #333; transition: 0.2s;">
-                                <div style="font-size: 12px; color: #e67e22; font-weight: bold; margin-bottom: 4px;">
-                                    [${item.courseId}] ${item.itemType != null ? item.itemType : 'อัปเดตใหม่'}
-                                </div>
+                                <div style="font-size: 12px; color: #e67e22; font-weight: bold; margin-bottom: 4px;">[${item.courseId}] ${item.itemType != null ? item.itemType : 'อัปเดตใหม่'}</div>
                                 <div style="font-size: 14px;">${item.title}</div>
                             </a>
                         `;
@@ -197,10 +209,19 @@
             dropdown.style.display = (dropdown.style.display === "none") ? "block" : "none";
         }
 
+        function toggleUserMenu() {
+            const dd = document.getElementById('user-dropdown');
+            dd.style.display = dd.style.display === 'none' ? 'block' : 'none';
+        }
+
         window.onclick = function(event) {
             if (!event.target.closest('.notification')) {
                 const dropdown = document.getElementById("noti-dropdown");
                 if (dropdown) dropdown.style.display = "none";
+            }
+            if (!event.target.closest('.user-profile')) {
+                const userDropdown = document.getElementById("user-dropdown");
+                if (userDropdown) userDropdown.style.display = "none";
             }
         }
     </script>

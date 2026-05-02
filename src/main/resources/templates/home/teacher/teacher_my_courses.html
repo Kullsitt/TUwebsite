@@ -6,34 +6,28 @@
     <title>รายวิชาของฉัน - Teacher</title>
     
     <link rel="stylesheet" th:href="@{/css/home_teacher_style.css}">
-    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600&display=swap" rel="stylesheet">
     
     <style>
-        /* สไตล์เพิ่มเติมสำหรับปุ่มลบบนการ์ด (ถ้ายังไม่ได้ใส่ในไฟล์ CSS) */
         .course-card { position: relative; }
         .btn-delete-course {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: rgba(231, 76, 60, 0.9);
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 30px;
-            height: 30px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            z-index: 10;
-            transition: 0.3s;
+            position: absolute; top: 10px; right: 10px;
+            background: rgba(231, 76, 60, 0.9); color: white; border: none;
+            border-radius: 50%; width: 30px; height: 30px;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; z-index: 10; transition: 0.3s;
         }
-        .btn-delete-course:hover {
-            background: #c0392b;
-            transform: scale(1.1);
-        }
+        .btn-delete-course:hover { background: #c0392b; transform: scale(1.1); }
+
+        /* Dropdown logout */
+        .user-profile { position: relative; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+        #user-dropdown { display: none; position: absolute; top: 110%; right: 0; background: #fff; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.15); min-width: 180px; z-index: 999; overflow: hidden; }
+        .dd-header { padding: 12px 16px; border-bottom: 1px solid #f0f0f0; }
+        .dd-header-name { font-weight: 600; font-size: 14px; }
+        .dd-header-role { font-size: 12px; color: #888; }
+        .dd-logout { display: flex; align-items: center; gap: 10px; padding: 12px 16px; color: #e74c3c; text-decoration: none; font-size: 14px; }
+        .dd-logout:hover { background: #fff5f5; }
     </style>
 </head>
 
@@ -49,22 +43,33 @@
                 </div>
             </div>
             <div class="user-section">
-              			<div class="notification" style="position: relative; cursor: pointer;" onclick="toggleNotification()">
-				    <i class="fa-regular fa-bell"></i>
-				    <span class="badge" id="noti-badge">0</span>
+                <div class="notification" style="position: relative; cursor: pointer;" onclick="toggleNotification()">
+                    <i class="fa-regular fa-bell"></i>
+                    <span class="badge" id="noti-badge">0</span>
+                    <div id="noti-dropdown" class="noti-dropdown-content" style="display: none; position: absolute; right: 0; top: 40px; background: white; border: 1px solid #ddd; width: 320px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 1000; max-height: 400px; overflow-y: auto;">
+                        <div style="padding: 12px; border-bottom: 1px solid #eee; font-weight: bold; text-align: center; color: #c0392b;">
+                            <i class="fa-solid fa-bullhorn"></i> แจ้งเตือนล่าสุด
+                        </div>
+                        <div id="noti-list">
+                            <div style="padding: 15px; text-align: center; color: #888;">กำลังโหลด...</div>
+                        </div>
+                    </div>
+                </div>
 
-				    <div id="noti-dropdown" class="noti-dropdown-content" style="display: none; position: absolute; right: 0; top: 40px; background: white; border: 1px solid #ddd; width: 320px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 1000; max-height: 400px; overflow-y: auto;">
-				        <div style="padding: 12px; border-bottom: 1px solid #eee; font-weight: bold; text-align: center; color: #c0392b;">
-				            <i class="fa-solid fa-bullhorn"></i> แจ้งเตือนล่าสุด
-				        </div>
-				        <div id="noti-list">
-				            <div style="padding: 15px; text-align: center; color: #888;">กำลังโหลด...</div>
-				        </div>
-				    </div>
-				</div>
-                <div class="user-profile">
+                <!-- User Profile + Dropdown logout -->
+                <div class="user-profile" onclick="toggleUserMenu()">
                     <div class="avatar-placeholder"><i class="fa-solid fa-user"></i></div>
                     <span class="user-name" th:text="${user.displaynameTh}">ชื่ออาจารย์</span>
+                    <i class="fa-solid fa-chevron-down" style="font-size:11px;"></i>
+                    <div id="user-dropdown">
+                        <div class="dd-header">
+                            <div class="dd-header-name" th:text="${user.displaynameTh}">ชื่ออาจารย์</div>
+                            <div class="dd-header-role">อาจารย์</div>
+                        </div>
+                        <a th:href="@{/logout}" class="dd-logout">
+                            <i class="fa-solid fa-right-from-bracket"></i> ออกจากระบบ
+                        </a>
+                    </div>
                 </div>
             </div>
         </header>
@@ -84,9 +89,9 @@
                     <li class="active" th:onclick="|window.location.href='@{/dashboard/teacher}'|">
                         <i class="fa-solid fa-graduation-cap"></i> รายวิชาของฉัน
                     </li>
-					<li th:onclick="|window.location.href='@{/dashboard/teacher/all-courses}'|">
-					    <i class="fa-solid fa-graduation-cap"></i> รายการทั้งหมด
-					</li>
+                    <li th:onclick="|window.location.href='@{/dashboard/teacher/all-courses}'|">
+                        <i class="fa-solid fa-graduation-cap"></i> รายการทั้งหมด
+                    </li>
                 </ul>
             </aside>
 
@@ -97,7 +102,7 @@
                     </select>
                 </div>
                
-				<div class="course-grid">
+                <div class="course-grid">
                     <div th:if="${#lists.isEmpty(allCourses)}" style="grid-column: 1/-1; text-align: center; padding: 50px; opacity: 0.5;">
                          <i class="fa-solid fa-folder-open" style="font-size: 48px; color: #ccc;"></i>
                          <p style="margin-top: 15px; color: #666;">ยังไม่มีรายวิชาที่คุณสร้างไว้</p>
@@ -105,7 +110,7 @@
 
                     <div class="course-card" th:each="course, stat : ${allCourses}" 
                          th:onclick="|window.location.href='@{/dashboard/teacher/course(id=${course.courseId})}'|" style="cursor: pointer;">
-				        
+                        
                         <button class="btn-delete-course" 
                                 th:data-id="${course.courseId}" 
                                 onclick="confirmDeleteCourse(event, this.getAttribute('data-id'))">
@@ -114,19 +119,19 @@
 
                         <div class="card-banner" 
                              th:classappend="${stat.index % 4 == 0 ? 'bg-blue' : (stat.index % 4 == 1 ? 'bg-green' : (stat.index % 4 == 2 ? 'bg-yellow' : 'bg-darkblue'))}">
-				            <span class="course-code" th:text="${course.courseId}">CS101</span>
-				            <h3 class="course-title" th:text="${course.courseName}">ชื่อวิชา</h3>
-				        </div>
-				        <div class="card-details">
-				            <p>อาจารย์: <span th:text="${course.teacherName}">ชื่ออาจารย์</span></p>
-				            <p class="section-info">ความจุ : <span th:text="${course.capacity}"></span> คน</p>
-				        </div>
-				    </div>
-					<div id="noSearchResults" style="display: none; grid-column: 1/-1; text-align: center; padding: 50px; color: #666;">
-																				                        <i class="fa-solid fa-magnifying-glass" style="font-size: 48px; margin-bottom: 15px; color: #ccc;"></i>
-																				                        <p>ไม่พบรายวิชาที่คุณค้นหา</p>
-					</div>
-				</div>
+                            <span class="course-code" th:text="${course.courseId}">CS101</span>
+                            <h3 class="course-title" th:text="${course.courseName}">ชื่อวิชา</h3>
+                        </div>
+                        <div class="card-details">
+                            <p>อาจารย์: <span th:text="${course.teacherName}">ชื่ออาจารย์</span></p>
+                            <p class="section-info">ความจุ : <span th:text="${course.capacity}"></span> คน</p>
+                        </div>
+                    </div>
+                    <div id="noSearchResults" style="display: none; grid-column: 1/-1; text-align: center; padding: 50px; color: #666;">
+                        <i class="fa-solid fa-magnifying-glass" style="font-size: 48px; margin-bottom: 15px; color: #ccc;"></i>
+                        <p>ไม่พบรายวิชาที่คุณค้นหา</p>
+                    </div>
+                </div>
 
                 <div class="pagination" th:if="${not #lists.isEmpty(allCourses)}">
                     <span class="page-info">หน้า 1 จาก 1</span>
@@ -142,7 +147,6 @@
                 <div><i class="fa-regular fa-square-plus"></i> เพิ่มรายวิชาใหม่</div>
                 <i class="fa-solid fa-xmark" onclick="closeModal()" style="cursor: pointer;"></i>
             </div>
-            
             <form th:action="@{/teacher/course/save}" method="post">
                 <div class="modal-body">
                     <div class="form-group">
@@ -185,15 +189,18 @@
             document.getElementById('addCourseModal').style.display = 'none';
         }
 
-        // 🎯 ฟังก์ชันลบวิชา
         function confirmDeleteCourse(event, courseId) {
-            // หยุดไม่ให้คลิกแล้วเด้งไปหน้าวิชา
             event.stopPropagation();
-            
             if (confirm("คุณแน่ใจหรือไม่ว่าต้องการลบรายวิชา " + courseId + "?")) {
                 document.getElementById("courseIdToDelete").value = courseId;
                 document.getElementById("deleteCourseForm").submit();
             }
+        }
+
+        // Toggle user dropdown
+        function toggleUserMenu() {
+            const dd = document.getElementById('user-dropdown');
+            dd.style.display = dd.style.display === 'none' ? 'block' : 'none';
         }
 
         window.onclick = function(event) {
@@ -201,91 +208,90 @@
             if (event.target == modal) {
                 modal.style.display = "none";
             }
+            if (!event.target.closest('.user-profile')) {
+                const userDD = document.getElementById('user-dropdown');
+                if (userDD) userDD.style.display = 'none';
+            }
         }
 		
-		const searchInput = document.getElementById('searchInput');
-				const courseCards = document.querySelectorAll('.course-card');
-				const noSearchResults = document.getElementById('noSearchResults'); // 1. ดึงกล่องข้อความมาเตรียมไว้
+        const searchInput = document.getElementById('searchInput');
+        const courseCards = document.querySelectorAll('.course-card');
+        const noSearchResults = document.getElementById('noSearchResults');
 
-				if (searchInput) {
-				    searchInput.addEventListener('input', function(e) {
-				        const keyword = e.target.value.toLowerCase().trim();
-				        let visibleCount = 0; // 2. สร้างตัวแปรมาคอยนับการ์ดที่หาเจอ
-				        
-				        courseCards.forEach(card => {
-				            const code = card.querySelector('.course-code').innerText.toLowerCase();
-				            const title = card.querySelector('.course-title').innerText.toLowerCase();
-				            
-				            if (code.includes(keyword) || title.includes(keyword)) {
-				                card.style.display = 'block';
-				                visibleCount++; // 3. ถ้าหาเจอ ให้นับเพิ่มทีละ 1
-				            } else {
-				                card.style.display = 'none';
-				            }
-				        });
+        if (searchInput) {
+            searchInput.addEventListener('input', function(e) {
+                const keyword = e.target.value.toLowerCase().trim();
+                let visibleCount = 0;
+                
+                courseCards.forEach(card => {
+                    const code = card.querySelector('.course-code').innerText.toLowerCase();
+                    const title = card.querySelector('.course-title').innerText.toLowerCase();
+                    
+                    if (code.includes(keyword) || title.includes(keyword)) {
+                        card.style.display = 'block';
+                        visibleCount++;
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
 
-				        // 4. เช็คผลลัพธ์: ถ้ามีการ์ดในระบบ แต่ดันหาไม่เจอเลยสักใบ (visibleCount == 0)
-				        if (noSearchResults && courseCards.length > 0) {
-				            if (visibleCount === 0) {
-				                noSearchResults.style.display = 'block'; // โชว์ข้อความ "ไม่พบรายวิชา"
-				            } else {
-				                noSearchResults.style.display = 'none';  // ซ่อนข้อความทิ้งไป
-				            }
-				        }
-				    });
-				}
+                if (noSearchResults && courseCards.length > 0) {
+                    if (visibleCount === 0) {
+                        noSearchResults.style.display = 'block';
+                    } else {
+                        noSearchResults.style.display = 'none';
+                    }
+                }
+            });
+        }
     </script>
-	<script th:inline="javascript">
-	    // ดึงชื่ออาจารย์จาก Session
-	    const currentTeacherName = /*[[${user != null ? user.displaynameTh : 'ชื่ออาจารย์'}]]*/ 'ชื่ออาจารย์';
+    <script th:inline="javascript">
+        const currentTeacherName = /*[[${user != null ? user.displaynameTh : 'ชื่ออาจารย์'}]]*/ 'ชื่ออาจารย์';
 
-	    document.addEventListener("DOMContentLoaded", function() {
-	        if(currentTeacherName && currentTeacherName !== 'ชื่ออาจารย์') {
-	            fetchNotifications(currentTeacherName);
-	        }
-	    });
+        document.addEventListener("DOMContentLoaded", function() {
+            if(currentTeacherName && currentTeacherName !== 'ชื่ออาจารย์') {
+                fetchNotifications(currentTeacherName);
+            }
+        });
 
-	    function fetchNotifications(teacherName) {
-	        // วิ่งไปขอข้อมูลจาก API ของอาจารย์
-	        fetch(`/api/notifications/teacher/${teacherName}`)
-	            .then(response => response.json())
-	            .then(data => {
-	                document.getElementById('noti-badge').innerText = data.length;
-	                const notiList = document.getElementById('noti-list');
-	                notiList.innerHTML = '';
+        function fetchNotifications(teacherName) {
+            fetch(`/api/notifications/teacher/${teacherName}`)
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('noti-badge').innerText = data.length;
+                    const notiList = document.getElementById('noti-list');
+                    notiList.innerHTML = '';
 
-	                if(data.length === 0) {
-	                    notiList.innerHTML = '<div style="padding: 15px; text-align: center; color: #888;">ไม่มีการแจ้งเตือนใหม่</div>';
-	                    return;
-	                }
+                    if(data.length === 0) {
+                        notiList.innerHTML = '<div style="padding: 15px; text-align: center; color: #888;">ไม่มีการแจ้งเตือนใหม่</div>';
+                        return;
+                    }
 
-	                data.forEach(item => {
-	                    const notiHTML = `
-	                        <a href="/dashboard/teacher?courseId=${item.courseId}" style="display: block; padding: 12px; border-bottom: 1px solid #f5f5f5; text-decoration: none; color: #333; transition: 0.2s;">
-	                            <div style="font-size: 12px; color: #e67e22; font-weight: bold; margin-bottom: 4px;">
-	                                [${item.courseId}] ${item.itemType != null ? item.itemType : 'อัปเดตใหม่'}
-	                            </div>
-	                            <div style="font-size: 14px;">${item.title}</div>
-	                        </a>
-	                    `;
-	                    notiList.innerHTML += notiHTML;
-	                });
-	            })
-	            .catch(error => console.error('Error:', error));
-	    }
+                    data.forEach(item => {
+                        const notiHTML = `
+                            <a href="/dashboard/teacher?courseId=${item.courseId}" style="display: block; padding: 12px; border-bottom: 1px solid #f5f5f5; text-decoration: none; color: #333; transition: 0.2s;">
+                                <div style="font-size: 12px; color: #e67e22; font-weight: bold; margin-bottom: 4px;">
+                                    [${item.courseId}] ${item.itemType != null ? item.itemType : 'อัปเดตใหม่'}
+                                </div>
+                                <div style="font-size: 14px;">${item.title}</div>
+                            </a>
+                        `;
+                        notiList.innerHTML += notiHTML;
+                    });
+                })
+                .catch(error => console.error('Error:', error));
+        }
 
-	    // ฟังก์ชันเปิด/ปิด กล่องแจ้งเตือน
-	    function toggleNotification() {
-	        const dropdown = document.getElementById("noti-dropdown");
-	        dropdown.style.display = (dropdown.style.display === "none") ? "block" : "none";
-	    }
+        function toggleNotification() {
+            const dropdown = document.getElementById("noti-dropdown");
+            dropdown.style.display = (dropdown.style.display === "none") ? "block" : "none";
+        }
 
-	    // ปิดกล่องแจ้งเตือนถ้าคลิกที่อื่นบนหน้าจอ
-	    window.onclick = function(event) {
-	        if (!event.target.closest('.notification')) {
-	            document.getElementById("noti-dropdown").style.display = "none";
-	        }
-	    }
-	</script>
+        window.onclick = function(event) {
+            if (!event.target.closest('.notification')) {
+                document.getElementById("noti-dropdown").style.display = "none";
+            }
+        }
+    </script>
 </body>
 </html>

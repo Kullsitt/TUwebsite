@@ -367,18 +367,51 @@ public class PageController {
     }
  // 🎯 เพิ่มเมธอดสำหรับรับหน้า "ผลคะแนนของฉัน"
     @GetMapping("/score-report")
-    public String getScoreReportPage(HttpSession session, Model model) {
-        // เช็กก่อนว่าใช่นักศึกษาล็อกอินอยู่ไหม
+    public String getScoreReportPage(
+            @RequestParam(name = "courseId", required = false) String courseId,
+            HttpSession session, Model model) {
+
         TULoginResponse user = (TULoginResponse) session.getAttribute("user");
         if (user == null || !"student".equals(session.getAttribute("role"))) {
             return "redirect:/login";
         }
-        
-        // ส่งข้อมูล user ไปให้หน้าเว็บแสดงชื่อโปรไฟล์
+
         model.addAttribute("user", user);
-        
-        // ⚠️ สำคัญ: ตรงนี้ต้องชี้ไปที่ไฟล์ HTML ที่เพื่อนคุณสร้างไว้
-        // สมมติว่าเพื่อนเซฟไว้ที่ src/main/resources/templates/home/student/score_report.html
-        return "home/student/score_report"; 
+
+        if (courseId == null || courseId.isBlank()) {
+            return "redirect:/home/student";
+        }
+
+        Student student = studentRepository
+                .findByStudentCode(user.getUsername())
+                .orElse(null);
+
+        if (student == null) {
+            return "redirect:/home/student";
+        }
+
+        boolean enrolled = enrollmentRepository
+                .findByStudent_Id(student.getId())
+                .stream()
+                .anyMatch(e -> e.getCourse() != null
+                        && e.getCourse().getCourseId().equals(courseId));
+
+        if (!enrolled) {
+            return "redirect:/home/student";
+        }
+
+        Course course = courseRepository.findById(courseId).orElse(null);
+        if (course == null) {
+            return "redirect:/home/student";
+        }
+
+        List<Submission> submissions = submissionRepository
+                .findByStudent_IdAndAssignment_Course_CourseId(
+                        student.getId(), courseId);
+
+        model.addAttribute("course", course);
+        model.addAttribute("submissions", submissions);
+
+        return "home/student/score_report";
     }
 }

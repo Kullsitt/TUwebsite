@@ -8,205 +8,390 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
-        .score-container { background: white; padding: 40px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-top: 20px; text-align: center; max-width: 800px; margin-left: auto; margin-right: auto; }
-        .score-big { font-size: 72px; color: #f39c12; font-weight: 600; margin: 20px 0; text-shadow: 2px 2px 4px rgba(0,0,0,0.1); }
-        .feedback-box { background: #fff9e6; border-left: 5px solid #f39c12; padding: 20px; text-align: left; margin-top: 20px; border-radius: 0 8px 8px 0; }
-        .back-link { display: inline-block; margin-top: 30px; color: #f39c12; text-decoration: none; font-weight: 500; padding: 10px 20px; border: 1px solid #f39c12; border-radius: 6px; transition: 0.3s; }
+        .score-container {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            margin-top: 20px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .score-card {
+            border: 1px solid #eee;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 20px;
+            text-align: center;
+            background: #fafafa;
+        }
+        .score-big {
+            font-size: 64px;
+            color: #f39c12;
+            font-weight: 600;
+            margin: 15px 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+        .score-no-grade {
+            font-size: 28px;
+            color: #bbb;
+            margin: 15px 0;
+        }
+        .assignment-title {
+            font-size: 1.2rem;
+            color: #2c3e50;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        .assignment-type {
+            display: inline-block;
+            font-size: 0.8rem;
+            padding: 3px 10px;
+            border-radius: 12px;
+            background: #f0f0f0;
+            color: #777;
+            margin-bottom: 10px;
+        }
+        .feedback-box {
+            background: #fff9e6;
+            border-left: 5px solid #f39c12;
+            padding: 15px 20px;
+            text-align: left;
+            margin-top: 15px;
+            border-radius: 0 8px 8px 0;
+        }
+        .back-link {
+            display: inline-block;
+            margin-top: 30px;
+            color: #f39c12;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 10px 20px;
+            border: 1px solid #f39c12;
+            border-radius: 6px;
+            transition: 0.3s;
+        }
         .back-link:hover { background: #f39c12; color: white; }
-        .fab-email { position: fixed; bottom: 30px; right: 30px; background-color: #e67e22; color: white; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; box-shadow: 0 4px 15px rgba(230, 126, 34, 0.4); cursor: pointer; transition: 0.3s; z-index: 100; border: none; }
+
+        /* FAB Email */
+        .fab-email {
+            position: fixed; bottom: 30px; right: 30px;
+            background-color: #e67e22; color: white;
+            width: 60px; height: 60px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 24px; box-shadow: 0 4px 15px rgba(230,126,34,0.4);
+            cursor: pointer; transition: 0.3s; z-index: 100; border: none;
+        }
         .fab-email:hover { transform: scale(1.1) translateY(-5px); background-color: #d35400; }
-        .email-modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); }
-        .email-modal-content { background-color: #fff; margin: 5% auto; padding: 0; border-radius: 12px; width: 400px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); overflow: hidden; }
-        .email-header { background: linear-gradient(135deg, #e67e22, #f39c12); color: white; padding: 15px 20px; font-size: 1.2rem; display: flex; justify-content: space-between; align-items: center; }
+
+        /* Email Modal */
+        .email-modal {
+            display: none; position: fixed; z-index: 1000;
+            left: 0; top: 0; width: 100%; height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+        .email-modal-content {
+            background-color: #fff; margin: 5% auto; padding: 0;
+            border-radius: 12px; width: 400px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2); overflow: hidden;
+        }
+        .email-header {
+            background: linear-gradient(135deg, #e67e22, #f39c12);
+            color: white; padding: 15px 20px; font-size: 1.2rem;
+            display: flex; justify-content: space-between; align-items: center;
+        }
         .email-body { padding: 20px; }
         .email-form-group { margin-bottom: 15px; }
         .email-form-group label { display: block; margin-bottom: 5px; font-size: 0.9rem; color: #555; }
-        .email-form-group input, .email-form-group textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-family: 'Prompt', sans-serif; }
-        .email-footer { padding: 15px 20px; background: #f9f9f9; text-align: right; border-top: 1px solid #eee; }
-        .btn-send { background: #e67e22; color: white; border: none; padding: 8px 20px; border-radius: 6px; cursor: pointer; transition: 0.2s; }
+        .email-form-group input,
+        .email-form-group textarea {
+            width: 100%; padding: 10px; border: 1px solid #ddd;
+            border-radius: 6px; font-family: 'Prompt', sans-serif;
+        }
+        .email-footer {
+            padding: 15px 20px; background: #f9f9f9;
+            text-align: right; border-top: 1px solid #eee;
+        }
+        .btn-send {
+            background: #e67e22; color: white; border: none;
+            padding: 8px 20px; border-radius: 6px; cursor: pointer; transition: 0.2s;
+        }
         .btn-send:hover { background: #d35400; }
-        .btn-cancel { background: white; color: #666; border: 1px solid #ccc; padding: 8px 15px; border-radius: 6px; cursor: pointer; margin-right: 10px; }
+        .btn-cancel {
+            background: white; color: #666; border: 1px solid #ccc;
+            padding: 8px 15px; border-radius: 6px; cursor: pointer; margin-right: 10px;
+        }
 
-        /* Dropdown logout */
-        .user-profile { position: relative; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+        /* User Dropdown */
+        .user-profile {
+            position: relative; cursor: pointer;
+            display: flex; align-items: center; gap: 8px;
+        }
         #user-dropdown {
-            display: none;
-            position: absolute;
-            top: 110%;
-            right: 0;
-            background: #fff;
-            border-radius: 10px;
+            display: none; position: absolute; top: 110%; right: 0;
+            background: #fff; border-radius: 10px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.15);
-            min-width: 180px;
-            z-index: 999;
-            overflow: hidden;
+            min-width: 180px; z-index: 999; overflow: hidden;
         }
         .dd-header { padding: 12px 16px; border-bottom: 1px solid #f0f0f0; }
         .dd-header-name { font-weight: 600; font-size: 14px; }
         .dd-header-role { font-size: 12px; color: #888; }
-        .dd-logout { display: flex; align-items: center; gap: 10px; padding: 12px 16px; color: #e74c3c; text-decoration: none; font-size: 14px; }
+        .dd-logout {
+            display: flex; align-items: center; gap: 10px;
+            padding: 12px 16px; color: #e74c3c;
+            text-decoration: none; font-size: 14px;
+        }
         .dd-logout:hover { background: #fff5f5; }
+
+        /* Empty state */
+        .empty-state {
+            text-align: center;
+            padding: 50px 20px;
+            color: #999;
+        }
+        .empty-state i {
+            font-size: 52px;
+            color: #ddd;
+            margin-bottom: 15px;
+            display: block;
+        }
     </style>
 </head>
 <body>
-    <div class="top-orange-bar"></div>
-    <div class="container">
-        <header class="main-header">
-            <div class="logo-section">
-                <img th:src="@{/images/TU logo.png}" alt="Thammasat Logo" class="logo-img">
-                <div class="logo-text">
-                    <span class="uni-name-th">มหาวิทยาลัยธรรมศาสตร์</span><br>
-                    <span class="uni-name-en">Thammasat University</span>
-                </div>
-            </div>
-            <div class="user-section">
-                <div class="notification" style="position: relative; cursor: pointer;" onclick="toggleNotification()">
-                    <i class="fa-regular fa-bell"></i>
-                    <span class="badge" id="noti-badge">0</span>
-                    <div id="noti-dropdown" class="noti-dropdown-content" style="display: none; position: absolute; right: 0; top: 40px; background: white; border: 1px solid #ddd; width: 320px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 1000; max-height: 400px; overflow-y: auto;">
-                        <div style="padding: 12px; border-bottom: 1px solid #eee; font-weight: bold; text-align: center; color: #c0392b;">
-                            <i class="fa-solid fa-bullhorn"></i> แจ้งเตือนล่าสุด
-                        </div>
-                        <div id="noti-list">
-                            <div style="padding: 15px; text-align: center; color: #888;">กำลังโหลด...</div>
-                        </div>
-                    </div>
-                </div>
+<div class="top-orange-bar"></div>
+<div class="container">
 
-                <div class="user-profile" onclick="toggleUserMenu()">
-                    <div class="avatar-placeholder"><i class="fa-solid fa-user"></i></div>
-                    <span class="user-name" th:text="${user != null ? user.displaynameTh : 'ชื่อนักศึกษา'}">ชื่อนักศึกษา</span>
-                    <i class="fa-solid fa-chevron-down" style="font-size:11px;"></i>
-
-                    <div id="user-dropdown">
-                        <div class="dd-header">
-                            <div class="dd-header-name" th:text="${user != null ? user.displaynameTh : 'ชื่อนักศึกษา'}">ชื่อนักศึกษา</div>
-                            <div class="dd-header-role">นักศึกษา</div>
-                        </div>
-                        <a href="/logout" class="dd-logout">
-                            <i class="fa-solid fa-right-from-bracket"></i>
-                            ออกจากระบบ
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </header>
-
-        <div class="search-container">
-            <div class="search-box">
-                <i class="fa-solid fa-bars menu-icon"></i>
-                <input type="text" id="searchInput" placeholder="ค้นหารายวิชา">
-                <i class="fa-solid fa-magnifying-glass search-icon"></i>
+    <!-- Header -->
+    <header class="main-header">
+        <div class="logo-section">
+            <img th:src="@{/images/TU logo.png}" alt="Thammasat Logo" class="logo-img">
+            <div class="logo-text">
+                <span class="uni-name-th">มหาวิทยาลัยธรรมศาสตร์</span><br>
+                <span class="uni-name-en">Thammasat University</span>
             </div>
         </div>
-
-        <div class="main-content">
-            <aside class="sidebar">
-                <ul class="menu-list">
-                    <li th:onclick="'window.location.href=\'' + @{/home/student} + '\''" style="cursor: pointer;">
-                        <i class="fa-solid fa-graduation-cap"></i> รายวิชาของฉัน
-                    </li>
-                    <li th:onclick="'window.location.href=\'' + @{/all-courses} + '\''" style="cursor: pointer;">
-                        <i class="fa-solid fa-graduation-cap"></i> รายการทั้งหมด
-                    </li>
-                    <li class="active" th:onclick="'window.location.href=\'' + @{/score-report} + '\''" style="cursor: pointer;">
-                        <i class="fa-solid fa-chart-simple"></i> ผลคะแนนของฉัน
-                    </li>
-                </ul>
-            </aside>
-
-            <section class="content-area">
-                <div class="score-container">
-                    <h2 style="color: #333; font-size: 1.8rem; margin-bottom: 5px;">ผลการเรียนวิชา CS101</h2>
-                    <p style="color: #666; font-size: 1.1rem;">การเขียนโปรแกรมเบื้องต้น</p>
-                    <div class="score-big">9.5 / 10</div>
-                    <div class="feedback-box">
-                        <strong style="color: #d35400; font-size: 1.1rem;"><i class="fa-solid fa-comment-dots"></i> ข้อเสนอแนะจากอาจารย์:</strong><br>
-                        <p style="margin-top: 10px; color: #444; line-height: 1.6;">"การเขียนโค้ดทำได้เป็นระเบียบและถูกต้องตามหลักการพัฒนาซอฟต์แวร์ที่ดี"</p>
+        <div class="user-section">
+            <!-- กระดิ่งแจ้งเตือน -->
+            <div class="notification" style="position: relative; cursor: pointer;" onclick="toggleNotification()">
+                <i class="fa-regular fa-bell"></i>
+                <span class="badge" id="noti-badge">0</span>
+                <div id="noti-dropdown" style="display: none; position: absolute; right: 0; top: 40px;
+                     background: white; border: 1px solid #ddd; width: 320px; border-radius: 8px;
+                     box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 1000; max-height: 400px; overflow-y: auto;">
+                    <div style="padding: 12px; border-bottom: 1px solid #eee; font-weight: bold;
+                                text-align: center; color: #c0392b;">
+                        <i class="fa-solid fa-bullhorn"></i> แจ้งเตือนล่าสุด
                     </div>
-                    <a th:href="@{/home/student}" class="back-link"><i class="fa-solid fa-arrow-left"></i> กลับไปหน้ารายวิชา</a>
+                    <div id="noti-list">
+                        <div style="padding: 15px; text-align: center; color: #888;">กำลังโหลด...</div>
+                    </div>
                 </div>
-            </section>
+            </div>
+
+            <!-- User Profile Dropdown -->
+            <div class="user-profile" onclick="toggleUserMenu()">
+                <div class="avatar-placeholder"><i class="fa-solid fa-user"></i></div>
+                <span class="user-name"
+                      th:text="${user != null ? user.displaynameTh : 'ชื่อนักศึกษา'}">ชื่อนักศึกษา</span>
+                <i class="fa-solid fa-chevron-down" style="font-size:11px;"></i>
+                <div id="user-dropdown">
+                    <div class="dd-header">
+                        <div class="dd-header-name"
+                             th:text="${user != null ? user.displaynameTh : 'ชื่อนักศึกษา'}">ชื่อนักศึกษา</div>
+                        <div class="dd-header-role">นักศึกษา</div>
+                    </div>
+                    <a th:href="@{/logout}" class="dd-logout">
+                        <i class="fa-solid fa-right-from-bracket"></i> ออกจากระบบ
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Search Bar -->
+    <div class="search-container">
+        <div class="search-box">
+            <i class="fa-solid fa-bars menu-icon"></i>
+            <input type="text" placeholder="ค้นหารายวิชา">
+            <i class="fa-solid fa-magnifying-glass search-icon"></i>
         </div>
     </div>
 
-    <button class="fab-email" onclick="openEmailModal()" title="ส่งอีเมลติดต่อระบบ">
-        <i class="fa-regular fa-envelope"></i>
-    </button>
+    <div class="main-content">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <ul class="menu-list">
+                <li th:onclick="'window.location.href=\'' + @{/home/student} + '\''">
+                    <i class="fa-solid fa-graduation-cap"></i> รายวิชาของฉัน
+                </li>
+                <li th:onclick="'window.location.href=\'' + @{/all-courses} + '\''">
+                    <i class="fa-solid fa-graduation-cap"></i> รายการทั้งหมด
+                </li>
+                <li class="active">
+                    <i class="fa-solid fa-chart-simple"></i> ผลคะแนนของฉัน
+                </li>
+            </ul>
+        </aside>
 
-    <div id="emailModal" class="email-modal">
-        <div class="email-modal-content">
-            <div class="email-header">
-                <span><i class="fa-regular fa-paper-plane"></i> ส่งอีเมลติดต่อ</span>
-                <i class="fa-solid fa-xmark" onclick="closeEmailModal()" style="cursor:pointer;"></i>
+        <!-- Content -->
+        <section class="content-area">
+            <div class="score-container">
+
+                <!-- หัวข้อวิชา -->
+                <h2 style="color: #333; font-size: 1.8rem; margin-bottom: 5px; text-align: center;">
+                    ผลการเรียนวิชา
+                    <span th:text="${course.courseId}">CSXXX</span>
+                </h2>
+                <p style="color: #666; font-size: 1.1rem; text-align: center; margin-bottom: 30px;"
+                   th:text="${course.courseName}">ชื่อวิชา</p>
+
+                <!-- กรณียังไม่มีคะแนนเลย -->
+                <div th:if="${#lists.isEmpty(submissions)}" class="empty-state">
+                    <i class="fa-solid fa-inbox"></i>
+                    <p>ยังไม่มีคะแนนสำหรับวิชานี้</p>
+                </div>
+
+                <!-- วนแสดงคะแนนแต่ละงาน -->
+                <div th:each="sub : ${submissions}" class="score-card">
+
+                    <!-- ชื่องานและประเภท -->
+                    <div class="assignment-title"
+                         th:text="${sub.assignment.title}">ชื่องาน</div>
+                    <span class="assignment-type"
+                          th:text="${sub.assignment.type}">ประเภท</span>
+
+                    <!-- คะแนน: มี -->
+                    <div class="score-big"
+                         th:if="${sub.score != null}"
+                         th:text="${sub.score + ' / 10'}">
+                        0 / 10
+                    </div>
+
+                    <!-- คะแนน: ยังไม่ได้ให้ -->
+                    <div class="score-no-grade"
+                         th:if="${sub.score == null}">
+                        <i class="fa-regular fa-clock"></i> รอการตรวจ
+                    </div>
+
+                    <!-- Feedback จากอาจารย์ -->
+                    <div class="feedback-box"
+                         th:if="${sub.feedback != null and !#strings.isEmpty(sub.feedback)}">
+                        <strong style="color: #d35400; font-size: 1.05rem;">
+                            <i class="fa-solid fa-comment-dots"></i> ข้อเสนอแนะจากอาจารย์:
+                        </strong>
+                        <p style="margin-top: 10px; color: #444; line-height: 1.6;"
+                           th:text="${sub.feedback}"></p>
+                    </div>
+
+                </div>
+                <!-- ปุ่มกลับ -->
+                <div style="text-align: center;">
+                    <a th:href="@{/home/student}" class="back-link">
+                        <i class="fa-solid fa-arrow-left"></i> กลับไปหน้ารายวิชา
+                    </a>
+                </div>
+
             </div>
-            <form th:action="@{/api/send-email}" method="post">
-                <div class="email-body">
-                    <div class="email-form-group">
-                        <label>ส่งถึง (Email)</label>
-                        <input type="email" name="toEmail" placeholder="เช่น teacher@tu.ac.th" required>
-                    </div>
-                    <div class="email-form-group">
-                        <label>หัวข้อ (Subject)</label>
-                        <input type="text" name="subject" placeholder="ระบุหัวข้อที่ต้องการติดต่อ" required>
-                    </div>
-                    <div class="email-form-group">
-                        <label>ข้อความ (Message)</label>
-                        <textarea name="message" rows="4" placeholder="พิมพ์ข้อความของคุณที่นี่..." required></textarea>
-                    </div>
-                </div>
-                <div class="email-footer">
-                    <button type="button" class="btn-cancel" onclick="closeEmailModal()">ยกเลิก</button>
-                    <button type="submit" class="btn-send"><i class="fa-solid fa-paper-plane"></i> ส่งอีเมล</button>
-                </div>
-            </form>
-        </div>
+        </section>
     </div>
+</div>
 
-    <script th:inline="javascript">
-        const currentStudentId = /*[[${user != null ? user.username : ''}]]*/ '';
-        document.addEventListener("DOMContentLoaded", function() {
-            if(currentStudentId) fetchNotifications(currentStudentId);
-        });
+<!-- FAB Email Button -->
+<button class="fab-email" onclick="openEmailModal()" title="ส่งอีเมลติดต่อระบบ">
+    <i class="fa-regular fa-envelope"></i>
+</button>
 
-        function fetchNotifications(studentId) {
-            fetch(`/api/notifications/student/${studentId}`).then(res => res.json()).then(data => {
+<!-- Email Modal -->
+<div id="emailModal" class="email-modal">
+    <div class="email-modal-content">
+        <div class="email-header">
+            <span><i class="fa-regular fa-paper-plane"></i> ส่งอีเมลติดต่อ</span>
+            <i class="fa-solid fa-xmark" onclick="closeEmailModal()" style="cursor:pointer;"></i>
+        </div>
+        <form th:action="@{/api/send-email}" method="post">
+            <div class="email-body">
+                <div class="email-form-group">
+                    <label>ส่งถึง (Email)</label>
+                    <input type="email" name="toEmail" placeholder="เช่น teacher@tu.ac.th" required>
+                </div>
+                <div class="email-form-group">
+                    <label>หัวข้อ (Subject)</label>
+                    <input type="text" name="subject" placeholder="ระบุหัวข้อที่ต้องการติดต่อ" required>
+                </div>
+                <div class="email-form-group">
+                    <label>ข้อความ (Message)</label>
+                    <textarea name="message" rows="4"
+                              placeholder="พิมพ์ข้อความของคุณที่นี่..." required></textarea>
+                </div>
+            </div>
+            <div class="email-footer">
+                <button type="button" class="btn-cancel" onclick="closeEmailModal()">ยกเลิก</button>
+                <button type="submit" class="btn-send">
+                    <i class="fa-solid fa-paper-plane"></i> ส่งอีเมล
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script th:inline="javascript">
+    const currentStudentId = /*[[${user != null ? user.username : ''}]]*/ '';
+
+    document.addEventListener("DOMContentLoaded", function () {
+        if (currentStudentId) fetchNotifications(currentStudentId);
+    });
+
+    function fetchNotifications(studentId) {
+        fetch(`/api/notifications/student/${studentId}`)
+            .then(res => res.json())
+            .then(data => {
                 document.getElementById('noti-badge').innerText = data.length;
                 const list = document.getElementById('noti-list');
-                list.innerHTML = data.length === 0 ? '<div style="padding: 15px; text-align: center; color: #888;">ไม่มีแจ้งเตือนใหม่</div>' : '';
+                list.innerHTML = data.length === 0
+                    ? '<div style="padding:15px;text-align:center;color:#888;">ไม่มีแจ้งเตือนใหม่</div>'
+                    : '';
                 data.forEach(item => {
-                    list.innerHTML += `<a href="/dashboard/student?id=${item.courseId}" style="display: block; padding: 12px; border-bottom: 1px solid #f5f5f5; text-decoration: none; color: #333;">
-                        <div style="font-size: 11px; color: #e67e22;">[${item.courseId}]</div>
-                        <div style="font-size: 13px;">${item.title}</div></a>`;
+                    list.innerHTML += `
+                        <a href="/dashboard/student?id=${item.courseId}"
+                           style="display:block;padding:12px;border-bottom:1px solid #f5f5f5;
+                                  text-decoration:none;color:#333;">
+                            <div style="font-size:11px;color:#e67e22;">[${item.courseId}]</div>
+                            <div style="font-size:13px;">${item.title}</div>
+                        </a>`;
                 });
-            }).catch(() => { document.getElementById('noti-list').innerHTML = '<div style="padding: 15px; text-align: center; color: #888;">ยังไม่ได้เชื่อมต่อ API</div>'; });
-        }
+            })
+            .catch(() => {
+                document.getElementById('noti-list').innerHTML =
+                    '<div style="padding:15px;text-align:center;color:#888;">ยังไม่ได้เชื่อมต่อ API</div>';
+            });
+    }
 
-        function toggleNotification() {
-            const dropdown = document.getElementById("noti-dropdown");
-            dropdown.style.display = (dropdown.style.display === "none") ? "block" : "none";
-        }
+    function toggleNotification() {
+        const d = document.getElementById("noti-dropdown");
+        d.style.display = d.style.display === "none" ? "block" : "none";
+    }
 
-        function toggleUserMenu() {
-            const dd = document.getElementById('user-dropdown');
-            dd.style.display = dd.style.display === 'none' ? 'block' : 'none';
-        }
+    function toggleUserMenu() {
+        const d = document.getElementById('user-dropdown');
+        d.style.display = d.style.display === 'none' ? 'block' : 'none';
+    }
 
-        const emailModal = document.getElementById("emailModal");
-        function openEmailModal() { emailModal.style.display = "block"; }
-        function closeEmailModal() { emailModal.style.display = "none"; }
+    const emailModal = document.getElementById("emailModal");
+    function openEmailModal() { emailModal.style.display = "block"; }
+    function closeEmailModal() { emailModal.style.display = "none"; }
 
-        window.onclick = function(event) {
-            if (!event.target.closest('.notification')) {
-                const notiDropdown = document.getElementById("noti-dropdown");
-                if(notiDropdown) notiDropdown.style.display = "none";
-            }
-            if (!event.target.closest('.user-profile')) {
-                const userDropdown = document.getElementById("user-dropdown");
-                if(userDropdown) userDropdown.style.display = "none";
-            }
-            if (event.target == emailModal) closeEmailModal();
+    window.onclick = function (event) {
+        if (!event.target.closest('.notification')) {
+            const n = document.getElementById("noti-dropdown");
+            if (n) n.style.display = "none";
         }
-    </script>
+        if (!event.target.closest('.user-profile')) {
+            const u = document.getElementById('user-dropdown');
+            if (u) u.style.display = 'none';
+        }
+        if (event.target === emailModal) closeEmailModal();
+    }
+</script>
 </body>
 </html>

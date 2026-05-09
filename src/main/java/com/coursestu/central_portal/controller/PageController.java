@@ -414,4 +414,29 @@ public class PageController {
 
         return "home/student/score_report";
     }
+ // ในไฟล์ PageController.java
+ // PageController.java
+    @GetMapping("/assignment/submithw")
+    public String showSubmitPage(@RequestParam("assignmentId") String assignmentTitle, 
+                                 @RequestParam("courseId") String courseId, 
+                                 HttpSession session, 
+                                 Model model) {
+        
+        Assignment assignment = assignmentRepository.findAll().stream()
+                .filter(a -> a.getTitle().equals(assignmentTitle) && a.getCourse().getCourseId().equals(courseId))
+                .findFirst().orElse(null);
+
+        model.addAttribute("courseId", courseId);
+        model.addAttribute("assignmentTitle", assignmentTitle); // ✅ ชื่อเอาไว้โชว์
+
+        if (assignment != null) {
+            model.addAttribute("assignmentId", assignment.getId()); // ✅ ID เอาไว้ส่งเข้า Database
+            model.addAttribute("assignmentDescription", assignment.getDescription());
+            model.addAttribute("assignmentFileName", assignment.getFileName());
+            model.addAttribute("deadline", assignment.getDeadline() != null ? 
+                assignment.getDeadline().format(java.time.format.DateTimeFormatter.ofPattern("dd MMM yyyy HH:mm")) : "ไม่มีกำหนด");
+        }
+        // ... ส่วนอื่นเหมือนเดิม ...
+        return "dashboard/student/submithw";
+    }
 }

@@ -59,18 +59,28 @@
             </div>
         </header>
 
-        <div class="dashboard-content">
-            <div class="breadcrumb">
-                <a th:href="@{/home/student}">หน้าแรก</a> / 
-                <span>วิชา <span th:text="${courseId}">CSXXX</span></span>
-            </div>
+		<!-- ... (ส่วนบนเหมือนเดิมจนถึง dashboard-content) ... -->
 
-            <h1 class="course-title">วิชา <span th:text="${courseId}">CSXXX</span></h1>
+		<div class="dashboard-content">
+		    <div class="breadcrumb">
+		        <a th:href="@{/home/student}">หน้าแรก</a> / 
+		        <span>วิชา <span th:text="${courseId}">CSXXX</span></span>
+		    </div>
 
-            <div class="section-card">
-                <div class="section-header">
-                    <i class="fa-solid fa-bullhorn outline-icon"></i> Announcement
-                </div>
+		    <!-- 🚩 เพิ่มส่วนนี้: แจ้งเตือนเมื่อส่งงานสำเร็จ -->
+		    <div th:if="${param.success}" 
+		         style="background-color: #d4edda; color: #155724; padding: 15px; border-radius: 8px; margin: 20px 0; border: 1px solid #c3e6cb; text-align: center; font-family: 'Prompt', sans-serif; animation: fadeInDown 0.5s ease;">
+		        <i class="fa-solid fa-circle-check" style="margin-right: 8px;"></i>
+		        <strong>ส่งงานสำเร็จเรียบร้อยแล้ว!</strong>
+		    </div>
+
+		    <h1 class="course-title">วิชา <span th:text="${courseId}">CSXXX</span></h1>
+
+		    <div class="section-card">
+		        <div class="section-header">
+		            <i class="fa-solid fa-bullhorn outline-icon"></i> Announcement
+		        </div>
+		<!-- ... (ส่วนที่เหลือเหมือนเดิม) ... -->
                 <div class="section-body">
                     <div th:if="${#lists.isEmpty(announcements)}" class="text-normal" style="padding:10px; color:#999;">ไม่มีข้อมูลในหมวดนี้</div>
                     
@@ -115,28 +125,39 @@
                 </div>
             </div>
 
-            <div class="section-card">
-                <div class="section-header">
-                    <i class="fa-regular fa-file-word outline-icon"></i> Homework
-                </div>
-                <div class="section-body">
-                    <div th:if="${#lists.isEmpty(homeworks)}" class="text-normal" style="padding:10px; color:#999;">ไม่มีข้อมูลในหมวดนี้</div>
-                    
-                    <div th:each="item : ${homeworks}" class="list-item">
-                        <i class="fa-regular fa-square-check icon-grey"></i>
-                        <div class="item-text">
-                            <div class="text-bold" th:text="${item.title}">ชื่อการบ้าน</div>
-                            <div class="text-normal" th:text="'กำหนดส่ง: ' + ${item.deadline != null ? #temporals.format(item.deadline, 'dd MMM yyyy HH:mm') : 'ไม่มีกำหนด'}">Deadline</div>
-							<a th:if="${item.fileName != null}" 
-							   th:href="@{'/documents/view/' + ${item.fileName}}" 
-							   target="_blank" 
-							   style="display:inline-block; margin-top:5px; font-size: 0.9rem; color:#e67e22; text-decoration: none;">
-							    <i class="fa-solid fa-file-pdf"></i> เปิดโจทย์การบ้าน
+			<div class="section-card">
+			    <div class="section-header">
+			        <i class="fa-regular fa-file-word outline-icon"></i> Homework
+			    </div>
+			    <div class="section-body">
+			        <!-- กรณีไม่มีการบ้าน -->
+			        <div th:if="${#lists.isEmpty(homeworks)}" class="text-normal" style="padding:10px; color:#999;">ไม่มีข้อมูลในหมวดนี้</div>
+			        
+			        <!-- รายการการบ้าน -->
+			        <div th:each="item : ${homeworks}" class="homework-list-item">
+			            <!-- ฝั่งซ้าย: รายละเอียดงาน -->
+			            <div class="homework-info">
+			                <i class="fa-regular fa-square-check icon-grey"></i>
+			                <div class="item-text">
+			                    <span class="text-bold" th:text="${item.title}">ชื่อการบ้าน</span>
+			                    <div class="deadline-text">
+			                        <i class="fa-regular fa-clock"></i> 
+			                        กำหนดส่ง: <span th:text="${item.deadline != null ? #temporals.format(item.deadline, 'dd MMM yyyy HH:mm') : 'ไม่มีกำหนด'}"></span>
+			                    </div>
+			                </div>
+			            </div>
+
+			            <!-- ฝั่งขวา: กล่องปุ่มส่งงาน (แบบใหม่) -->
+			            <div class="homework-action-box">
+							<a th:href="@{/assignment/submithw(assignmentId=${item.title}, courseId=${courseId})}" 
+							   class="btn-submit-styled">
+							    <i class="fa-solid fa-cloud-arrow-up"></i>
+							    <span>ส่งงานที่นี่</span>
 							</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
+			            </div>
+			        </div>
+			    </div>
+			</div>
 
             <div class="section-card">
                 <div class="section-header">

@@ -1,0 +1,175 @@
+@import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;700&display=swap');
+
+:root {
+    --tu-orange: #fbb03b;
+    --tu-red: #f15a24;
+    --bg-gray: #f0f0f0;
+    --text-main: #333333;
+    --text-muted: #888888;
+}
+
+body {
+    font-family: 'Sarabun', sans-serif;
+    background-color: var(--bg-gray);
+    margin: 0;
+    color: var(--text-main);
+}
+
+/* Header & Logo */
+.tu-header {
+    background-color: white;
+    border-bottom: 4px solid var(--tu-orange);
+    padding: 15px 0;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+.header-flex {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo-section {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.tu-logo {
+    height: 30px; /* ขนาดโลโก้เล็กลงตามรูป */
+    width: auto;
+    object-fit: contain;
+}
+
+.tu-text-red {
+    color: var(--tu-red);
+    font-size: 18px;
+    font-weight: bold;
+    margin: 0;
+    line-height: 1.1;
+}
+
+.tu-subtitle {
+    color: var(--text-muted);
+    font-size: 11px;
+    margin: 0;
+}
+
+/* User Profile */
+.user-profile {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.user-name {
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.user-avatar {
+    width: 35px;
+    height: 35px;
+    background-color: #eee;
+    border-radius: 50%;
+    border: 1px solid #ddd;
+}
+
+/* Layout Helpers */
+.container {
+    max-width: 1140px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.breadcrumb {
+    padding: 20px 0;
+    font-size: 13px;
+}
+
+.breadcrumb a { text-decoration: none; font-weight: 600; }
+.link-home { color: var(--tu-orange); }
+.link-course { color: var(--text-muted); }
+.breadcrumb span { margin: 0 8px; color: #ccc; }
+.current-page { font-weight: bold; color: var(--text-main); }
+
+/* Card & Table */
+.card {
+    background: white;
+    border-radius: 12px;
+    padding: 30px 40px;
+    margin-bottom: 25px;
+    box-shadow: 0 2px 15px rgba(0,0,0,0.03);
+}
+
+.card-header h2 { margin: 0; font-size: 24px; }
+.score-label { font-weight: bold; font-size: 18px; }
+
+.table-section {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 15px rgba(0,0,0,0.03);
+}
+
+.table-title {
+    background: #fafafa;
+    padding: 15px 40px;
+    border-bottom: 1px solid #eee;
+}
+
+table { width: 100%; border-collapse: collapse; }
+th { padding: 15px 40px; color: var(--text-muted); font-size: 11px; text-transform: uppercase; border-bottom: 1px solid #eee; text-align: left; }
+td { padding: 18px 40px; border-bottom: 1px solid #f9f9f9; font-size: 14px; }
+
+/* Status & Button */
+.status-badge {
+    background-color: #fff9db;
+    color: #f08c00;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: bold;
+}
+
+.score-input {
+    width: 80px;
+    padding: 8px 12px;
+    border: 2px solid #e67e22;
+    border-radius: 8px;
+    background: #ffffff;
+    color: #333;
+    font-size: 14px;
+    text-align: center;
+    outline: none;
+    transition: box-shadow 0.2s;
+}
+
+.score-input:focus {
+    box-shadow: 0 0 0 3px rgba(230, 126, 34, 0.25);
+}
+
+/* ซ่อน arrow ของ number input */
+.score-input::-webkit-outer-spin-button,
+.score-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+}
+
+.btn-orange {
+    background-color: var(--tu-orange);
+    color: white;
+    border: none;
+    padding: 8px 25px;
+    border-radius: 6px;
+    font-weight: bold;
+    font-size: 12px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.btn-orange:hover { background-color: #e89a20; }
+
+.text-center { text-align: center; }
+.text-right { text-align: right; }
+
+footer { text-align: center; padding: 40px 0; color: #bbb; font-size: 10px; letter-spacing: 1px; }

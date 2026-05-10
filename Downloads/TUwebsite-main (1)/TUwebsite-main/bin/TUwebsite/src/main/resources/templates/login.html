@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" th:href="@{/css/loginstyle.css}">
+    <title>Login</title>
+</head>
+<body>
+    <div class="contain">
+        <div class="view">
+            <div class="view2">
+                <div class="column">
+                    <img th:src="@{/images/TU logo.png}" class="image"/>
+                    <span class="text">
+                        มหาวิทยาลัยธรรมศาสตร์<br/>Thammasat University
+                    </span>
+                    <div class="box"></div>
+
+                    <!-- แก้ form ตรงนี้ -->
+                    <form th:action="@{/login}" method="post">
+
+                        <!-- แสดง error -->
+                        <div th:if="${param.error}" style="color:red; margin-bottom:10px;">
+                            Username หรือ Password ไม่ถูกต้อง
+                        </div>
+
+                        <span class="text2">อีเมลมหาวิทยาลัย</span>
+                        <div class="row-view">
+                            <img th:src="@{/images/user.svg}" class="image2"/>
+                            <input type="text"
+                                   name="username"
+                                   id="username"
+                                   placeholder="username"
+                                   class="input"/>
+                        </div>
+
+                        <span class="text3">รหัสผ่าน</span>
+                        <div class="row-view2">
+                            <img th:src="@{/images/lock.svg}" class="image3"/>
+                            <input type="password"
+                                   name="password"
+                                   id="password"
+                                   placeholder="กรอกรหัสผ่าน"
+                                   class="input"/>
+                        </div>
+
+                        <button type="submit" class="button">
+                            <span class="text4">เข้าสู่ระบบ</span>
+                        </button>
+
+                    </form>
+                    <!-- ลบ loginscrip.js ออก ไม่ต้องใช้แล้ว -->
+
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

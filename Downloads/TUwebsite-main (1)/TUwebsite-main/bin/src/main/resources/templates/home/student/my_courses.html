@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="th" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>รายวิชาของฉัน - Thammasat</title>
+    <link rel="stylesheet" th:href="@{/css/homestyle.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="top-orange-bar"></div>
+    <div class="container">
+        <header class="main-header">
+            <div class="logo-section">
+                <img th:src="@{/images/TU logo.png}" alt="Thammasat Logo" class="logo-img">
+                <div class="logo-text">
+                    <span class="uni-name-th">มหาวิทยาลัยธรรมศาสตร์</span><br>
+                    <span class="uni-name-en">Thammasat University</span>
+                </div>
+            </div>
+            <div class="user-section">
+                <div class="notification" style="position: relative; cursor: pointer;" onclick="toggleNotification()">
+                    <i class="fa-regular fa-bell"></i>
+                    <span class="badge" id="noti-badge">0</span>
+                    <div id="noti-dropdown" class="noti-dropdown-content" style="display: none; position: absolute; right: 0; top: 40px; background: white; border: 1px solid #ddd; width: 320px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 1000; max-height: 400px; overflow-y: auto;">
+                        <div style="padding: 12px; border-bottom: 1px solid #eee; font-weight: bold; text-align: center; color: #c0392b;">
+                            <i class="fa-solid fa-bullhorn"></i> แจ้งเตือนล่าสุด
+                        </div>
+                        <div id="noti-list">
+                            <div style="padding: 15px; text-align: center; color: #888;">กำลังโหลด...</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="user-profile">
+                    <div class="avatar-placeholder"><i class="fa-solid fa-user"></i></div>
+                    <span class="user-name" th:text="${user.displaynameTh}">ชื่อนักศึกษาตัวอย่าง</span>
+                </div>
+            </div>
+        </header>
+
+        <div class="search-container">
+            <div class="search-box">
+                <i class="fa-solid fa-bars menu-icon"></i>
+                <input type="text" id="searchInput" placeholder="ค้นหารายวิชา">
+                <i class="fa-solid fa-magnifying-glass search-icon"></i>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <aside class="sidebar">
+                <ul class="menu-list">
+                    <li class="active" th:onclick="|window.location.href='@{/home/student}'|">
+                        <i class="fa-solid fa-graduation-cap"></i> รายวิชาของฉัน
+                    </li>
+                    <li th:onclick="|window.location.href='@{/all-courses}'|">
+                        <i class="fa-solid fa-graduation-cap"></i> รายการทั้งหมด
+                    </li>
+                </ul>
+            </aside>
+
+            <section class="content-area">
+                <h2 style="margin-left: 20px; margin-bottom: 20px; color: #333;">วิชาที่ฉันลงทะเบียนแล้ว</h2>
+                
+                <div class="course-grid" id="courseGrid">
+                    <div th:each="enroll, stat : ${enrolledCourses}" class="course-card" th:onclick="|window.location.href='@{/dashboard/student(id=${enroll.course.courseId})}'|" style="cursor:pointer;">
+                        <div class="card-banner" th:classappend="${stat.index % 3 == 0 ? 'bg-blue' : (stat.index % 3 == 1 ? 'bg-green' : 'bg-yellow')}">
+                            <span class="course-code" th:text="${enroll.course.courseId}">CSXXX</span>
+                            <h3 class="course-title" th:text="${enroll.course.courseId == 'CS232' ? 'Backend Development' : enroll.course.courseName}">เข้าสู่บทเรียน</h3>
+                        </div>
+                        <div class="card-details">
+                            <button class="btn-registered">ลงทะเบียนแล้ว</button>
+                        </div>
+                    </div>
+                    <div id="noSearchResults" style="display: none; grid-column: 1/-1; text-align: center; padding: 50px; color: #666;">
+                        <i class="fa-solid fa-magnifying-glass" style="font-size: 48px; margin-bottom: 15px; color: #ccc;"></i>
+                        <p>ไม่พบรายวิชาที่คุณค้นหา</p>
+                    </div>
+                </div>
+
+                <div th:if="${#lists.isEmpty(enrolledCourses)}" style="text-align: center; padding: 50px; color: #666; background: #fff; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
+                    <i class="fa-solid fa-folder-open" style="font-size: 48px; margin-bottom: 15px; color: #ccc;"></i>
+                    <p>คุณยังไม่มีวิชาที่ลงทะเบียนเรียนในขณะนี้</p>
+                    <a th:href="@{/all-courses}" class="btn-registered" style="display: inline-block; margin-top: 15px; background: #f39c12; color: white; text-decoration: none; padding: 10px 20px; border-radius: 5px;">
+                        ไปดูรายวิชาทั้งหมด
+                    </a>
+                </div>
+
+                <div class="feed-section" style="margin-top: 40px; padding: 20px; background: #fff; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
+                    <h2 style="color: #333; margin-bottom: 20px; border-bottom: 2px solid #f39c12; padding-bottom: 10px; display: inline-block; font-size: 1.5rem;">
+                        <i class="fa-solid fa-bell" style="color: #f39c12; margin-right: 10px;"></i> แจ้งเตือนล่าสุด (Feed)
+                    </h2>
+
+                    <div th:if="${#lists.isEmpty(feedItems)}" style="text-align: center; color: #999; padding: 30px;">
+                        <i class="fa-regular fa-face-smile-wink" style="font-size: 2.5rem; margin-bottom: 10px; color: #ddd;"></i>
+                        <p>ยังไม่มีการแจ้งเตือนหรืองานใหม่ในขณะนี้</p>
+                    </div>
+
+                    <div th:each="item : ${feedItems}" style="margin-bottom: 10px;">
+                        <a th:href="@{/dashboard/student(id=${item.course.courseId})}" style="text-decoration: none; display: flex; align-items: flex-start; gap: 15px; padding: 15px; border-bottom: 1px solid #eee; transition: 0.3s; color: inherit; cursor: pointer; border-radius: 8px;" onmouseover="this.style.backgroundColor='#fdfdfd'" onmouseout="this.style.backgroundColor='transparent'">
+                            <div style="width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; flex-shrink: 0;"
+                                 th:styleappend="${item.type == 'announcement'} ? 'background: #e8f4f8; color: #3498db;' : 
+                                                (${item.type == 'homework'} ? 'background: #fcf3cf; color: #f1c40f;' : 'background: #eaeded; color: #7f8c8d;')">
+                                <i class="fa-solid fa-bullhorn" th:if="${item.type == 'announcement'}"></i>
+                                <i class="fa-solid fa-book" th:if="${item.type == 'homework'}"></i>
+                                <i class="fa-solid fa-file-lines" th:if="${item.type != 'announcement' and item.type != 'homework'}"></i>
+                            </div>
+                            <div style="flex-grow: 1;">
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 5px; align-items: center;">
+                                    <strong style="color: #2c3e50; font-size: 1.1rem;" th:text="${item.title}">หัวข้อแจ้งเตือน</strong>
+                                    <span style="font-size: 0.8rem; padding: 3px 10px; border-radius: 12px; background: #f8f9fa; color: #555; border: 1px solid #ddd;" th:text="${item.course.courseId}">รหัสวิชา</span>
+                                </div>
+                                <p style="margin: 0 0 5px 0; color: #666; font-size: 0.95rem; line-height: 1.5;" th:text="${item.description}">รายละเอียด...</p>
+                                <div th:if="${item.deadline != null}" style="font-size: 0.85rem; color: #e74c3c; font-weight: 500;">
+                                    <i class="fa-regular fa-clock"></i> กำหนดส่ง: <span th:text="${#temporals.format(item.deadline, 'dd MMM yyyy')}"></span>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <script th:inline="javascript">
+        // 1. ระบบค้นหา (Search)
+        const searchInput = document.getElementById('searchInput');
+        const courseCards = document.querySelectorAll('.course-card');
+        const noSearchResults = document.getElementById('noSearchResults');
+
+        if (searchInput) {
+            searchInput.addEventListener('input', function(e) {
+                const keyword = e.target.value.toLowerCase().trim();
+                let visibleCount = 0;
+                courseCards.forEach(card => {
+                    const code = card.querySelector('.course-code').innerText.toLowerCase();
+                    const title = card.querySelector('.course-title').innerText.toLowerCase();
+                    if (code.includes(keyword) || title.includes(keyword)) {
+                        card.style.display = 'block';
+                        visibleCount++;
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+                if (noSearchResults) noSearchResults.style.display = (visibleCount === 0 && courseCards.length > 0) ? 'block' : 'none';
+            });
+        }
+
+        // 2. ระบบแจ้งเตือน Dropdown (ดึงข้อมูลจาก API ถ้าเพื่อนทำไว้)
+        const currentStudentId = /*[[${user != null ? user.username : ''}]]*/ '';
+        document.addEventListener("DOMContentLoaded", function() {
+            if(currentStudentId) fetchNotifications(currentStudentId);
+        });
+
+        function fetchNotifications(studentId) {
+            fetch(`/api/notifications/student/${studentId}`).then(res => res.json()).then(data => {
+                document.getElementById('noti-badge').innerText = data.length;
+                const list = document.getElementById('noti-list');
+                list.innerHTML = data.length === 0 ? '<div style="padding: 15px; text-align: center; color: #888;">ไม่มีแจ้งเตือนใหม่</div>' : '';
+                data.forEach(item => {
+                    list.innerHTML += `<a href="/dashboard/student?id=${item.courseId}" style="display: block; padding: 12px; border-bottom: 1px solid #f5f5f5; text-decoration: none; color: #333;">
+                        <div style="font-size: 11px; color: #e67e22;">[${item.courseId}]</div>
+                        <div style="font-size: 13px;">${item.title}</div></a>`;
+                });
+            }).catch(() => { document.getElementById('noti-list').innerHTML = '<div style="padding: 15px; text-align: center; color: #888;">ยังไม่ได้เชื่อมต่อ API</div>'; });
+        }
+
+        function toggleNotification() {
+            const dropdown = document.getElementById("noti-dropdown");
+            dropdown.style.display = (dropdown.style.display === "none") ? "block" : "none";
+        }
+
+        window.onclick = function(event) {
+            if (!event.target.closest('.notification')) document.getElementById("noti-dropdown").style.display = "none";
+        }
+    </script>
+</body>
+</html>

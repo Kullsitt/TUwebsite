@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="th" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ระบบประเมินผลงาน - มหาวิทยาลัยธรรมศาสตร์</title>
+    <link rel="stylesheet" th:href="@{/css/evaluation-style.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .user-profile { position: relative; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+        #user-dropdown { display: none; position: absolute; top: 110%; right: 0; background: #fff; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.15); min-width: 180px; z-index: 999; overflow: hidden; }
+        .dd-header { padding: 12px 16px; border-bottom: 1px solid #f0f0f0; }
+        .dd-header-name { font-weight: 600; font-size: 14px; }
+        .dd-header-role { font-size: 12px; color: #888; }
+        .dd-logout { display: flex; align-items: center; gap: 10px; padding: 12px 16px; color: #e74c3c; text-decoration: none; font-size: 14px; }
+        .dd-logout:hover { background: #fff5f5; }
+    </style>
+</head>
+<body class="bg-[#f0f0f0] min-h-screen">
+
+    <header class="tu-header">
+        <div class="container header-flex">
+            <div class="logo-section">
+                <img th:src="@{/images/TU logo.png}" alt="TU Logo" class="tu-logo">
+                <div>
+                    <h1 class="tu-text-red">มหาวิทยาลัยธรรมศาสตร์</h1>
+                    <p class="tu-subtitle">Thammasat University</p>
+                </div>
+            </div>
+            <div class="user-profile" onclick="toggleUserMenu()">
+                <span class="user-name" th:text="${userDisplayName}">ชื่ออาจารย์ผู้สอน</span>
+                <div class="user-avatar"></div>
+                <i class="fa-solid fa-chevron-down" style="font-size:11px;"></i>
+                <div id="user-dropdown">
+                    <div class="dd-header">
+                        <div class="dd-header-name" th:text="${userDisplayName}">ชื่ออาจารย์</div>
+                        <div class="dd-header-role">อาจารย์</div>
+                    </div>
+                    <a href="/logout" class="dd-logout">
+                        <i class="fa-solid fa-right-from-bracket"></i> ออกจากระบบ
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <nav class="container breadcrumb">
+        <a th:href="@{/dashboard/teacher}" class="link-home">หน้าแรก</a>
+        <span>/</span>
+        <a th:href="@{/dashboard/teacher/course(id=${courseId})}" class="link-course" th:text="'วิชา ' + ${subjectCode}">วิชาเดิม</a>
+        <span>/</span>
+        <span class="current-page" th:text="${assignmentTitle}">ชื่อการบ้านจริง</span>
+    </nav>
+
+    <section class="card">
+        <div class="card-header">
+            <h2 th:text="${assignmentTitle}">หัวข้อการบ้าน</h2>
+        </div>
+        <div class="assignment-info">
+            <p th:text="${assignmentDescription}">คำอธิบาย...</p>
+            <div th:if="${assignmentFileName != null}" style="display: flex; align-items: center; gap: 8px; margin-top: 10px;">
+                <i class="fa fa-file" style="color: #666;"></i>
+				<a th:if="${assignmentFileName != null}"
+				   th:href="@{/api/assignments/download/{fileName}(fileName=${assignmentFileName})}"
+				   th:text="${assignmentFileName}"
+				   target="_blank"
+				   style="color: #e67e22; font-weight: bold; text-decoration: underline;">
+				</a> 
+            </div>
+            <p class="deadline" style="margin-top: 10px; display: flex; align-items: center; gap: 8px;">
+                <i class="far fa-calendar-alt"></i>
+                <span th:text="${assignmentDeadline}">วันที่ส่ง</span>
+            </p>
+        </div>
+    </section>
+
+    <section class="table-section">
+        <table>
+            <thead>
+                <tr>
+                    <th>รหัสนักศึกษา</th>
+                    <th>ชื่อ-นามสกุล</th>
+                    <th class="text-center">ไฟล์การบ้าน</th>
+                    <th class="text-center">สถานะ</th>
+                    <th class="text-center">คะแนน</th>
+                    <th class="text-center">จัดการ</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="sub : ${submissions}">
+                    <td th:text="${sub.student.studentCode}">640961xxxx</td>
+                    <td th:text="${sub.student.firstname + (sub.student.surname != null ? ' ' + sub.student.surname : '')}">ชื่อ-นามสกุล</td>
+                    <td style="text-align: center; vertical-align: middle;">
+						<a th:if="${sub.fileName != null}"
+						   th:href="@{/api/assignments/download/submission/{fileName}(fileName=${sub.fileName})}"
+						   th:text="${sub.fileName}"
+						   target="_blank"
+						   style="color: #e67e22; font-weight: bold; text-decoration: underline;">
+						</a> 
+                        <span th:if="${sub.fileName == null}" style="color: #aaa;">ยังไม่ส่ง</span>
+                    </td>
+                    <td class="text-center">
+                        <span th:id="'status-' + ${sub.student.id}" th:class="${sub.score != null ? 'status-badge status-success' : 'status-badge'}" th:text="${sub.score != null ? 'ตรวจแล้ว' : 'รอตรวจ'}">สถานะ</span>
+                    </td>
+                    <td class="text-center">
+                        <input type="number" class="score-input" th:id="'score-' + ${sub.student.id}" th:value="${sub.score}" th:data-student-id="${sub.student.id}" placeholder="..." min="0" max="100">
+                    </td>
+                    <td class="text-right">
+                        <button th:data-student-id="${sub.student.id}" onclick="saveScore(this.dataset.studentId)" class="btn-orange">บันทึกคะแนน</button>
+                    </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(submissions)}">
+                    <td colspan="5" style="text-align: center; padding: 20px; color: #888;">ยังไม่มีนักศึกษาส่งงานในขณะนี้</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+    <footer>&copy; 2026 Thammasat University. All rights reserved.</footer>
+
+    <script th:inline="javascript">
+        const assignmentId = [[${assignmentId}]];
+        function toggleUserMenu() {
+            const dd = document.getElementById('user-dropdown');
+            dd.style.display = dd.style.display === 'none' ? 'block' : 'none';
+        }
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.user-profile')) {
+                const dd = document.getElementById('user-dropdown');
+                if (dd) dd.style.display = 'none';
+            }
+        });
+    </script>
+    <script th:src="@{/js/evaluation-script.js}"></script>
+</body>
+</html>

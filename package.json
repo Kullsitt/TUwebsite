@@ -1,0 +1,27 @@
+{
+  "name": "tuwebsite",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "bin": {
+    "tuwebsite": "bin/loginscrip.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Kullsitt/TUwebsite.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Kullsitt/TUwebsite/issues"
+  },
+  "homepage": "https://github.com/Kullsitt/TUwebsite#readme",
+  "devDependencies": {
+    "jest": "^30.3.0"
+  }
+}

@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>รายละเอียดวิชา - Thammasat</title>
+    <link rel="stylesheet" href="homestyle.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        .assignment-list {
+            margin-top: 20px;
+        }
+        .assignment-item {
+            background: #fff;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .assignment-item:hover {
+            background: #f9f9f9;
+        }
+        .assignment-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        .assignment-due {
+            color: #666;
+            font-size: 14px;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+        .modal-content {
+            background-color: #fff;
+            margin: 10% auto;
+            padding: 20px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 500px;
+        }
+        .close {
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .close:hover {
+            color: #f39c12;
+        }
+    </style>
+</head>
+<body>
+    <div class="top-orange-bar"></div>
+    <div class="container">
+        <header class="main-header">
+            <div class="logo-section">
+                <img src="D:\CS232\home\student\photo\v39_436.png" alt="Thammasat Logo" class="logo-img">
+                <div class="logo-text"><span class="uni-name-th">มหาวิทยาลัยธรรมศาสตร์</span><br><span class="uni-name-en">Thammasat University</span></div>
+            </div>
+            <div class="user-section">
+                <div class="notification">
+                    <i class="fa-regular fa-bell"></i><span class="badge">2</span>
+                    <div class="notification-dropdown">
+                        <div class="notif-header"><span>Notifications</span><i class="fa-solid fa-check" style="color: #f39c12;"></i></div>
+                        <div class="notif-list">
+                            <div class="notif-item"><div class="notif-text">CS271 เพิ่ม Quiz 1 : เนื้อหา...</div><div class="notif-meta"><span class="notif-time">29 มี.ค. 68 13:00 น.</span><i class="fa-solid fa-chevron-right"></i></div></div>
+                            <div class="notif-item"><div class="notif-text">CS251 เพิ่ม Quiz 23 : เนื้อหา...</div><div class="notif-meta"><span class="notif-time">25 มี.ค. 68 15:00 น.</span><i class="fa-solid fa-chevron-right"></i></div></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="user-profile"><div class="avatar-placeholder"><i class="fa-solid fa-user"></i></div><span class="user-name">ชื่อนักศึกษาตัวอย่าง</span></div>
+            </div>
+        </header>
+
+        <section class="content-area" style="width: 100%; padding: 20px;">
+            <div id="course-detail"></div>
+        </section>
+    </div>
+    <div id="assignment-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h3 id="modal-title">ส่งงาน</h3>
+            <form id="submit-form">
+                <label for="comment">ข้อความ:</label><br>
+                <textarea id="comment" name="comment" rows="4" style="width:100%; margin:10px 0;"></textarea><br>
+                <label for="file">แนบไฟล์:</label><br>
+                <input type="file" id="file" name="file" style="margin:10px 0;"><br>
+                <button type="submit" style="background:#6ed062; color:white; border:none; padding:10px; border-radius:6px;">ส่งงาน</button>
+            </form>
+        </div>
+    </div>
+    <script src="script.js"></script>
+    <script>
+        const assignments = [
+            { id: 1, title: 'Assignment 1: Introduction to Programming', dueDate: '2026-05-01', description: 'เขียนโปรแกรมง่ายๆ โดยใช้ภาษา C หรือ Python' },
+            { id: 2, title: 'Assignment 2: Project Proposal', dueDate: '2026-05-15', description: 'เสนอแนวคิดโปรเจคสำหรับเทอมนี้' }
+        ];
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const code = urlParams.get('code');
+            const course = allCourses.find(c => c.code === code);
+            if (course) {
+                let detailHTML = `
+                    <div class="course-card" style="max-width: 600px; margin: 0 auto;">
+                        <div class="card-banner ${course.color}">
+                            <span class="course-code">${course.code}</span>
+                            <h3 class="course-title">${course.title}</h3>
+                        </div>
+                        <div class="card-details">
+                            <p><strong>อาจารย์:</strong> ${course.instructor}</p>
+                            <p><strong>จำนวนที่เปิดสอน:</strong> ${course.capacity} คน</p>
+                            <p><strong>ประเภท:</strong> ${course.type === 'bachelor' ? 'ปริญญาตรี' : 'ปริญญาโท'}</p>
+                            <p><strong>รายละเอียดเพิ่มเติม:</strong> รายละเอียดของวิชา ${course.title} จะถูกเพิ่มเติมในภายหลัง</p>
+                        </div>
+                    </div>
+                `;
+
+                // เพิ่มส่วนการบ้าน
+                let assignmentsHTML = '<h2 style="margin-top:30px;">การบ้าน</h2><div class="assignment-list">';
+                assignments.forEach(a => {
+                    assignmentsHTML += `<div class="assignment-item" data-id="${a.id}">
+                        <div class="assignment-title">${a.title}</div>
+                        <div class="assignment-due">กำหนดส่ง: ${a.dueDate}</div>
+                    </div>`;
+                });
+                assignmentsHTML += '</div>';
+                detailHTML += assignmentsHTML;
+
+                document.getElementById('course-detail').innerHTML = detailHTML;
+
+                // เพิ่ม event listeners สำหรับการบ้าน
+                document.querySelectorAll('.assignment-item').forEach(item => {
+                    item.addEventListener('click', () => {
+                        const id = item.getAttribute('data-id');
+                        const assignment = assignments.find(a => a.id == id);
+                        document.getElementById('modal-title').textContent = `ส่งงาน: ${assignment.title}`;
+                        document.getElementById('assignment-modal').style.display = 'block';
+                    });
+                });
+            } else {
+                document.getElementById('course-detail').innerHTML = '<p>ไม่พบรายวิชา</p>';
+            }
+
+            // Event สำหรับปิด modal
+            document.querySelector('.close').addEventListener('click', () => {
+                document.getElementById('assignment-modal').style.display = 'none';
+            });
+
+            // ปิด modal เมื่อคลิกข้างนอก
+            window.addEventListener('click', (e) => {
+                if (e.target == document.getElementById('assignment-modal')) {
+                    document.getElementById('assignment-modal').style.display = 'none';
+                }
+            });
+
+            // Event สำหรับส่งฟอร์ม
+            document.getElementById('submit-form').addEventListener('submit', (e) => {
+                e.preventDefault();
+                alert('ส่งงานเรียบร้อยแล้ว!');
+                document.getElementById('assignment-modal').style.display = 'none';
+                // รีเซ็ตฟอร์ม
+                document.getElementById('comment').value = '';
+                document.getElementById('file').value = '';
+            });
+        });
+    </script>
+</body>
+</html>

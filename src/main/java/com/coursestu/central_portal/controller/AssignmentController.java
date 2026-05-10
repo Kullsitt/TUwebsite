@@ -87,7 +87,7 @@ public class AssignmentController {
         }
 
         assignment.setFileName(fileName);
-        String fileViewUrl = "http://localhost:8080/documents/view/" + fileName;
+        String fileViewUrl = "/api/assignments/download/" + fileName;
         assignment.setFileUrl(fileViewUrl);
 
         Course course = new Course();
@@ -129,7 +129,7 @@ public class AssignmentController {
             if (!Files.exists(submissionPath)) { Files.createDirectories(submissionPath); }
 
             String assignmentIdStr = String.valueOf(assignmentId); 
-            String fileName = studentId + "_ID" + assignmentIdStr + "_" + file.getOriginalFilename();
+            String fileName = studentId + "_" + file.getOriginalFilename();
             
             Path filePath = submissionPath.resolve(fileName);
             Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);

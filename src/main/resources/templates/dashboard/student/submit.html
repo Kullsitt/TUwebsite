@@ -51,43 +51,122 @@
                 <a th:href="@{/home/student}">หน้าแรก</a> / <span id="breadcrumb-text">วิชา CS271 ARTIFICIAL INTELLIGENCE FUNDAMENTALS / การบ้านครั้งที่ 1</span>
             </div>
 
-            <div class="submit-card">
+            <div class="submit-card" th:if="${assignment != null}">
                 <div class="card-header">
-                    <h2 id="main-title">การบ้านครั้งที่ 1</h2>
+					<h2 id="main-title" th:text="${assignment.title}">
+					    การบ้าน
+					</h2>
                 </div>
                 <div class="card-body">
-                    <p class="assignment-desc" id="assignment-desc">
-                        Assignment#1<br>
-                        เขียนคำตอบแต่ละข้อย่อย<br>
-                        ข้อย่อยละ 1 diagram เรียงตามลำดับ เขียนคำตอบลงในไฟล์เดียวกัน ตั้งชื่อไฟล์ว่า cs251_HW1_x.pdf<br>
-                        หมายเหตุ เขียน ERD/EERD ด้วยลายมือก็ได้ หรือใช้เครื่องมือวาด & พิมพ์ก็ได้
-                    </p>
+					<p class="assignment-desc"
+					   id="assignment-desc"
+					   th:text="${assignment.description}">
+					    รายละเอียดการบ้าน
+					</p>
                     <div class="meta-item">
                         <i class="fa-regular fa-folder-open icon-meta"></i> 
-                        <a href="#" class="file-link">ไฟล์การบ้าน</a>
+						<a th:if="${assignment != null && assignment.fileName != null}"
+						   th:href="@{/api/assignments/download/{fileName}(fileName=${assignment.fileName})}"
+						   th:text="${assignment.fileName}"
+						   target="_blank"
+						   class="file-link">
+						</a>
+
+						<span th:if="${assignment == null || assignment.fileName == null}">
+						    ไม่มีไฟล์แนบ
+						</span>
                     </div>
                     <div class="meta-item">
                         <i class="fa-regular fa-calendar icon-meta"></i> 
-                        <span>20/03/2569 ไม่เกิน 23.59 น.</span>
+						<span th:text="${assignment.deadline != null ? assignment.deadline : 'ไม่มีกำหนดส่ง'}">
+						</span>
                     </div>
                 </div>
             </div>
+			
+			<div class="submit-card" th:if="${submission != null}">
+			    <div class="card-header border-none">
+			        <h2>งานที่คุณส่งแล้ว</h2>
+			    </div>
 
-            <div class="submit-card">
-                <div class="card-header border-none">
-                    <h2 id="action-title">กล่องสำหรับส่งงาน</h2>
-                </div>
-                <div class="card-body">
-                    <div class="upload-box" id="upload-box">
-                        <i class="fa-solid fa-arrow-up-from-bracket upload-icon"></i>
-                        <span class="upload-text">อัปโหลดการบ้าน</span>
-                    </div>
-                    <div class="button-group">
-                        <button class="btn-cancel" id="btn-cancel">ยกเลิก</button>
-                        <button class="btn-submit" id="btn-submit">ตกลง</button>
-                    </div>
-                </div>
-            </div>
+			    <div class="card-body">
+			        <p>
+			            ไฟล์ที่ส่ง:
+			            <a th:href="@{/api/assignments/download/submission/{fileName}(fileName=${submission.fileName})}"
+			               th:text="${submission.fileName}"
+			               target="_blank"
+			               class="file-link">
+			            </a>
+			        </p>
+
+			        <p>
+			            เวลาที่ส่ง:
+			            <span th:text="${submission.submittedAt}"></span>
+			        </p>
+
+			        <p th:if="${submission.score != null}">
+			            คะแนน:
+			            <span th:text="${submission.score}"></span>
+			        </p>
+
+			        <p th:if="${submission.feedback != null}">
+			            Feedback:
+			            <span th:text="${submission.feedback}"></span>
+			        </p>
+			    </div>
+			</div>
+
+			<div class="submit-card" th:if="${assignment != null}">
+			    <div class="card-header border-none">
+			        <h2 id="action-title">กล่องสำหรับส่งงาน</h2>
+			    </div>
+
+			    <div class="card-body">
+			        <form th:action="@{/api/assignments/submit/upload}"
+			              method="post"
+			              enctype="multipart/form-data">
+
+			            <input type="hidden" name="assignmentId" th:value="${assignment.id}">
+			            <input type="hidden" name="courseId" th:value="${courseId}">
+			            <input type="hidden" name="studentId" th:value="${student.studentCode}">
+
+						<label class="upload-box" id="upload-box" for="homeworkFile">
+						    <i class="fa-solid fa-arrow-up-from-bracket upload-icon"></i>
+						    <span class="upload-text" id="fileLabel">คลิกเพื่ออัปโหลดไฟล์การบ้าน</span>
+						</label>
+
+						<input type="file"
+						       id="homeworkFile"
+						       name="file"
+						       required
+						       style="display:none;"
+						       onchange="document.getElementById('fileLabel').innerText = this.files[0] ? this.files[0].name : 'คลิกเพื่ออัปโหลดไฟล์การบ้าน';">
+
+			            <div class="button-group">
+			                <button type="button" class="btn-cancel" id="btn-cancel" onclick="window.history.back()">ยกเลิก</button>
+			                <button type="submit" class="btn-submit" id="btn-submit">ส่งงาน</button>
+			            </div>
+			        </form>
+			    </div>
+			</div>
+			<div class="submit-card" th:if="${assignment == null}">
+			    <div class="card-header border-none">
+			        <h2>ดำเนินการลงทะเบียน</h2>
+			    </div>
+
+			    <div class="card-body">
+			        <form method="post" th:action="@{/course/enroll/confirm}">
+			            <input type="hidden"
+			                   name="courseId"
+			                   th:value="${param.id != null ? param.id[0] : param.courseId[0]}">
+
+			            <div class="button-group">
+			                <button type="button" class="btn-cancel" onclick="window.history.back()">ยกเลิก</button>
+			                <button type="submit" class="btn-submit">ยืนยันการลงทะเบียน</button>
+			            </div>
+			        </form>
+			    </div>
+			</div>
         </div>
     </div>
 
@@ -103,38 +182,15 @@
             }
         });
 
-        document.addEventListener('DOMContentLoaded', function() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const courseId = urlParams.get('id');
-            if (courseId) {
-                document.getElementById('breadcrumb-text').innerText = `ยืนยันการลงทะเบียนเรียน: ${courseId}`;
-                document.getElementById('main-title').innerText = `ยืนยันการลงทะเบียนเรียน: ${courseId}`;
-                document.getElementById('assignment-desc').innerHTML = 
-                    `คุณกำลังดำเนินการลงทะเบียนในรายวิชา <strong>${courseId}</strong><br>` +
-                    `โปรดตรวจสอบความถูกต้องของรายวิชาก่อนกดยืนยันการลงทะเบียน`;
-                const metaItems = document.querySelectorAll('.meta-item');
-                metaItems.forEach(item => item.style.display = 'none');
-                document.getElementById('upload-box').style.display = 'none';
-                document.getElementById('action-title').innerText = "ดำเนินการลงทะเบียน";
-                const btnSubmit = document.getElementById('btn-submit');
-                btnSubmit.innerText = "ยืนยันการลงทะเบียน";
-                btnSubmit.onclick = function() {
-                    const form = document.createElement('form');
-                    form.method = 'POST';
-                    form.action = '/course/enroll/confirm';
-                    const inputCourseId = document.createElement('input');
-                    inputCourseId.type = 'hidden';
-                    inputCourseId.name = 'courseId';
-                    inputCourseId.value = courseId;
-                    form.appendChild(inputCourseId);
-                    document.body.appendChild(form);
-                    alert('กำลังส่งคำขอลงทะเบียนวิชา ' + courseId + ' ...');
-                    form.submit();
-                };
-                const btnCancel = document.getElementById('btn-cancel');
-                btnCancel.onclick = function() { window.history.back(); };
-            }
-        });
+		document.addEventListener('DOMContentLoaded', function() {
+		    const urlParams = new URLSearchParams(window.location.search);
+		    const courseId = urlParams.get('id') || urlParams.get('courseId');
+
+		    if (courseId && document.getElementById('breadcrumb-text')) {
+		        document.getElementById('breadcrumb-text').innerText =
+		            `ยืนยันการลงทะเบียนเรียน: ${courseId}`;
+		    }
+		});
     </script>
 </body>
 </html>

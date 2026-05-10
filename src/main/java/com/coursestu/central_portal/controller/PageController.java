@@ -417,26 +417,37 @@ public class PageController {
  // ในไฟล์ PageController.java
  // PageController.java
     @GetMapping("/assignment/submithw")
-    public String showSubmitPage(@RequestParam("assignmentId") String assignmentTitle, 
-                                 @RequestParam("courseId") String courseId, 
-                                 HttpSession session, 
+    public String showSubmitPage(@RequestParam("assignmentId") Long assignmentId,
+                                 @RequestParam("courseId") String courseId,
+                                 HttpSession session,
                                  Model model) {
-        
-        Assignment assignment = assignmentRepository.findAll().stream()
-                .filter(a -> a.getTitle().equals(assignmentTitle) && a.getCourse().getCourseId().equals(courseId))
-                .findFirst().orElse(null);
 
-        model.addAttribute("courseId", courseId);
-        model.addAttribute("assignmentTitle", assignmentTitle); // ✅ ชื่อเอาไว้โชว์
-
-        if (assignment != null) {
-            model.addAttribute("assignmentId", assignment.getId()); // ✅ ID เอาไว้ส่งเข้า Database
-            model.addAttribute("assignmentDescription", assignment.getDescription());
-            model.addAttribute("assignmentFileName", assignment.getFileName());
-            model.addAttribute("deadline", assignment.getDeadline() != null ? 
-                assignment.getDeadline().format(java.time.format.DateTimeFormatter.ofPattern("dd MMM yyyy HH:mm")) : "ไม่มีกำหนด");
+        TULoginResponse user = (TULoginResponse) session.getAttribute("user");
+        if (user == null || !"student".equals(session.getAttribute("role"))) {
+            return "redirect:/login";
         }
-        // ... ส่วนอื่นเหมือนเดิม ...
-        return "dashboard/student/submithw";
+
+        Student student = getOrCreateStudent(user);
+
+        Assignment assignment = assignmentRepository.findById(assignmentId).orElse(null);
+        if (assignment == null) {
+            return "redirect:/dashboard/student?id=" + courseId;
+        }
+
+        model.addAttribute("user", user);
+        model.addAttribute("student", student);
+        model.addAttribute("assignment", assignment);
+        Submission existingSubmission = submissionRepository
+                .findByStudent_Id(student.getId())
+                .stream()
+                .filter(s -> s.getAssignment() != null &&
+                             s.getAssignment().getId().equals(assignmentId))
+                .findFirst()
+                .orElse(null);
+
+        model.addAttribute("submission", existingSubmission);
+        model.addAttribute("courseId", courseId);
+
+        return "dashboard/student/submit";
     }
 }
